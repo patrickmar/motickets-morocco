@@ -52,6 +52,12 @@ const FinancialCard: React.FC<{ onViewReport: () => void }> = ({
 
   const eventList: Event[] = events?.data || [];
 
+  if (!user) {
+    <p className="text-[#c10006] flex justify-center text-3xl">
+      You do not have an event yet
+    </p>;
+  }
+
   return (
     <div className="container mx-auto">
       <div className="flex flex-wrap -mx-2">
