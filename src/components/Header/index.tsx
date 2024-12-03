@@ -67,11 +67,11 @@ const Header: React.FC = () => {
   console.log(avatarUrl);
   console.log(setQuery);
 
-  useEffect(() => {
-    if (!hostid) {
-      navigate("/login");
-    }
-  }, [hostid, navigate]);
+  // useEffect(() => {
+  //   if (!hostid) {
+  //     navigate("/login");
+  //   }
+  // }, [hostid, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -167,7 +167,7 @@ const Header: React.FC = () => {
           <DropdownCountry />
         </li>
 
-        {user && isAuthenticated ? (
+        {hostid && isAuthenticated ? (
           <li className="menuItem">
             <div className="border-t border-gray-200 flex justify-end">
               <div className="relative">
