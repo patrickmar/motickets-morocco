@@ -136,7 +136,7 @@ function AvatarUploadForm() {
           />
         </div>
         <label className="block">
-          <span className="sr-only">Choose profile photo</span>
+          <span className="sr-only">Choisir une photo de profil</span>
           <input
             type="file"
             onChange={loadFile}
@@ -152,7 +152,7 @@ function AvatarUploadForm() {
           type="submit"
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
         >
-          Submit
+          Soumettre
         </button>
       </div>
     </form>

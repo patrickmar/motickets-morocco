@@ -143,22 +143,22 @@ const Header: React.FC = () => {
         {/* Menu Items */}
         <ul className={`menuItems ${mobileMenu ? "mobileMenuVisible" : ""}`}>
           <li className="menuItem" onClick={() => navigationHandler("/")}>
-            Home
+          Accueil
           </li>
           <li
             className="menuItem"
             onClick={() => navigationHandler("/organisers")}
           >
-            For Business
+            Pour les professionnels
           </li>
           <li className="menuItem" onClick={() => navigationHandler("/events")}>
-            All Events
+          Tous les événements
           </li>
           <li
             className="menuItem"
             onClick={() => navigationHandler("/create-event")}
           >
-            Create Event
+            Créer un événement
           </li>
         </ul>
 
@@ -186,18 +186,18 @@ const Header: React.FC = () => {
                     <Link
                       to="/dashboard"
                       onClick={closeDropdown}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-xs text-gray-700 hover:bg-gray-100"
                     >
-                      Dashboard
+                      Tableau de bord
                     </Link>
                     <button
                       onClick={() => {
                         closeDropdown();
                         handleLogout();
                       }}
-                      className="block w-full text-left px-8 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block w-full text-left px-8 py-2 text-xs text-gray-700 hover:bg-gray-100"
                     >
-                      Logout
+                      Se déconnecter
                     </button>
                   </div>
                 </div>
@@ -209,7 +209,7 @@ const Header: React.FC = () => {
             to="/login"
             className="py-2 px-6 bg-[#25aae1] rounded-md text-white"
           >
-            LOGIN
+            Se connecter
           </Link>
         )}
 

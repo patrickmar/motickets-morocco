@@ -21,9 +21,9 @@ export const currencies = [
 
 export const countries = [
   {
-    name: "Nigeria",
+    name: "Morocco",
     url: "https://motickets.co.uk",
-    code: "NG",
+    code: "MA",
   },
   // {
   //   name: "United States",
@@ -49,7 +49,7 @@ export const countries = [
 
 export const guests = [
   {
-    name: "Find Events",
+    name: "Trouver des événements",
     url: "events",
   },
   // {
@@ -64,7 +64,7 @@ export const guests = [
 
 export const hosts = [
   {
-    name: "Organisers",
+    name: "Organisateurs",
     url: "/organisers",
   },
   // {
@@ -72,16 +72,16 @@ export const hosts = [
   //   url: 'https://play.google.com/store/apps/details?id=com.avantecs.moloyal',
   // },
   {
-    name: "MoTickets Agent APK",
+    name: "APK de l'agent MoTickets",
     url: "../MoTickets_Agent_App.apk",
   },
   {
-    name: "Agent Web App",
+    name: "Application Web de l'Agent",
     url: "https://motickets-agent-web.netlify.app",
   },
 
   {
-    name: "Help",
+    name: "Aide",
     url: "/faq",
   },
 ];
@@ -105,11 +105,11 @@ export const QuillFormats = [
 
 export const company = [
   {
-    name: "Corporate Philosophy",
+    name: "Philosophie d'entreprise",
     url: "corporate-philosophy",
   },
   {
-    name: "Corporate Profile",
+    name: "Profil de l'entreprise",
     url: "corporate-profile",
   },
   // {
@@ -117,11 +117,11 @@ export const company = [
   //   url: "",
   // },
   {
-    name: "Terms of Service",
+    name: "Conditions d'utilisation",
     url: "/terms",
   },
   {
-    name: "Contact Us",
+    name: "Contactez-nous",
     url: "/contact-us",
   },
 ];

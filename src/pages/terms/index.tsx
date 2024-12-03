@@ -6,7 +6,8 @@ const TermsAndConditions = () => {
       <div className="max-w-screen-md mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-between">
         <div className="text-center mt-32">
           <h3 className="text-3xl sm:text-4xl leading-normal font-extrabold tracking-tight text-gray-100">
-            Frequently Asked <span className="text-indigo-600">Questions</span>
+            Questions fréquemment posées{" "}
+            <span className="text-indigo-600">Questions</span>
           </h3>
         </div>
 
@@ -38,7 +39,7 @@ const TermsAndConditions = () => {
                 </div>
                 <div className="bg-gray-100 p-5 px-10 w-full flex items-center">
                   <h4 className="text-md leading-6 font-medium text-gray-900">
-                    How do I request a refund?{" "}
+                    Comment demander un remboursement ?{" "}
                   </h4>
                 </div>
               </div>
@@ -46,12 +47,13 @@ const TermsAndConditions = () => {
               <div className="flex flex-row items-start">
                 <div className="bg-indigo-100 p-5 px-10 w-full flex items-center">
                   <p className="text-gray-700 text-sm">
-                    To request a refund, please send an email to
-                    help@motickets.co.uk. Please be aware that refund policies
-                    may vary for each event, and the specific policy will be
-                    communicated on your ticket. Your refund request will be
-                    forwarded to the event organizer for review. You will
-                    receive an email notification once they respond.
+                    Pour demander un remboursement, veuillez envoyer un email à
+                    help@motickets.co.uk. Veuillez noter que les politiques de
+                    remboursement peuvent varier en fonction de chaque
+                    événement, et la politique spécifique sera indiquée sur
+                    votre billet. Votre demande de remboursement sera transmise
+                    à l'organisateur de l'événement pour examen. Vous recevrez
+                    une notification par email une fois qu'ils auront répondu.{" "}
                   </p>
                 </div>
                 <div
@@ -129,8 +131,8 @@ const TermsAndConditions = () => {
                 </div>
                 <div className="bg-gray-100 p-5 px-10 w-full flex items-center">
                   <h4 className="text-md leading-6 font-medium text-gray-900">
-                    Is there a mobile app available for easier ticket management
-                    and access?
+                    Y a-t-il une application mobile disponible pour une gestion
+                    et un accès plus faciles aux billets ?
                   </h4>
                 </div>
               </div>
@@ -138,8 +140,10 @@ const TermsAndConditions = () => {
               <div className="flex flex-row items-start">
                 <div className="bg-indigo-100 p-5 px-10 w-full flex items-center">
                   <p className="text-gray-700 text-sm">
-                    While a mobile app is in development, for now, you can find
-                    events and manage tickets at https://motickets.co.uk/events.
+                    Bien qu'une application mobile soit en cours de
+                    développement, pour le moment, vous pouvez trouver des
+                    événements et gérer vos billets sur
+                    https://motickets.co.uk/events.
                   </p>
                 </div>
                 <div
@@ -217,7 +221,8 @@ const TermsAndConditions = () => {
                 </div>
                 <div className="bg-gray-100 p-5 px-10 w-full flex items-center">
                   <h4 className="text-md leading-6 font-medium text-gray-900">
-                    What payment methods do you accept for purchasing tickets?
+                    Quels modes de paiement acceptez-vous pour l'achat de
+                    billets ?
                   </h4>
                 </div>
               </div>
@@ -225,8 +230,9 @@ const TermsAndConditions = () => {
               <div className="flex flex-row items-start">
                 <div className="bg-indigo-100 p-5 px-10 w-full flex items-center">
                   <p className="text-gray-700 text-sm">
-                    We accept all major card providers. Additionally, PayPal is
-                    available, and Apple Pay and Google Pay will be added soon.
+                    Nous acceptons tous les principaux fournisseurs de cartes.
+                    De plus, PayPal est disponible, et Apple Pay ainsi que
+                    Google Pay seront ajoutés prochainement.
                   </p>
                 </div>
                 <div
@@ -304,7 +310,7 @@ const TermsAndConditions = () => {
                 </div>
                 <div className="bg-gray-100 p-5 px-10 w-full flex items-center">
                   <h4 className="text-md leading-6 font-medium text-gray-900">
-                    What happens if the event is cancelled or rescheduled?{" "}
+                    Que se passe-t-il si l'événement est annulé ou reprogrammé ?{" "}
                   </h4>
                 </div>
               </div>
@@ -312,13 +318,14 @@ const TermsAndConditions = () => {
               <div className="flex flex-row items-start">
                 <div className="bg-indigo-100 p-5 px-10 w-full flex items-center">
                   <p className="text-gray-700 text-sm">
-                    Any changes to events will be communicated via email. Please
-                    ensure to check your email for any updates before the event.
-                    If an event is cancelled or rescheduled, your tickets will
-                    remain valid for the new event time, and you'll have the
-                    option for a refund. In the case of a cancellation, event
-                    refunds will automatically be issued back to the card you
-                    used for the purchase.
+                    Toute modification d'événement sera communiquée par email.
+                    Veuillez vous assurer de vérifier votre email pour toute
+                    mise à jour avant l'événement. Si un événement est annulé ou
+                    reprogrammé, vos billets resteront valides pour la nouvelle
+                    date de l'événement, et vous aurez la possibilité de
+                    demander un remboursement. En cas d'annulation, les
+                    remboursements des événements seront automatiquement
+                    effectués sur la carte que vous avez utilisée pour l'achat.
                   </p>
                 </div>
                 <div

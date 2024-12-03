@@ -18,7 +18,7 @@ export default function CardBlogAction() {
 
   return (
     <div className="bg-[#f9f9f9]">
-      <h3 className="text-dark text-2xl p-12">Explore Events</h3>
+      <h3 className="text-dark text-2xl p-12">Explorer les événements</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-12">
         {!loading
           ? eventData?.map((item: any, index: number) => {

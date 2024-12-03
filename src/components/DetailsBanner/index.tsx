@@ -73,15 +73,15 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
       //   value: newData?.status,
       // },
       {
-        name: "Venue",
+        name: "Lieu",
         value: newData?.venue,
       },
       {
-        name: "Category",
+        name: "Catégorie",
         value: newData?.event_cat,
       },
       {
-        name: "Days",
+        name: "Jours",
         value: differenceInDays(newData),
       },
     ];
@@ -91,17 +91,17 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
   const dateInfo = (newData: any) => {
     const options = [
       {
-        name: "Start Date",
+        name: "Date de début",
         value: moment(newData?.from_date).format("MMM D, YYYY."),
       },
       {
-        name: "End Date",
+        name: "Date de fin",
         value: newData?.to_date
           ? moment(newData?.to_date).format("MMM D, YYYY.")
           : "",
       },
       {
-        name: "Time",
+        name: "Heure",
         value: moment(newData?.from_date + " " + newData?.from_time).format(
           "hh:mmA"
         ),
@@ -133,9 +133,9 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
 
     if (updatedCategories[index].qty >= updatedQty[index].qty) {
       toast(
-        "You can not buy more than the remaining tickets ( " +
+        "Vous ne pouvez pas acheter plus que le nombre de billets restants. ( " +
           updatedQty[index].qty +
-          " ), kindly buy another ticket type"
+          " ), Veuillez acheter un autre type de billet."
       );
     } else {
       updatedCategories[index].qty += 1;
@@ -219,7 +219,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                             type="button"
                             onClick={() => setSelectedImage(item.img)}
                           >
-                            <span>Image view</span>
+                            <span>Vue de l'image</span>
                             <span className="rounded-md overflow-hidden inset-0 absolute">
                               <Img
                                 className="object-center object-cover w-full h-full"
@@ -307,7 +307,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                             </h2>
                           </div>
                           <span className="text-sm font-small p-4 text-red-600  ">
-                            *includes booking fee
+                            *Inclut les frais de réservation
                           </span>
                           <div className="mt-8">
                             <div className="flow-root">
@@ -321,7 +321,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                                       color: "black",
                                     }}
                                   >
-                                    Event is no longer available.
+                                    L'événement n'est plus disponible.
                                   </span>
                                 </>
                               ) : (
@@ -353,7 +353,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                                                       id="decrement-button"
                                                       className="relative md:text-sm text-xs  bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 dark:border-gray-600 hover:bg-black-100 border border-gray-200 rounded-s-lg rounded-e-lg px-5 py-2  focus:ring-gray-100 dark:focus:ring-gray-700 focus:outline-none"
                                                     >
-                                                      Sold Out
+                                                      Complet
                                                     </button>
                                                   </div>
                                                 </div>
@@ -439,7 +439,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                                                   thousandSeparator={true}
                                                   prefix={`${currency}`}
                                                 />{" "}
-                                                booking fee
+                                                Frais de réservation
                                               </span>
                                             </p>
                                           </div>
@@ -462,7 +462,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                                 !isButtonEnabled ? "disabled" : ""
                               } flex w-full items-center justify-center  rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700`}
                             >
-                              Buy Tickets
+                              Acheter des billets
                             </button>
                           </div>
                         </div>

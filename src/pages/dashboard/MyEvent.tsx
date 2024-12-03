@@ -127,19 +127,19 @@ const MyEvent: React.FC = () => {
                       onClick={() => navigate(`/details/${event.slug}`)}
                       className="bg-[#25aae1] text-white px-3 py-1 rounded hover:bg-[#1a8abf]"
                     >
-                      View
+                      Vue
                     </button>
                     <button
                       onClick={() => navigate(`/update-event/${event.sn}`)}
                       className="text-white bg-[#0A0D36] py-1.5 px-4"
                     >
-                      Edit
+                      Modifier
                     </button>
                     <button
                       onClick={() => deleteEventHandler(event.sn)}
                       className="text-red-500 hover:text-red-700"
                     >
-                      Delete
+                      Supprimer
                     </button>
                   </div>
                 </div>

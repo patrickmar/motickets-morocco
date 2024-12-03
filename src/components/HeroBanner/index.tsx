@@ -43,18 +43,18 @@ const HeroBanner = (props: Props) => {
       {/* <div className="opacity-layer"></div> */}
       <ContentWrapper>
         <div className="heroBannerContent">
-          <span className="title">Unlock the Fun.</span>
-          <span className="subTitle">Your Ticket to Unforgettable Events</span>
+          <span className="title">Débloquez le plaisir.</span>
+          <span className="subTitle">Votre billet pour des événements inoubliables.</span>
           <div className="searchInput">
             <input
               type="text"
               value={query}
-              placeholder="Search the Scene, Events, Venue, Artists and Beyond...."
+              placeholder="Recherchez la scène, les événements, les lieux, les artistes et bien plus encore...."
               onChange={(e) => setQuery(e.target.value)}
               onKeyUp={searchQueryHandler}
               className="text-black dark:text-white"
             />
-            <button onClick={searchQueryHandler}>Search</button>
+            <button onClick={searchQueryHandler}>Rechercher</button>
           </div>
         </div>
       </ContentWrapper>

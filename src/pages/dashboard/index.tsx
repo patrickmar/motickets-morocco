@@ -61,7 +61,7 @@ const Dashboard: React.FC = () => {
         return (
           <div className="card--container bg-gray-100">
             <div className="card--container">
-              <h3 className="main--title">Today's data</h3>
+              <h3 className="main--title">Données d'aujourd'hui</h3>
               <div className="card--wrapper">
                 <div className="payment--card light-red">
                   <div className="card--header">
@@ -75,7 +75,7 @@ const Dashboard: React.FC = () => {
                 <div className="payment--card light-purple">
                   <div className="card--header">
                     <div className="amount">
-                      <span className="title">Payment Order</span>
+                      <span className="title">Ordre de paiement</span>
                       <span className="amount--value">£0.00</span>
                     </div>
                     <i className="fas fa-list icon"></i>
@@ -84,8 +84,10 @@ const Dashboard: React.FC = () => {
                 <div className="payment--card light-green">
                   <div className="card--header">
                     <div className="amount">
-                      <span className="title">Events</span>
-                      <span className="amount--value">All Hosted Events</span>
+                      <span className="title">Événements</span>
+                      <span className="amount--value">
+                        Tous les événements organisés
+                      </span>
                     </div>
                     <i className="fas fa-check icon dark-blue"></i>
                   </div>
@@ -93,7 +95,7 @@ const Dashboard: React.FC = () => {
                 <div className="payment--card light-blue">
                   <div className="card--header">
                     <div className="amount">
-                      <span className="title">Bookings</span>
+                      <span className="title">Réservations</span>
                       <span className="amount--value">£0.00</span>
                     </div>
                     <i className="fas fa-users icon dark-green"></i>
@@ -128,7 +130,7 @@ const Dashboard: React.FC = () => {
           >
             <a href="#">
               <i className="fas fa-user"></i>
-              <span>Profile</span>
+              <span>Profil</span>
             </a>
             {selectedMenu === "Profile" && (
               <ul className="dropdown-menu">
@@ -138,7 +140,7 @@ const Dashboard: React.FC = () => {
                   }
                   onClick={() => setSelectedProfileOption("ViewProfile")}
                 >
-                  <i className="fas fa-eye"></i> <span>View Profile</span>
+                  <i className="fas fa-eye"></i> <span>Voir le profil</span>
                 </li>
                 <li
                   className={
@@ -146,7 +148,8 @@ const Dashboard: React.FC = () => {
                   }
                   onClick={() => setSelectedProfileOption("EditProfile")}
                 >
-                  <i className="fas fa-edit"></i> <span>Edit Profile</span>
+                  <i className="fas fa-edit"></i>{" "}
+                  <span>Modifier le profil</span>
                 </li>
               </ul>
             )}
@@ -177,7 +180,7 @@ const Dashboard: React.FC = () => {
           >
             <a href="#">
               <i className="fas fa-calendar-alt"></i>
-              <span>Event</span>
+              <span>Événement</span>
             </a>
             {selectedMenu === "Event" && (
               <ul className="dropdown-menu">
@@ -187,13 +190,15 @@ const Dashboard: React.FC = () => {
                   }
                   onClick={() => setSelectedEventOption("CreateEvent")}
                 >
-                  <i className="fas fa-plus"></i> <span>Create Event</span>
+                  <i className="fas fa-plus"></i>{" "}
+                  <span>Créer un événement</span>
                 </li>
                 <li
                   className={selectedEventOption === "MyEvent" ? "active" : ""}
                   onClick={() => setSelectedEventOption("MyEvent")}
                 >
-                  <i className="fas fa-info-circle"></i> <span>My Events</span>
+                  <i className="fas fa-info-circle"></i>{" "}
+                  <span>Mes événements</span>
                 </li>
               </ul>
             )}
@@ -201,7 +206,7 @@ const Dashboard: React.FC = () => {
           <li className="logout">
             <a href="#">
               <i className="fas fa-sign-out-alt"></i>
-              <span>Logout</span>
+              <span>Se déconnecter</span>
             </a>
           </li>
         </ul>

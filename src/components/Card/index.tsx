@@ -4,6 +4,7 @@ import Img from "../LazyLoadImage";
 import PosterFallback from "../../assets/images/no-poster.png";
 import "./styles.scss";
 import moment from "moment";
+import 'moment/locale/fr';  // Import French locale
 import Tags from "../Tags";
 import { PriceSelection, getCurrency, getTags } from "../../utils/functions";
 
@@ -16,6 +17,8 @@ type Props = {
 const Card = ({ data, loading, title }: Props) => {
   const imageURL = process.env.REACT_APP_IMAGEURL;
   const navigate = useNavigate();
+  moment.locale('fr');  // Set moment to use the French locale
+
 
   const currency = data && getCurrency(data[0]);
   // const filteredData =  data.filter((item:any) =>

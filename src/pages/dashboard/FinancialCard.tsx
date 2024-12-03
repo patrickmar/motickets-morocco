@@ -81,7 +81,7 @@ const FinancialCard: React.FC<{ onViewReport: () => void }> = ({
                       className="bg-[#25aae1] text-white py-2 px-6 rounded hover:bg-[#1a8abf]"
                       onClick={onViewReport}
                     >
-                      View Finacial Report
+                      Voir le rapport financier{" "}
                     </button>
                   </div>
                 </div>

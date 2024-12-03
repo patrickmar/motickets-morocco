@@ -468,13 +468,15 @@ const CreateEventForm: React.FC = () => {
   return (
     <div className="flex items-center justify-center">
       <div className="bg-gray-100 p-8 rounded shadow-lg w-4/5 lg:w-3/5 mt-24">
-        <h2 className="text-2xl font-semibold mb-4 text-[#25aae1]">Create Event</h2>
+        <h2 className="text-2xl font-semibold mb-4 text-[#25aae1]">
+          Créer un événement
+        </h2>
         <form onSubmit={handleSubmit}>
           {step === 1 && (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600 mb-2">
-                  Event Title
+                  Titre de l'événement
                 </label>
                 <input
                   type="text"
@@ -489,7 +491,7 @@ const CreateEventForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="venue" className="block text-gray-600 mb-2">
-                  Event Venue
+                  Lieu de l'événement
                 </label>
                 <input
                   type="text"
@@ -499,12 +501,12 @@ const CreateEventForm: React.FC = () => {
                   value={eventData.venue}
                   onChange={handleChange}
                   required
-                  placeholder="Lagos, Nigeria"
+                  placeholder="Rabat, Morocco"
                 />
               </div>
               <div className="mb-4">
                 <label htmlFor="banner" className="block text-gray-600">
-                  Event Images (Up to 5)
+                  Images de l'événement (jusqu'à 5)
                 </label>
                 <div className="border border-dashed p-12 rounded-md">
                   <div className="flex items-center">
@@ -512,7 +514,7 @@ const CreateEventForm: React.FC = () => {
                       htmlFor="banner"
                       className="cursor-pointer bg-[#25aae1] text-white px-4 py-2 rounded-md mr-2 focus:outline-none"
                     >
-                      Add Event Image
+                      Ajouter une image de l'événement
                     </label>
                     <input
                       type="file"
@@ -574,9 +576,11 @@ const CreateEventForm: React.FC = () => {
               {showInformation && (
                 <div className="bg-white p-4 border rounded-md">
                   <p className=" italic text-gray-600">
-                    Event graphics preferably include dimensions (220 by 330 px)
-                    and (500 by 550 px) but any size provided may be resized to
-                    fit. Supported formats are jpg, jpeg, png, gif.
+                    Les graphiques de l'événement doivent de préférence inclure
+                    les dimensions (220 par 330 px) et (500 par 550 px), mais
+                    toute taille fournie peut être redimensionnée pour
+                    s'adapter. Les formats pris en charge sont jpg, jpeg, png,
+                    gif.
                   </p>
                 </div>
               )}
@@ -587,7 +591,7 @@ const CreateEventForm: React.FC = () => {
             <>
               <div className="mb-4">
                 <label htmlFor="startDate" className="block text-gray-600 mb-2">
-                  Start Date
+                  Date de début
                 </label>
                 <input
                   type="date"
@@ -601,7 +605,7 @@ const CreateEventForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="endDate" className="block text-gray-600 mb-2">
-                  End Date
+                  Date de fin
                 </label>
                 <input
                   type="date"
@@ -616,7 +620,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="startTime" className="block text-gray-600 mb-2">
-                  Start Time
+                  Heure de début
                 </label>
                 <div className="flex items-center">
                   <input
@@ -644,7 +648,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="endTime" className="block text-gray-600 mb-2">
-                  End Time
+                  Heure de fin
                 </label>
                 <div className="flex items-center">
                   <input
@@ -688,7 +692,7 @@ const CreateEventForm: React.FC = () => {
                   theme="snow"
                 />
                 <p className="text-xs text-gray-400">
-                  Give a full description. Not more than 3000 words
+                  Donnez une description complète. Pas plus de 3000 mots.
                 </p>
               </div>
               <div className="mb-4">
@@ -699,33 +703,35 @@ const CreateEventForm: React.FC = () => {
                   value={eventData.eventType}
                   onChange={handleEventTypeChange}
                 >
-                  <option value="">Select Event Type</option>
+                  <option value="">Sélectionner le type d'événement</option>
                   <option value="Festival">Festival</option>
-                  <option value="Conference">Conference</option>
-                  <option value="Seminar">Seminar</option>
-                  <option value="Executive Meeting">Executive Meeting</option>
-                  <option value="Webinar">Webinar</option>
-                  <option value="Comedy and Standup">Comedy and Standup</option>
-                  <option value="Musical Show">Musical Show</option>
-                  <option value="Trade Fair">Trade Fair</option>
+                  <option value="Conference">Conférence</option>
+                  <option value="Seminar">Séminaire</option>
+                  <option value="Executive Meeting">Réunion exécutive</option>
+                  <option value="Webinar">Webinaire</option>
+                  <option value="Comedy and Standup">
+                    Comédie et Stand-up
+                  </option>
+                  <option value="Musical Show">Spectacle musical</option>
+                  <option value="Trade Fair">Foire commerciale</option>
                   <option value="Charity Events/Fundraisers">
-                    Charity Events/Fundraisers
+                    Événements caritatifs/Collectes de fonds
                   </option>
                   <option value="Club Nights and Bars">
-                    Club Nights and Bars
+                    Soirées en club et bars
                   </option>
                   <option value="Concerts">Concerts</option>
-                  <option value="Cultural Events">Cultural Events</option>
-                  <option value="Trade Show">Trade Show</option>
-                  <option value="Film Screenings">Film Screenings</option>
-                  <option value="Galas/Dinners">Galas/Dinners</option>
-                  <option value="Gigs">Gigs</option>
-                  <option value="Sports Events">Sports Events</option>
+                  <option value="Cultural Events">Événements culturels</option>
+                  <option value="Trade Show">Salon professionnel</option>
+                  <option value="Film Screenings">Projections de films</option>
+                  <option value="Galas/Dinners">Galas/Dîners</option>
+                  <option value="Gigs">Concerts</option>
+                  <option value="Sports Events">Événements sportifs</option>
                   <option value="Theatre/Performing Arts">
-                    Theatre/Performing Arts
+                    Théâtre/Arts de la scène{" "}
                   </option>
-                  <option value="Workshops">Workshops</option>
-                  <option value="Others">Others</option>
+                  <option value="Workshops">Ateliers</option>
+                  <option value="Others">Autres</option>
                 </select>
               </div>
             </>
@@ -739,7 +745,7 @@ const CreateEventForm: React.FC = () => {
                     htmlFor="bearer"
                     className="block mb-2 text-sm font-medium text-[#25aae1]"
                   >
-                    Charge Bearer
+                    Responsable des frais
                   </label>
                   <select
                     id="bearer"
@@ -753,7 +759,7 @@ const CreateEventForm: React.FC = () => {
                       })
                     }
                   >
-                    <option value="">Select Bearer</option>
+                    <option value="">Sélectionner le porteur</option>
                     <option value="client">Client</option>
                     <option value="moloyal">MoTickets</option>
                   </select>
@@ -764,7 +770,7 @@ const CreateEventForm: React.FC = () => {
                     htmlFor="currency"
                     className="block mb-2 text-sm font-medium text-[#25aae1]"
                   >
-                    Currency
+                    Monnaie
                   </label>
                   <select
                     id="currency"
@@ -773,7 +779,7 @@ const CreateEventForm: React.FC = () => {
                     value={eventData.currency}
                     onChange={(e) => handleCurrencyChange(e.target.value)}
                   >
-                    <option value="">Select Currency</option>
+                    <option value="">Sélectionner la devise</option>
                     <option value="GBP">GBP</option>
                     <option value="USD">USD</option>
                     <option value="NGN">NGN</option>
@@ -783,24 +789,24 @@ const CreateEventForm: React.FC = () => {
               </div>
 
               <h3 className="text-xl font-semibold mb-4 text-[#25aae1]">
-                Ticket Categories
+                Catégories de billets
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full mb-4">
                   <thead className="bg-[#25aae1]">
                     <tr>
-                      <th className="px-4 py-2">Name</th>
+                      <th className="px-4 py-2">Nom</th>
                       <th className="px-4 py-2">
-                        Price ({currencySymbolMap[eventData.currency]})
+                        Prix ({currencySymbolMap[eventData.currency]})
                       </th>
                       <th className="px-4 py-2">
-                        Discount Price(
+                        Prix réduit(
                         {currencySymbolMap[eventData.currency]})
                       </th>
 
-                      <th className="px-4 py-2">Wallet Discount</th>
+                      <th className="px-4 py-2">Réduction portefeuille</th>
                       <th className="px-4 py-2">Qty</th>
-                      <th className="px-4 py-2">Number Of People</th>
+                      <th className="px-4 py-2">Nombre de personnes</th>
                       <th className="px-4 py-2">Action</th>
                     </tr>
                   </thead>
@@ -893,7 +899,7 @@ const CreateEventForm: React.FC = () => {
                             className="text-red-500"
                             onClick={() => handleDeleteCategory(index)}
                           >
-                            Delete
+                            Supprimer
                           </button>
                         </td>
                       </tr>
@@ -907,7 +913,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-4 py-2 rounded-md"
                 onClick={handleAddCategory}
               >
-                Add Category
+                Ajouter une catégorie
               </button>
             </>
           )}
@@ -919,7 +925,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#c10006] px-6 py-2 rounded-md"
                 onClick={handlePreviousStep}
               >
-                Previous
+                Précédent
               </button>
             )}
             {step !== 4 ? (
@@ -929,7 +935,7 @@ const CreateEventForm: React.FC = () => {
                 onClick={handleNextStep}
                 disabled={!isStepFieldsFilled()}
               >
-                Next
+                Suivant
               </button>
             ) : (
               <button
@@ -937,7 +943,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-6 py-2 rounded-md disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={!isLastStepFieldsFilled() || isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Soumission en cours..." : "Soumettre"}
               </button>
             )}
           </div>
