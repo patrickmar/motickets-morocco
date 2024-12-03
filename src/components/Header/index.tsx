@@ -67,11 +67,11 @@ const Header: React.FC = () => {
   console.log(avatarUrl);
   console.log(setQuery);
 
-  // useEffect(() => {
-  //   if (!hostid) {
-  //     navigate("/login");
-  //   }
-  // }, [hostid, navigate]);
+  useEffect(() => {
+    if (!hostid) {
+      navigate("/login");
+    }
+  }, [hostid, navigate]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -143,7 +143,7 @@ const Header: React.FC = () => {
         {/* Menu Items */}
         <ul className={`menuItems ${mobileMenu ? "mobileMenuVisible" : ""}`}>
           <li className="menuItem" onClick={() => navigationHandler("/")}>
-          Accueil
+            Accueil
           </li>
           <li
             className="menuItem"
@@ -152,7 +152,7 @@ const Header: React.FC = () => {
             Pour les professionnels
           </li>
           <li className="menuItem" onClick={() => navigationHandler("/events")}>
-          Tous les événements
+            Tous les événements
           </li>
           <li
             className="menuItem"
