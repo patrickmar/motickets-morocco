@@ -119,11 +119,11 @@ const CheckoutForm = (props: Props) => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-32 sm:px-6 lg:max-w-7xl lg:px-8">
+    <div className="mx-auto max-w-2xl px-4 bg-gray-300 pb-24 pt-32 sm:px-6 lg:max-w-7xl lg:px-8">
       <div className="xl:gap-x-16 lg:gap-x-12 lg:grid-cols-2 grid max-w-[1200px]">
         <div>
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-700 dark:text-white">
               Checkout
             </h2>
           </div>
@@ -133,9 +133,9 @@ const CheckoutForm = (props: Props) => {
                 <div>
                   <label
                     htmlFor="firstName"
-                    className="block mb-2 text-sm font-medium text-white dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-700 dark:text-white"
                   >
-                    First Name
+                    Prénom
                   </label>
                   <input
                     type="text"
@@ -149,9 +149,9 @@ const CheckoutForm = (props: Props) => {
                 <div>
                   <label
                     htmlFor="lastName"
-                    className="block mb-2 text-sm font-medium text-white dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-700 dark:text-white"
                   >
-                    Last Name
+                    Nom de famille
                   </label>
                   <input
                     type="text"
@@ -165,9 +165,9 @@ const CheckoutForm = (props: Props) => {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-white dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-700 dark:text-white"
                   >
-                    Email
+                    E-mail
                   </label>
                   <input
                     type="email"
@@ -182,13 +182,13 @@ const CheckoutForm = (props: Props) => {
                 <div>
                   <label
                     htmlFor="phoneNo"
-                    className="block mb-2 text-sm font-medium text-white dark:text-white"
+                    className="block mb-2 text-sm font-medium text-gray-700 dark:text-white"
                   >
-                    Phone Number
+                    Numéro de téléphone
                   </label>
                   <PhoneInput
                     international
-                    defaultCountry="NG"
+                    defaultCountry="MA"
                     value={phoneNo as string}
                     onChange={handlePhoneChange}
                     className="inputClass"
@@ -206,23 +206,23 @@ const CheckoutForm = (props: Props) => {
                 />
                 <label
                   htmlFor="terms"
-                  className="font-medium text-white ms-2 text-sm dark:text-gray-300"
+                  className="font-medium text-gray-700 ms-2 text-sm dark:text-gray-300"
                 >
-                  I accept the <Link to="/terms">terms and conditions</Link>
+                  J'accepte les <Link to="/terms">termes et conditions</Link>
                 </label>
               </div>
               <PaystackButton
                 {...paystackConfig}
                 className="text-white bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
               >
-                Proceed to Payment
+                Passer au paiement.
               </PaystackButton>
             </form>
           </div>
         </div>
 
         <div className="mt-10 lg:mt-0">
-          <h2 className="text-lg font-medium text-white">Ticket summary</h2>
+          <h2 className="text-lg font-medium text-white">Résumé du billet</h2>
           <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
             <dl className="aby border-t border-gray-200 px-4 py-6 sm:px-6">
               {tickets.map((item, i) => (
@@ -240,7 +240,7 @@ const CheckoutForm = (props: Props) => {
               ))}
 
               <div className="flex items-center justify-between">
-                <dt className="text-base text-red-600">Subtotal</dt>
+                <dt className="text-base text-red-600">Sous-total</dt>
                 <dd className="text-base font-medium text-red-600">
                   <NumericFormat
                     value={Number(subTotal).toFixed(2)}
@@ -251,7 +251,9 @@ const CheckoutForm = (props: Props) => {
                 </dd>
               </div>
               <div className="flex items-center justify-between">
-                <dt className="text-base text-customBlack">Booking Fee</dt>
+                <dt className="text-base text-customBlack">
+                  Frais de réservation
+                </dt>
                 <dd className="text-base font-medium text-customBlack">
                   <NumericFormat
                     value={Number(totalbookingFee).toFixed(2)}
@@ -264,7 +266,7 @@ const CheckoutForm = (props: Props) => {
 
               <div className="flex items-center justify-between">
                 <dt className="text-base text-customBlack">
-                  VAT
+                  TVA
                   <span className="ml-2 rounded-lg bg-gray-200 px-2 py-1 text-xs tracking-wide text-gray-600">
                     {taxPercent}%
                   </span>
@@ -296,7 +298,7 @@ const CheckoutForm = (props: Props) => {
                 {...paystackConfig}
                 className="text-white bg-blue-500  hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
               >
-                Proceed to Payment &nbsp;
+                Passer au paiement &nbsp;
                 <NumericFormat
                   value={Number(totalAmount).toFixed(2)}
                   displayType={"text"}
