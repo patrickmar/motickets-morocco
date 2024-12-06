@@ -31,6 +31,7 @@ import ForgotPassword from "./pages/auth/User/UserProfile/ForgotPassword";
 import EditEventForm from "./pages/dashboard/EditEventForm";
 import AvatarUploadForm from "./pages/auth/User/UserProfile/AvatarUploadForm";
 import ResetPassword from "./pages/auth/User/UserProfile/ResetPassword";
+import EmailTemplate from "./components/Email";
 
 function App() {
   // const { isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -52,6 +53,7 @@ function App() {
             <Route path="/corporate-profile" element={<Profile />} />
             <Route path="/corporate-philosophy" element={<Philosophy />} />
             <Route path="/success" element={<Success />} />
+            <Route path="/email" element={<EmailTemplate />} />
             <Route
               path="/create-event"
               element={
