@@ -479,7 +479,7 @@ const CheckoutForm = (props: Props) => {
                   disabled={disabled}
                   className={`${
                     disabled ? "disabled" : ""
-                  } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700`}
+                  } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-gray-800 shadow-sm hover:bg-red-700`}
                 >
                   Pay &nbsp;
                   <NumericFormat
