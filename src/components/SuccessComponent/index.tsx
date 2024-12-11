@@ -55,7 +55,6 @@ const SuccessComponent = (props: Props) => {
   const [tickData, setTickData] = useState(ticketData);
   const [validatePay, setValidatePay] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const currency = data && getCurrency(data.data);
   const navigate = useNavigate();
 
@@ -166,7 +165,7 @@ const SuccessComponent = (props: Props) => {
                   color: "white",
                 }}
               >
-                Le paiement est invalide ! Veuillez contacter l'administrateur.{" "}
+                The payment is invalid! Please contact admin.
               </span>
               <button
                 onClick={() => navigate("/")}
@@ -179,7 +178,7 @@ const SuccessComponent = (props: Props) => {
                 }}
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
               >
-                Aller à la page d'accueil
+                Go to Homepage
               </button>
             </>
           ) : (
@@ -189,10 +188,10 @@ const SuccessComponent = (props: Props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "black",
+                  color: "white",
                 }}
               >
-                Les billets ont été achetés avec succès.
+                The tickets have been purchased successfully.
               </span>
               <button
                 onClick={() => navigate("/")}
@@ -205,7 +204,7 @@ const SuccessComponent = (props: Props) => {
                 }}
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
               >
-                Aller à la page d'accueil
+                Go to Homepage
               </button>
               <div
                 // style={{ width: '700px' }}
@@ -227,7 +226,7 @@ const SuccessComponent = (props: Props) => {
                   ))}
 
                   <div className="flex items-center justify-between">
-                    <dt className="text-base text-red-600 ">Sous-total</dt>
+                    <dt className="text-base text-red-600 ">Subtotal</dt>
                     <dd className="text-base font-medium text-red-600">
                       <NumericFormat
                         value={Number(data.subTotal).toFixed(2)}
@@ -238,9 +237,7 @@ const SuccessComponent = (props: Props) => {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt className="text-base text-customBlack">
-                      Frais de réservation
-                    </dt>
+                    <dt className="text-base text-customBlack">Booking Fee</dt>
                     <dd className="text-base font-medium text-customBlack">
                       <NumericFormat
                         value={Number(data.totalbookingFee).toFixed(2)}
@@ -252,7 +249,7 @@ const SuccessComponent = (props: Props) => {
                   </div>
                   <div className="flex items-center justify-between">
                     <dt className="text-base text-customBlack">
-                      TVA
+                      VAT
                       <span className="ml-2 rounded-lg bg-gray-200 px-2 py-1 text-xs tracking-wide text-gray-600">
                         {taxPercent}%
                       </span>
@@ -296,7 +293,7 @@ const SuccessComponent = (props: Props) => {
                   color: "white",
                 }}
               >
-                Chargement en cours... ne pas actualiser.<br></br>
+                Loading...do not refresh.<br></br>
               </span>
               {[1, 2, 3, 4, 5, 6, 7].map((item, i) => (
                 <div key={i} className="row skeleton"></div>

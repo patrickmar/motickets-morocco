@@ -84,7 +84,11 @@ const Register = (props: Props) => {
   const [user, setUser] = useState({
     fullname: "",
     email: "",
+<<<<<<< HEAD
     country: "Morocco", // Set the default country to United Kingdom
+=======
+    country: "Nigeria", // Set the default country to United Kingdom
+>>>>>>> 4894f96acd127847185ff848541316549900c636
     password: "",
   });
   const { fullname, email, country, password } = user;
