@@ -72,7 +72,7 @@ const Register = (props: Props) => {
   // Move the United Kingdom to the first position
   const countriesList = Object.values(countries);
   const ngIndex = countriesList.findIndex(
-    (country) => country.name === "Nigeria"
+    (country) => country.name === "Morocco"
   );
   if (ngIndex !== -1) {
     const [ngCountry] = countriesList.splice(ngIndex, 1);
@@ -84,11 +84,7 @@ const Register = (props: Props) => {
   const [user, setUser] = useState({
     fullname: "",
     email: "",
-<<<<<<< HEAD
     country: "Morocco", // Set the default country to United Kingdom
-=======
-    country: "Nigeria", // Set the default country to United Kingdom
->>>>>>> 4894f96acd127847185ff848541316549900c636
     password: "",
   });
   const { fullname, email, country, password } = user;
