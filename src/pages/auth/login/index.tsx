@@ -50,7 +50,6 @@ const Login: React.FC = () => {
   const user = useSelector(
     (state: RootState) => state.auth.user
   ) as User | null;
-  console.log(user);
   const dispatch = useDispatch();
 
   useEffect(() => {

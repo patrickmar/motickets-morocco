@@ -91,7 +91,6 @@ function AvatarUploadForm() {
       );
 
       const data = await response.json();
-      console.log("Parsed response data:", data);
 
       if (
         !data.error &&

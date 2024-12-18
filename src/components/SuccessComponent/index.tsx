@@ -124,7 +124,7 @@ const SuccessComponent = (props: Props) => {
         const tacks = session.data.lineitem;
         setTickets(tacks);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         toast.error(error, {
           toastId: customId,
         });
@@ -160,9 +160,9 @@ const SuccessComponent = (props: Props) => {
     const MakeRequest = async () => {
       const customId2 = "toastid2";
       try {
-        console.log(tickets);
-        console.log(stripe);
-        console.log(userData);
+        // console.log(tickets);
+        // console.log(stripe);
+        // console.log(userData);
 
         //      const { data, loading } =  usePost(`/stripe/payment`, {
         //       tokenId : stripeToken.id,
@@ -176,9 +176,9 @@ const SuccessComponent = (props: Props) => {
             ticketData: tickets,
           })
           .then((res: any) => {
-            console.log(res.data);
-            console.log(res.data.error);
-            console.log(res.data.message);
+            // console.log(res.data);
+            // console.log(res.data.error);
+            // console.log(res.data.message);
             // setLoading(false);
             // setData(res?.name === "AxiosError" ? null : res);
             setTimeout(() => {
@@ -204,7 +204,7 @@ const SuccessComponent = (props: Props) => {
     tickets && MakeRequest();
   }, [tickets]);
 
-  console.log(data);
+  // console.log(data);
 
   return (
     <div className="detailsBanner">

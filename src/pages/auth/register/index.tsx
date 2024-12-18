@@ -90,8 +90,6 @@ const Register = (props: Props) => {
   const { fullname, email, country, password } = user;
   const [register, { isLoading, error, data }] = useRegisterMutation();
 
-  console.log(data);
-
   const [showDropdown, setShowDropdown] = useState(false);
   // const [inputValue, setInputValue] = useState("");
   // const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);

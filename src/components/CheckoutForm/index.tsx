@@ -60,7 +60,7 @@ const CheckoutForm = (props: Props) => {
     terms: false,
   };
 
-  console.log(tickets);
+  // console.log(tickets);
   const [formData, setFormData] = useState<ICheckoutForm>(initialValues);
   const [errors, setErrors] = useState<ICheckoutForm>(initialValues);
   const [touched, setTouched] = useState<IBoolean>({
@@ -78,7 +78,7 @@ const CheckoutForm = (props: Props) => {
   const navigate = useNavigate();
 
   const onToken = (token: any) => {
-    console.log(token);
+    // console.log(token);
     setStripeToken(token);
   };
   const currency = data && getCurrency(data);
@@ -94,9 +94,9 @@ const CheckoutForm = (props: Props) => {
         toastId: customId,
       });
 
-      console.log(tickets);
+      // console.log(tickets);
 
-      console.log(ticketDatas);
+      // console.log(ticketDatas);
       // navigate("/success", {
       //   state: {
 
@@ -180,7 +180,7 @@ const CheckoutForm = (props: Props) => {
   const onSubmit: FormEventHandler<HTMLFormElement> = async (
     e: FormEvent<HTMLFormElement>
   ) => {
-    console.log("got");
+    // console.log("got");
     e.preventDefault();
     if (!terms) {
       toast.error("Please accept the terms and conditions");
@@ -199,12 +199,11 @@ const CheckoutForm = (props: Props) => {
       };
 
       setTicketDatas(ticketData);
-      console.log(ticketData);
       const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
         ticketData: ticketData,
       });
 
-      console.log(res.data);
+      // console.log(res.data);
       window.location.href = res.data.url;
     }
   };

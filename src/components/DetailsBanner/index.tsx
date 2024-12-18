@@ -29,7 +29,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
   const [selectedImage, setSelectedImage] = useState(
     newData ? newData?.imgs[0]?.img : ""
   );
-  console.log(newData?.enableseat);
+  // console.log(newData?.enableseat);
   const enableSeat = newData?.enableseat;
   const [tickets, setTickets] = useState<any>([]);
   const [bookFees, setbookFees] = useState<any>([]);
@@ -126,7 +126,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
   const currency = getCurrency(newData);
   const currencyName = getCurrencyName(newData);
   const isButtonEnabled = tickets.some((item: any) => item.qty > 0);
-  console.log(currencyName);
+  // console.log(currencyName);
   const increment = (index: number) => {
     const updatedCategories = [...tickets];
     const updatedQty = [...ticketsQty];
@@ -156,7 +156,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
   ) => {
     const updatedCategories = [...tickets];
     const updatedQty = [...ticketsQty];
-    console.log(updatedQty);
+    // console.log(updatedQty);
     updatedCategories[index].qty = Number(e.target.value);
 
     setTickets(updatedCategories);
@@ -177,7 +177,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
     //setbookFees(newBookFee);
     updatedCategories[index].booking_fee = newBookFee;
     //setbookFees(updatedCategories);
-    console.log(totalPrice);
+    // console.log(totalPrice);
     return newPrice;
   };
 

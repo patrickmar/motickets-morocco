@@ -459,7 +459,7 @@ const CreateEventForm: React.FC = () => {
     return `${paddedHours}:${paddedMinutes}:00`;
   };
 
-  console.log(formatTime);
+  // console.log(formatTime);
 
   const handleInformationClick = () => {
     setShowInformation((prevShowInformation) => !prevShowInformation);

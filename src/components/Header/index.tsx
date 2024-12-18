@@ -61,11 +61,11 @@ const Header: React.FC = () => {
   ) as User | null;
 
   const hostid = user?.id || "";
-  console.log("User:", user);
-  console.log("isAuthenticated:", isAuthenticated);
-  console.log("hostid:", hostid);
-  console.log(avatarUrl);
-  console.log(setQuery);
+  // console.log("User:", user);
+  // console.log("isAuthenticated:", isAuthenticated);
+  // console.log("hostid:", hostid);
+  // console.log(avatarUrl);
+  // console.log(setQuery);
 
   // useEffect(() => {
   //   if (!hostid) {
@@ -124,7 +124,7 @@ const Header: React.FC = () => {
   const closeDropdown = () => {
     setIsVisible(false);
   };
-  console.log("Avatar URL before rendering:", avatarUrl);
+  // console.log("Avatar URL before rendering:", avatarUrl);
 
   const handleLogout = () => {
     setAvatarUrl(default_avatar); // Reset to default avatar

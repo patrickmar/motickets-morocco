@@ -9,7 +9,7 @@ const Checkout = (props: Props) => {
   const location = useLocation();
   const tickets = location?.state?.tickets.filter((i: any) => i.qty > 0);
   const data = location?.state?.data;
-console.log(tickets);
+  // console.log(tickets);
   // Calculate the sum of the amounts
   const calculateTotalAmount = (prices: any) => {
     const price = prices?.reduce(
@@ -28,10 +28,10 @@ console.log(tickets);
     return bookingfee;
   };
 
-  console.log(tickets);
+  // console.log(tickets);
   const subtotal = calculateTotalAmount(tickets);
   const totalbookingFee = calculateTotalBookingFee(tickets);
-  console.log(totalbookingFee);
+  // console.log(totalbookingFee);
   const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
   const vat = (taxPercent / 100) * subtotal;
   const totalAmount = subtotal + totalbookingFee + vat;
