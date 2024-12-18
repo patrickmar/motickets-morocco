@@ -7,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import axios from "axios";
+
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { CountryCode, E164Number } from "libphonenumber-js";
@@ -15,10 +15,11 @@ import ContentWrapper from "../../components/ContentWrapper";
 
 import { NumericFormat } from "react-number-format";
 import { Link, useNavigate } from "react-router-dom";
-import { getCurrency, getCurrencyCode } from "../../utils/functions";
-import StripeCheckout from "react-stripe-checkout";
-import usePost from "../../hooks/usePost";
-import "./styles.scss";
+import { getCurrency, getCurrencyName } from "../../utils/functions";
+// import StripeCheckout from "react-stripe-checkout";
+// import usePost from "../../hooks/usePost";
+
+import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -44,21 +45,25 @@ interface IBoolean {
 }
 
 const SuccessComponent = (props: Props) => {
-  const { ticketData, stripeData, tickets, data } = props;
+  // console.log(props);
+  const { stripeData, data } = props;
   const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
   const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
   const baseUrl = process.env.REACT_APP_BASEURL;
-  console.log(data);
-  const [tick, setTick] = useState(tickets);
-  const [stripe, setStripe] = useState(stripeData);
+  //console.log(ticketData);
+  const [tickets, setTickets] = useState(null);
+  const [stripe, setStripe] = useState(null);
   const [userData, setUserData] = useState(data);
-  const [tickData, setTickData] = useState(ticketData);
+  const [ticketData, setTicketData] = useState(null);
   const [validatePay, setValidatePay] = useState(false);
   const [loading, setLoading] = useState(true);
-  const currency = data && getCurrency(data.data);
+  //console.log(stripeData);
+  const currency = tickets && getCurrency(tickets.currency);
   const navigate = useNavigate();
 
-  const currencycode = data && getCurrencyCode(data);
+  const currencyName = tickets && getCurrencyName(tickets.currency);
+  const query = new URLSearchParams(window.location.search);
+
   // const location = useLocation();
   // //in Cart.jsx I sent data and cart. Please check that page for the changes.(in video it's only data)
   // const data = location.state.stripeData;
@@ -97,37 +102,95 @@ const SuccessComponent = (props: Props) => {
   //   currency: currencycode
   // });
 
+  // console.log(tickdata)
+
+  useEffect(() => {
+    // Check to see if this is a redirect back from Checkout
+    const customId = "toastid";
+    const GetSession = async (sessionid) => {
+      try {
+        const session = await axios.post(`${baseUrl}/retrieve/stripe_session`, {
+          sessionid: sessionid,
+        });
+
+        const user = session.data.session.metadata;
+        setUserData(user);
+        //console.log(userData);
+
+        const stripeSession = session.data.session;
+        setStripe(stripeSession);
+        //console.log(stripeSession);
+
+        const tacks = session.data.lineitem;
+        setTickets(tacks);
+      } catch (error) {
+        console.log(error);
+        toast.error(error, {
+          toastId: customId,
+        });
+      }
+    };
+    if (query.get("session_id")) {
+      const sessionid = query.get("session_id");
+      // console.log(sessionid);
+
+      sessionid && GetSession(sessionid);
+
+      //console.log(tickets);
+    }
+
+    if (query.get("canceled")) {
+      toast.error(
+        "Order canceled -- continue to shop around and checkout when you're ready."
+      );
+    }
+  }, []);
+
   const resetState = () => {
-    setTick({});
+    //setTickets({});
     setStripe({});
     setUserData({});
-    setTickData({});
+    //setTickData({});
+    // console.log(tickets);
   };
 
   useEffect(() => {
+    //console.log(tickets);
+
     const MakeRequest = async () => {
+      const customId2 = "toastid2";
       try {
-        // console.log(userData);
-        // console.log(stripe);
-        //  console.log(tickData);
-        //  console.log(tick);
+        console.log(tickets);
+        console.log(stripe);
+        console.log(userData);
+
+        //      const { data, loading } =  usePost(`/stripe/payment`, {
+        //       tokenId : stripeToken.id,
+        //       amount: totalAmount*100,
+        //       currency: currencycode
+        //  });
         const res = await axios
-          .post(`${baseUrl}/dispense/internationalticket`, {
+          .post(`${baseUrl}/dispense/internationalticket-stripenew`, {
             userdata: userData,
             stripeData: stripe,
-            ticketData: tickData,
-            myCart: tick,
+            ticketData: tickets,
           })
           .then((res: any) => {
+            console.log(res.data);
+            console.log(res.data.error);
+            console.log(res.data.message);
             // setLoading(false);
             // setData(res?.name === "AxiosError" ? null : res);
             setTimeout(() => {
-              setLoading(false);
-              resetState();
-
+              // toast.success("Order placed! You will receive an email confirmation.", {
+              //   toastId: customId2
+              // });
               if (res.data.error === false) {
                 setValidatePay(true);
               }
+              setLoading(false);
+
+              resetState();
               //setData(res?.name === "AxiosError" ? null : res);
             }, 5000 * 1);
           });
@@ -138,8 +201,10 @@ const SuccessComponent = (props: Props) => {
       }
     };
 
-    MakeRequest();
-  }, []);
+    tickets && MakeRequest();
+  }, [tickets]);
+
+  console.log(data);
 
   return (
     <div className="detailsBanner">
@@ -162,7 +227,7 @@ const SuccessComponent = (props: Props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "white",
+                  color: "black",
                 }}
               >
                 The payment is invalid! Please contact admin.
@@ -174,21 +239,21 @@ const SuccessComponent = (props: Props) => {
                   marginTop: 20,
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "white",
+                  color: "black",
                 }}
-                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
+                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-black shadow-sm hover:bg-red-700"
               >
                 Go to Homepage
               </button>
             </>
           ) : (
-            <div>
+            <>
               <span
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "white",
+                  color: "black",
                 }}
               >
                 The tickets have been purchased successfully.
@@ -202,82 +267,11 @@ const SuccessComponent = (props: Props) => {
                   justifyContent: "center",
                   color: "white",
                 }}
-                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
+                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-black shadow-sm hover:bg-red-700"
               >
                 Go to Homepage
               </button>
-              <div
-                // style={{ width: '700px' }}
-                className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm md:w-[700px]"
-              >
-                <div className="aby border-t border-gray-200 px-4 py-6 sm:px-6">
-                  {tickets.map((item, i) => (
-                    <div className="flex items-center justify-between" key={i}>
-                      <dt className="text-base text-customBlack">{`${item?.qty} * ${item?.name}`}</dt>
-                      <dd className="text-base font-medium text-customBlack">
-                        <NumericFormat
-                          value={Number(item.price * item.qty).toFixed(2)}
-                          displayType={"text"}
-                          thousandSeparator={true}
-                          prefix={`${currency}`}
-                        />
-                      </dd>
-                    </div>
-                  ))}
-
-                  <div className="flex items-center justify-between">
-                    <dt className="text-base text-red-600 ">Subtotal</dt>
-                    <dd className="text-base font-medium text-red-600">
-                      <NumericFormat
-                        value={Number(data.subTotal).toFixed(2)}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        prefix={`${currency}`}
-                      />
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <dt className="text-base text-customBlack">Booking Fee</dt>
-                    <dd className="text-base font-medium text-customBlack">
-                      <NumericFormat
-                        value={Number(data.totalbookingFee).toFixed(2)}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        prefix={`${currency}`}
-                      />
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <dt className="text-base text-customBlack">
-                      VAT
-                      <span className="ml-2 rounded-lg bg-gray-200 px-2 py-1 text-xs tracking-wide text-gray-600">
-                        {taxPercent}%
-                      </span>
-                    </dt>
-                    <dd className="text-base font-medium text-customBlack">
-                      <NumericFormat
-                        value={Number(data.vat).toFixed(2)}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        prefix={`${currency}`}
-                      />
-                    </dd>
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-gray-200 pt-6">
-                    <dt className="text-lg text-red-600 font-bold">Total</dt>
-                    <dd className="text-base font-bold text-red-600">
-                      <NumericFormat
-                        value={Number(data.totalAmount).toFixed(2)}
-                        displayType={"text"}
-                        thousandSeparator={true}
-                        prefix={`${currency}`}
-                      />
-                    </dd>
-                  </div>
-                </div>
-              </div>
-            </div>
+            </>
           )}
         </div>
       ) : (
@@ -290,7 +284,8 @@ const SuccessComponent = (props: Props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "white",
+                  color: "red",
+                  marginTop: "1rem",
                 }}
               >
                 Loading...do not refresh.<br></br>

@@ -11,21 +11,22 @@ import axios from "axios";
 import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { CountryCode, E164Number } from "libphonenumber-js";
-
+import { useParams } from "react-router-dom";
 import { validationSchema } from "./validation";
 import { NumericFormat } from "react-number-format";
 import { Link, useNavigate } from "react-router-dom";
-import { getCurrency, getCurrencyCode } from "../../utils/functions";
-import StripeCheckout from "react-stripe-checkout";
+import { getCurrency, getCurrencyName } from "../../utils/functions";
+
 import usePost from "../../hooks/usePost";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 type Props = {
   tickets: Array<any>;
   totalAmount: number;
   subTotal: number;
+  totalbookingFee: number;
   vat: number;
   data: any;
 };
@@ -45,7 +46,7 @@ interface IBoolean {
 }
 
 const CheckoutForm = (props: Props) => {
-  const { tickets, data, totalAmount, subTotal, vat } = props;
+  const { tickets, data, totalAmount, subTotal, totalbookingFee, vat } = props;
   const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
   const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
   const baseUrl = process.env.REACT_APP_BASEURL;
@@ -58,6 +59,8 @@ const CheckoutForm = (props: Props) => {
     userConsent: false,
     terms: false,
   };
+
+  console.log(tickets);
   const [formData, setFormData] = useState<ICheckoutForm>(initialValues);
   const [errors, setErrors] = useState<ICheckoutForm>(initialValues);
   const [touched, setTouched] = useState<IBoolean>({
@@ -75,40 +78,74 @@ const CheckoutForm = (props: Props) => {
   const navigate = useNavigate();
 
   const onToken = (token: any) => {
+    console.log(token);
     setStripeToken(token);
   };
   const currency = data && getCurrency(data);
-  const currencycode = data && getCurrencyCode(data);
+  const currencyName = data && getCurrencyName(data);
+  const query = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    const MakeRequest = async () => {
-      try {
-        //      const { data, loading } =  usePost(`/stripe/payment`, {
-        //       tokenId : stripeToken.id,
-        //       amount: totalAmount*100,
-        //       currency: currencycode
-        //  });
-        const res = await axios.post(`${baseUrl}/stripe/payment`, {
-          tokenId: stripeToken.id,
-          amount: totalAmount * 100,
-          currency: currencycode,
-        });
+    // Check to see if this is a redirect back from Checkout
+    const customId = "toastid";
 
-        navigate("/success", {
-          state: {
-            stripeData: res.data,
-            tickets: tickets,
-            ticketData: ticketDatas,
-            data: { data, totalAmount, subTotal, vat },
-          },
-          replace: true,
-        });
-        //navigate("/success", res.data)
-      } catch (error) {}
-    };
+    if (query.get("success")) {
+      toast.success("Order placed! You will receive an email confirmation.", {
+        toastId: customId,
+      });
 
-    stripeToken && MakeRequest();
-  }, [stripeToken, navigate]);
+      console.log(tickets);
+
+      console.log(ticketDatas);
+      // navigate("/success", {
+      //   state: {
+
+      //     tickets: tickets,
+      //     ticketData: ticketDatas,
+      //     data: { data, totalAmount, subTotal, vat  } },
+      //   replace: true
+      //   })
+    }
+
+    if (query.get("canceled")) {
+      toast.error(
+        "Order canceled -- continue to shop around and checkout when you're ready."
+      );
+    }
+  }, [query]);
+
+  // useEffect(() => {
+  //   const MakeRequest = async ()=>{
+
+  //          try {
+
+  //       const res= await axios.post(`${baseUrl}/stripe/payment`, {
+  //            tokenId : stripeToken.id,
+  //            amount: totalAmount*100,
+  //            currency: currencycode
+  //       });
+
+  //       console.log(tickets);
+
+  //       console.log(ticketDatas);
+  //       // navigate("/success", {
+  //       // state: {
+  //       //   stripeData: res.data,
+  //       //   tickets: tickets,
+  //       //   ticketData: ticketDatas,
+  //       //   data: { data, totalAmount, subTotal, vat  } },
+  //       // replace: true
+  //       // })
+
+  //      console.log(stripeData);
+  //   } catch (error) {
+  //       console.log(error);
+
+  //   }
+  //   };
+
+  //   stripeToken && MakeRequest();
+  // }, [stripeToken, navigate])
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
@@ -143,6 +180,7 @@ const CheckoutForm = (props: Props) => {
   const onSubmit: FormEventHandler<HTMLFormElement> = async (
     e: FormEvent<HTMLFormElement>
   ) => {
+    console.log("got");
     e.preventDefault();
     if (!terms) {
       toast.error("Please accept the terms and conditions");
@@ -155,10 +193,19 @@ const CheckoutForm = (props: Props) => {
         userConsent,
         terms,
         discount,
+        currencyName,
+        vat,
         tickets,
       };
 
       setTicketDatas(ticketData);
+      console.log(ticketData);
+      const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
+        ticketData: ticketData,
+      });
+
+      console.log(res.data);
+      window.location.href = res.data.url;
     }
   };
 
@@ -185,8 +232,8 @@ const CheckoutForm = (props: Props) => {
 
   const onDiscountClick = () => {};
 
-  return (
-    <div className="mx-auto max-w-2xl px-4 pb-24 pt-32 bg-gray-200 sm:px-6 lg:max-w-7xl lg:px-8">
+  return tickets ? (
+    <div className="mx-auto max-w-2xl bg-gray-200 px-4 pb-24 pt-32 sm:px-6 lg:max-w-7xl lg:px-8">
       <div className="xl:gap-x-16 lg:gap-x-12 lg:grid-cols-2 grid max-w-[1200px]">
         <div>
           <div className="mb-6">
@@ -298,7 +345,7 @@ const CheckoutForm = (props: Props) => {
                     onFocus={onFocus}
                     onChange={onChange}
                     onBlur={onBlur}
-                    className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-600 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-red-600 bg-white border-gray-900 rounded focus:ring-red-600 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                 </div>
                 <div className="ms-2 text-sm">
@@ -314,7 +361,7 @@ const CheckoutForm = (props: Props) => {
                 </div>
               </div>
 
-              {/* <div className="flex mb-6">
+              <div className="flex mb-6">
                 <div className="flex items-center h-5">
                   <input
                     id="userConsent"
@@ -324,7 +371,7 @@ const CheckoutForm = (props: Props) => {
                     onFocus={onFocus}
                     onChange={onChange}
                     onBlur={onBlur}
-                    className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-600 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-red-600 bg-white border-[#25aae1] rounded focus:ring-red-600 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                 </div>
                 <div className="ms-2 text-sm">
@@ -335,44 +382,45 @@ const CheckoutForm = (props: Props) => {
                     Create account with above information.
                   </label>
                 </div>
-              </div> */}
-              <StripeCheckout
-                name="MoTickets "
-                image="https://moloyal.com/images/moticketsicon.png"
-                //  billingAddress
-                //  shippingAddress
-                currency={currencycode}
-                email={email}
-                description={`Your total amount is ${currency}${totalAmount}`}
-                amount={totalAmount * 100}
-                token={onToken}
-                stripeKey={STRIPE_KEY}
+              </div>
+              {/* <StripeCheckout
+       name = "MoTickets "
+       image = "https://moloyal.com/images/moticketsicon.png"
+      //  billingAddress
+      //  shippingAddress
+      currency={currencycode}
+      email={email}
+      description={`Your total amount is ${currency}${totalAmount}`}
+       amount={totalAmount*100}
+       token={onToken}
+      stripeKey={STRIPE_KEY}
+      > 
+       */}
+              <button
+                type="submit"
+                disabled={disabled}
+                className={`${
+                  disabled ? "disabled" : ""
+                } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700`}
               >
-                {" "}
-                <button
-                  type="submit"
-                  disabled={disabled}
-                  className={`${
-                    disabled ? "disabled" : ""
-                  } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-gray-800 shadow-sm hover:bg-red-700`}
-                >
-                  Pay &nbsp;
-                  <NumericFormat
-                    value={Number(totalAmount).toFixed(2)}
-                    displayType={"text"}
-                    thousandSeparator={true}
-                    prefix={`${currency}`}
-                  />
-                </button>
-              </StripeCheckout>
+                Pay &nbsp;
+                <NumericFormat
+                  value={Number(totalAmount).toFixed(2)}
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  prefix={`${currency}`}
+                />
+              </button>
+              {/* </StripeCheckout> */}
             </form>
           </div>
         </div>
+
         <div className="mt-10 lg:mt-0">
           <h2 className="text-lg font-medium text-gray-800">Ticket summary</h2>
           <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-            {/* <div className="px-4 py-6 sm:px-6">
-              <form>
+            <div className="px-4 py-6 sm:px-6">
+              {/* <form>
                 <label
                   htmlFor="discount"
                   className="block font-medium text-sm text-black1"
@@ -401,8 +449,8 @@ const CheckoutForm = (props: Props) => {
                     Apply
                   </button>
                 </div>
-              </form>
-            </div> */}
+              </form> */}
+            </div>
 
             <dl className="aby border-t border-gray-200 px-4 py-6 sm:px-6">
               {tickets.map((item, i) => (
@@ -430,10 +478,20 @@ const CheckoutForm = (props: Props) => {
                   />
                 </dd>
               </div>
-
+              <div className="flex items-center justify-between">
+                <dt className="text-base text-customBlack">Booking Fee</dt>
+                <dd className="text-base font-medium text-customBlack">
+                  <NumericFormat
+                    value={Number(totalbookingFee).toFixed(2)}
+                    displayType={"text"}
+                    thousandSeparator={true}
+                    prefix={`${currency}`}
+                  />
+                </dd>
+              </div>
               <div className="flex items-center justify-between">
                 <dt className="text-base text-customBlack">
-                  Booking Fee
+                  VAT
                   <span className="ml-2 rounded-lg bg-gray-200 px-2 py-1 text-xs tracking-wide text-gray-600">
                     {taxPercent}%
                   </span>
@@ -448,7 +506,7 @@ const CheckoutForm = (props: Props) => {
                 </dd>
               </div>
 
-              <div className="flex items-center justify-between border-t border-gray-200 pt-6">
+              <div className="flex items-center justify-between border-t border-gray-500 pt-6">
                 <dt className="text-lg text-customBlack font-bold">Total</dt>
                 <dd className="text-base font-bold text-customBlack">
                   <NumericFormat
@@ -461,41 +519,42 @@ const CheckoutForm = (props: Props) => {
               </div>
             </dl>
             <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-              <StripeCheckout
-                name="MoTickets"
-                image="https://moloyal.com/images/moticketsicon.png"
-                //  billingAddress
-                //  shippingAddress
-                currency={currencycode}
-                email={email}
-                description={`Your total amount is ${currency}${totalAmount}`}
-                amount={totalAmount * 100}
-                token={onToken}
-                stripeKey={STRIPE_KEY}
+              {/* <StripeCheckout
+       name = "MoTickets"
+       image = "https://moloyal.com/images/moticketsicon.png"
+      //  billingAddress
+      //  shippingAddress
+      currency={currencycode}
+      email={email}
+       description={`Your total amount is ${currency}${totalAmount}`}
+       amount={totalAmount*100}
+       token={onToken}
+      stripeKey={STRIPE_KEY}
+      >  */}
+
+              {/* <button
+                type="submit"
+                disabled={disabled}
+                className={`${
+                  disabled ? "disabled" : ""
+                } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-gray-800 shadow-sm hover:bg-red-700`}
               >
-                {" "}
-                <button
-                  type="submit"
-                  disabled={disabled}
-                  className={`${
-                    disabled ? "disabled" : ""
-                  } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-gray-800 shadow-sm hover:bg-red-700`}
-                >
-                  Pay &nbsp;
-                  <NumericFormat
-                    value={Number(totalAmount).toFixed(2)}
-                    displayType={"text"}
-                    thousandSeparator={true}
-                    prefix={`${currency}`}
-                  />
-                </button>
-              </StripeCheckout>
+                Pay &nbsp;
+                <NumericFormat
+                  value={Number(totalAmount).toFixed(2)}
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  prefix={`${currency}`}
+                />
+              </button> */}
+
+              {/* </StripeCheckout> */}
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default CheckoutForm;
