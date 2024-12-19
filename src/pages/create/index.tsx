@@ -396,7 +396,7 @@ const CreateEventForm: React.FC = () => {
           lastModified: selectedImages[i].lastModified,
         });
         formData.append("banner[]", banner);
-        // console.log(`Renamed Image: ${banner.name}`);
+        console.log(`Renamed Image: ${banner.name}`);
       }
 
       // Create an object to log
@@ -411,7 +411,7 @@ const CreateEventForm: React.FC = () => {
           logObject[key] = value;
         }
       });
-      // console.log(logObject);
+      console.log(logObject);
 
       const response = await fetch(BaseUrl, {
         method: "POST",
@@ -459,7 +459,7 @@ const CreateEventForm: React.FC = () => {
     return `${paddedHours}:${paddedMinutes}:00`;
   };
 
-  // console.log(formatTime);
+  console.log(formatTime);
 
   const handleInformationClick = () => {
     setShowInformation((prevShowInformation) => !prevShowInformation);
@@ -468,7 +468,7 @@ const CreateEventForm: React.FC = () => {
   return (
     <div className="flex items-center justify-center">
       <div className="bg-gray-100 p-8 rounded shadow-lg w-4/5 lg:w-3/5 mt-24">
-        <h2 className="text-2xl font-semibold mb-4 text-[#25aae1]">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-900">
           Créer un événement
         </h2>
         <form onSubmit={handleSubmit}>
@@ -482,7 +482,7 @@ const CreateEventForm: React.FC = () => {
                   type="text"
                   id="eventTitle"
                   name="eventTitle"
-                  className="w-full px-4 py-2 bg-white border rounded-md focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
                   value={eventData.eventTitle}
                   onChange={handleChange}
                   required
@@ -497,11 +497,11 @@ const CreateEventForm: React.FC = () => {
                   type="text"
                   id="venue"
                   name="venue"
-                  className="w-full px-4 py-2 bg-white border rounded-md focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
                   value={eventData.venue}
                   onChange={handleChange}
                   required
-                  placeholder="Rabat, Morocco"
+                  placeholder="London, England"
                 />
               </div>
               <div className="mb-4">
@@ -521,7 +521,7 @@ const CreateEventForm: React.FC = () => {
                       id="banner"
                       name="banner"
                       accept="image/*"
-                      className="hidden bg-white"
+                      className="hidden"
                       onChange={(e) => handleNewImageChange(e.target.files)}
                       ref={fileInputRef}
                       multiple
@@ -575,7 +575,7 @@ const CreateEventForm: React.FC = () => {
               {/* Add information tooltip or modal */}
               {showInformation && (
                 <div className="bg-white p-4 border rounded-md">
-                  <p className=" italic text-gray-600">
+                  <p className=" italic text-blue-400">
                     Les graphiques de l'événement doivent de préférence inclure
                     les dimensions (220 par 330 px) et (500 par 550 px), mais
                     toute taille fournie peut être redimensionnée pour
@@ -680,7 +680,7 @@ const CreateEventForm: React.FC = () => {
               <div className="mb-4" data-name="description">
                 <label
                   htmlFor="description"
-                  className="block mb-2 text-sm font-medium text-[#25aae1] "
+                  className="block mb-2 text-sm font-medium text-white "
                 >
                   Description
                 </label>
@@ -688,7 +688,7 @@ const CreateEventForm: React.FC = () => {
                   formats={formats}
                   value={eventData.description}
                   onChange={handleDescriptionChange}
-                  className="add-new-post__editor mb-1 text-gray-900 bg-white"
+                  className="add-new-post__editor mb-1 text-white"
                   theme="snow"
                 />
                 <p className="text-xs text-gray-400">
@@ -728,7 +728,7 @@ const CreateEventForm: React.FC = () => {
                   <option value="Gigs">Concerts</option>
                   <option value="Sports Events">Événements sportifs</option>
                   <option value="Theatre/Performing Arts">
-                    Théâtre/Arts de la scène{" "}
+                    Théâtre/Arts de la scène
                   </option>
                   <option value="Workshops">Ateliers</option>
                   <option value="Others">Autres</option>
@@ -743,7 +743,7 @@ const CreateEventForm: React.FC = () => {
                 <div className="flex-1">
                   <label
                     htmlFor="bearer"
-                    className="block mb-2 text-sm font-medium text-[#25aae1]"
+                    className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     Responsable des frais
                   </label>
@@ -768,7 +768,7 @@ const CreateEventForm: React.FC = () => {
                 <div className="flex-1">
                   <label
                     htmlFor="currency"
-                    className="block mb-2 text-sm font-medium text-[#25aae1]"
+                    className="block mb-2 text-sm font-medium text-gray-900"
                   >
                     Monnaie
                   </label>
@@ -784,12 +784,12 @@ const CreateEventForm: React.FC = () => {
                     <option value="USD">USD</option>
                     <option value="NGN">NGN</option>
                     <option value="EUR">EUR</option>
-                    <option value="MA">DH</option>
+                    <option value="MAD">MAD</option>
                   </select>
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold mb-4 text-[#25aae1]">
+              <h3 className="text-xl font-semibold mb-4 text-white">
                 Catégories de billets
               </h3>
               <div className="overflow-x-auto">
@@ -914,7 +914,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-4 py-2 rounded-md"
                 onClick={handleAddCategory}
               >
-                Ajouter une catégorie
+                Ajouter une catégorie{" "}
               </button>
             </>
           )}

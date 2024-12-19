@@ -176,9 +176,9 @@ const SuccessComponent = (props: Props) => {
             ticketData: tickets,
           })
           .then((res: any) => {
-            // console.log(res.data);
-            // console.log(res.data.error);
-            // console.log(res.data.message);
+            console.log(res.data);
+            console.log(res.data.error);
+            console.log(res.data.message);
             // setLoading(false);
             // setData(res?.name === "AxiosError" ? null : res);
             setTimeout(() => {

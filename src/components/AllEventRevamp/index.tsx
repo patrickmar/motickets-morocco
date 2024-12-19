@@ -6,19 +6,20 @@ import PosterFallback from "../../assets/images/no-poster.png";
 import { PriceSelection, getCurrency } from "../../utils/functions";
 import { Link } from "react-router-dom";
 
-export default function CardBlogAction() {
+export default function AllEventRevamp() {
   const currency = process.env.REACT_APP_CURRENCY;
-  const [endpoint, setEndpoint] = useState(`/eventspercurrency/${currency}`);
+  const [endpoint, setEndpoint] = useState(
+    `/pasteventspercurrency/${currency}`
+  );
 
   const { data, loading } = useFetch(endpoint); // Fetch data from the API
   const eventData = data?.data; // Ensure you access the correct array
-  console.log(data);
 
   const imageURL = process.env.REACT_APP_IMAGEURL;
 
   return (
-    <div className="bg-[#f9f9f9] mt-12">
-      <h3 className="text-dark text-2xl p-12">Explorer les événements</h3>
+    <div className="bg-[#f9f9f9] pt-24">
+      <h3 className="text-dark text-2xl p-12">All Events</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-12">
         {!loading
           ? eventData?.map((item: any, index: number) => {
