@@ -31,7 +31,7 @@ const HeroBanner = (props: Props) => {
   };
 
   return (
-    <div className="heroBanner !bg-white">
+    <div className="heroBanner ">
       {!loading && (
         <div className="backdrop-img">
           {/* <Img src={background} /> */}
@@ -44,7 +44,9 @@ const HeroBanner = (props: Props) => {
       <ContentWrapper>
         <div className="heroBannerContent">
           <span className="title">Débloquez le plaisir.</span>
-          <span className="subTitle">Votre billet pour des événements inoubliables.</span>
+          <span className="subTitle">
+            Votre billet pour des événements inoubliables.
+          </span>
           <div className="searchInput">
             <input
               type="text"
