@@ -59,7 +59,7 @@ const ContactUs = () => {
   };
 
   return (
-    <section className=" bg-[#e0e4eb]">
+    <section className=" bg-[#04152d]">
       <ToastContainer />
       <div className="mx-auto grid max-w-7xl grid-cols-1 lg:grid-cols-2 ">
         <form
@@ -209,11 +209,12 @@ const ContactUs = () => {
               Contact Us
             </h2>
             <p className="mt-6 text-sm leading-6 text-white">
-              Got a query or need assistance? Whether you're an event organiser,
-              partner, or customer buying tickets, MoTickets is here to help.
-              Don't hesitate to get in touch for inquiries, technical support,
-              or collaboration opportunities using the contact details provided
-              below.{" "}
+              Vous avez une question ou besoin d'aide ? Que vous soyez
+              organisateur d'événement, partenaire ou client achetant des
+              billets, MoTickets est là pour vous aider. N'hésitez pas à nous
+              contacter pour toute demande de renseignements, assistance
+              technique ou opportunité de collaboration en utilisant les
+              coordonnées fournies ci-dessous.{" "}
             </p>
             <dl className="mt-10 space-y-4 text-base leading-7 text-gray-600">
               <div className="flex gap-x-4">
@@ -243,18 +244,18 @@ const ContactUs = () => {
                     Email Us:
                   </a>
                   <p className="text-white">
-                    Sales & Partnership Queries - sales@motickets.co.uk
+                    Demandes de vente et de partenariat - sales@motickets.co.uk
                   </p>
                   <p className="text-white">
-                    Customer Support Queries -{" "}
-                    <Link to={""}>Mail: help@motickets.co.uk</Link>
+                    Demandes d'assistance client -{" "}
+                    <Link to={""}>Courrier électronique :</Link>
                     help@motickets.co.uk
                   </p>
                 </dd>
               </div>
               <div className="flex gap-x-4 ">
                 <dt className="flex-none">
-                  <span className="sr-only">Address</span>
+                  <span className="sr-only">Adresse</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -316,17 +317,18 @@ const ContactUs = () => {
                   </svg>
                 </dt>
                 <p className="text-white">
-                  66 <br />
-                  Bode Thomas, Surulere <br />
-                  <br></br>
-                  Lagos <br />
-                  Nigeria
+                  Suite 110 <br />
+                  150 Midsummer Boulevard <br />
+                  Milton Keynes <br />
+                  MK9 1FD
+                  <br />
+                  England{" "}
                 </p>
               </div>
             </dl>
             <p className="text-white mt-8 leading-6">
-              Hey there! Before you reach out, have you checked our
-              <br /> FAQs? They're packed with helpful info!
+              Bonjour ! Avant de nous contacter, avez-vous consulté notre
+              <br /> FAQ ? Elle regorge d'informations utiles !
             </p>
           </div>
         </div>

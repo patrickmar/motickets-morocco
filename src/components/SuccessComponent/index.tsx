@@ -41,23 +41,23 @@ interface ICheckoutForm {
 }
 
 interface IBoolean {
-  [key: string]: boolean;
-}
+    [key: string]: boolean;
+  }
 
-const SuccessComponent = (props: Props) => {
-  // console.log(props);
-  const { stripeData, data } = props;
-  const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
-  const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
-  const baseUrl = process.env.REACT_APP_BASEURL;
-  //console.log(ticketData);
-  const [tickets, setTickets] = useState(null);
-  const [stripe, setStripe] = useState(null);
-  const [userData, setUserData] = useState(data);
-  const [ticketData, setTicketData] = useState(null);
-  const [validatePay, setValidatePay] = useState(false);
-  const [loading, setLoading] = useState(true);
-  //console.log(stripeData);
+  const SuccessComponent = (props: Props) => {
+    // console.log(props);
+    const { stripeData, data } = props;
+    const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
+    const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
+    const baseUrl = process.env.REACT_APP_BASEURL;
+    //console.log(ticketData);
+    const [tickets, setTickets] = useState(null);
+    const [stripe, setStripe] = useState(null);
+    const [userData, setUserData] = useState(data);
+    const [ticketData, setTicketData] = useState(null);
+    const [validatePay, setValidatePay] = useState(false);
+    const [loading, setLoading] = useState(true);
+    //console.log(stripeData);
   const currency = tickets && getCurrency(tickets.currency);
   const navigate = useNavigate();
 

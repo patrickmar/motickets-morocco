@@ -680,7 +680,7 @@ const CreateEventForm: React.FC = () => {
               <div className="mb-4" data-name="description">
                 <label
                   htmlFor="description"
-                  className="block mb-2 text-sm font-medium text-white "
+                  className="block mb-2 text-sm font-medium text-black "
                 >
                   Description
                 </label>
@@ -688,7 +688,7 @@ const CreateEventForm: React.FC = () => {
                   formats={formats}
                   value={eventData.description}
                   onChange={handleDescriptionChange}
-                  className="add-new-post__editor mb-1 text-white"
+                  className="add-new-post__editor mb-1 text-black"
                   theme="snow"
                 />
                 <p className="text-xs text-gray-400">
@@ -789,7 +789,7 @@ const CreateEventForm: React.FC = () => {
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold mb-4 text-white">
+              <h3 className="text-xl font-semibold mb-4 text-black">
                 Catégories de billets
               </h3>
               <div className="overflow-x-auto">
