@@ -237,12 +237,12 @@ const CheckoutForm = (props: Props) => {
         <div>
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-800">
-              Checkout
+              Paiement
             </h2>
           </div>
           <div className="mt-10">
             <h2 className="font-medium text-gray-800 text-lg">
-              Ticket information
+              Informations sur le billet
             </h2>
 
             <form onSubmit={onSubmit}>
@@ -252,7 +252,7 @@ const CheckoutForm = (props: Props) => {
                     htmlFor="firstName"
                     className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
                   >
-                    First Name
+                    Prénom
                   </label>
                   <input
                     type="text"
@@ -273,7 +273,7 @@ const CheckoutForm = (props: Props) => {
                     htmlFor="lastName"
                     className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
                   >
-                    Last Name
+                    Nom de famille
                   </label>
                   <input
                     type="text"
@@ -294,7 +294,7 @@ const CheckoutForm = (props: Props) => {
                     htmlFor="email"
                     className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
                   >
-                    Email Address
+                    Adresse e-mail
                   </label>
                   <input
                     type="email"
@@ -315,7 +315,7 @@ const CheckoutForm = (props: Props) => {
                     htmlFor="phoneNo"
                     className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
                   >
-                    Phone Number
+                    Numéro de téléphone
                   </label>
                   <PhoneInput
                     defaultCountry={defaultCountryCode as CountryCode}
@@ -352,7 +352,8 @@ const CheckoutForm = (props: Props) => {
                     htmlFor="terms"
                     className="font-medium text-gray-800 dark:text-gray-300"
                   >
-                    I accept the <Link to="/terms">terms and conditions</Link>
+                    J'accepte le/la/les{" "}
+                    <Link to="/terms">termes et conditions</Link>
                   </label>
                   <p className="form-error">
                     {touched?.terms && errors?.terms}
@@ -378,7 +379,7 @@ const CheckoutForm = (props: Props) => {
                     htmlFor="userConsent"
                     className="font-medium text-gray-800 dark:text-gray-300"
                   >
-                    Create account with above information.
+                    Créer un compte avec les informations ci-dessus.
                   </label>
                 </div>
               </div>
@@ -402,7 +403,7 @@ const CheckoutForm = (props: Props) => {
                   disabled ? "disabled" : ""
                 } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700`}
               >
-                Pay &nbsp;
+                Payer &nbsp;
                 <NumericFormat
                   value={Number(totalAmount).toFixed(2)}
                   displayType={"text"}
@@ -416,7 +417,9 @@ const CheckoutForm = (props: Props) => {
         </div>
 
         <div className="mt-10 lg:mt-0">
-          <h2 className="text-lg font-medium text-gray-800">Ticket summary</h2>
+          <h2 className="text-lg font-medium text-gray-800">
+            Résumé du billet
+          </h2>
           <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
             <div className="px-4 py-6 sm:px-6">
               {/* <form>
@@ -467,7 +470,7 @@ const CheckoutForm = (props: Props) => {
               ))}
 
               <div className="flex items-center justify-between">
-                <dt className="text-base text-customBlack">Subtotal</dt>
+                <dt className="text-base text-customBlack">Total partiel</dt>
                 <dd className="text-base font-medium text-customBlack">
                   <NumericFormat
                     value={Number(subTotal).toFixed(2)}
@@ -478,7 +481,9 @@ const CheckoutForm = (props: Props) => {
                 </dd>
               </div>
               <div className="flex items-center justify-between">
-                <dt className="text-base text-customBlack">Booking Fee</dt>
+                <dt className="text-base text-customBlack">
+                  Frais de réservation
+                </dt>
                 <dd className="text-base font-medium text-customBlack">
                   <NumericFormat
                     value={Number(totalbookingFee).toFixed(2)}
@@ -490,7 +495,7 @@ const CheckoutForm = (props: Props) => {
               </div>
               <div className="flex items-center justify-between">
                 <dt className="text-base text-customBlack">
-                  VAT
+                  TVA
                   <span className="ml-2 rounded-lg bg-gray-200 px-2 py-1 text-xs tracking-wide text-gray-600">
                     {taxPercent}%
                   </span>
