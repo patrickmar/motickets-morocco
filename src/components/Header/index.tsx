@@ -67,12 +67,6 @@ const Header: React.FC = () => {
   // console.log(avatarUrl);
   // console.log(setQuery);
 
-  // useEffect(() => {
-  //   if (!hostid) {
-  //     navigate("/login");
-  //   }
-  // }, [hostid, navigate]);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location]);
@@ -127,7 +121,7 @@ const Header: React.FC = () => {
   // console.log("Avatar URL before rendering:", avatarUrl);
 
   const handleLogout = () => {
-    setAvatarUrl(default_avatar); // Reset to default avatar
+    setAvatarUrl(default_avatar);
     localStorage.removeItem("avatarUrl");
     dispatch(logout());
     navigate("/");
@@ -171,12 +165,15 @@ const Header: React.FC = () => {
           <li className="menuItem">
             <div className="border-t border-gray-200 flex justify-end">
               <div className="relative">
-                <img
-                  onClick={toggleVisibility}
-                  className="h-10 w-10 rounded-full cursor-pointer"
-                  src={avatarUrl || default_avatar} // Use avatar URL from context or default avatar
-                  alt="User Avatar"
-                />
+                {hostid && (
+                  <img
+                    onClick={toggleVisibility}
+                    className="h-10 w-10 rounded-full cursor-pointer"
+                    src={avatarUrl || default_avatar}
+                    alt="User Avatar"
+                  />
+                )}
+
                 <div
                   className={`absolute transition-all duration-300 ease-in-out ${
                     isVisible ? "block" : "hidden"

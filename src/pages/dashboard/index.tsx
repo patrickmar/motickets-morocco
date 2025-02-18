@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 // import avatar from "../../assets/images/default_avatar.jpg";
 import HostProfile from "./HostProfile";
@@ -10,6 +10,14 @@ import MyEvent from "./MyEvent";
 import FinancialCard from "./FinancialCard";
 import EditProfile from "./EditProfile"; // Import the new EditProfile component
 import { useAvatar } from "../../context/AvatarContext";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+
+interface User {
+  id: string;
+}
 
 const Dashboard: React.FC = () => {
   const [selectedMenu, setSelectedMenu] = useState<string>("Dashboard");
@@ -23,15 +31,29 @@ const Dashboard: React.FC = () => {
   // const navigate = useNavigate();
   const { avatarUrl } = useAvatar();
 
+  const user = useSelector(
+    (state: RootState) => state.auth.user
+  ) as User | null;
+  const hostid = user?.id || "";
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const navigate = useNavigate();
 
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
     setViewingFinancialReport(false);
     setIsSidebarOpen(false); // Close sidebar on menu item click
   };
+
+  useEffect(() => {
+    if (!hostid) {
+      toast.error("Please log in");
+      navigate("/login");
+    }
+  }, [hostid, navigate]);
 
   const renderSelectedContent = () => {
     if (selectedMenu === "Financial" && viewingFinancialReport) {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../../assets/css/quill.css";
@@ -357,6 +357,10 @@ const CreateEventForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!hostid) {
+      toast("Please login");
+      navigate("/login");
+    }
     setIsSubmitting(true);
 
     try {
@@ -464,6 +468,13 @@ const CreateEventForm: React.FC = () => {
   const handleInformationClick = () => {
     setShowInformation((prevShowInformation) => !prevShowInformation);
   };
+
+  useEffect(() => {
+    if (!hostid) {
+      toast.error("Please log in");
+      navigate("/login");
+    }
+  }, [hostid, navigate]);
 
   return (
     <div className="flex items-center justify-center">

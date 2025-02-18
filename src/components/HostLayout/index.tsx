@@ -88,6 +88,8 @@ const HostLayer: React.FC = () => {
 
   const [updateHost, { isLoading, isSuccess, error }] = useUpdateHostMutation();
 
+  const hostid = user?.id || "";
+
   const handlePhoneChange = (value: string | undefined) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -115,10 +117,7 @@ const HostLayer: React.FC = () => {
     if (error) {
       toast.error((error as any)?.data?.message);
     }
-    if (isSuccess) {
-      toast.success("User Updated");
-    }
-  }, [user, error, isSuccess]);
+  }, [user, error]);
 
   const handleNextStep = () => {
     setCurrentStep((prevStep) => prevStep + 1);
@@ -164,11 +163,6 @@ const HostLayer: React.FC = () => {
       toast.error("Failed to update host profile. Please try again.");
     }
   };
-
-  if (!isAuthenticated) {
-    navigate("/login");
-    return null;
-  }
 
   return (
     <div className="py-32  lg:mx-32 mx-2 bg-gray-300 p-8 rounded-md ">
