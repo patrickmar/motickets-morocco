@@ -1,5 +1,5 @@
 import moment from "moment";
-import 'moment/locale/fr';  // Import French locale
+import "moment/locale/fr"; // Import French locale
 import { BsInstagram, BsTwitterX } from "react-icons/bs";
 import logo from "./../../assets/logo/motickets_logo_-.png";
 import { company, guests, hosts } from "../../constant";
@@ -14,8 +14,7 @@ type Props = {};
 
 const Footer = (props: Props) => {
   const [email, setEmail] = useState("");
-  moment.locale('fr');  // Set moment to use the French locale
-
+  moment.locale("fr"); // Set moment to use the French locale
 
   const subscribe = async () => {
     try {
@@ -128,7 +127,9 @@ const Footer = (props: Props) => {
                 </button>
               </div>
               <p className="mt-3 text-sm text-gray-700">
-              Abonnez-vous pour être notifié lorsque nous publions de nouveaux billets.              </p>
+                Abonnez-vous pour être notifié lorsque nous publions de nouveaux
+                billets.{" "}
+              </p>
             </form>
           </div>
           {/* End Col */}
@@ -138,7 +139,8 @@ const Footer = (props: Props) => {
         <div className="mt-5 sm:mt-12 grid gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-900">
-              © {moment().format("YYYY")} MoLoyal. Tous droits réservés.
+              © {moment().format("YYYY")} MoLoyal. Tous droits réservés En
+              association avec Bizzy Bizznez Maroc
             </p>
           </div>
           {/* End Col */}
