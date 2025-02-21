@@ -59,7 +59,7 @@ export default function CardBlogAction() {
               );
             })
           : // Render skeletons during loading
-            [...Array(6)].map((_, i) => (
+            [...Array(8)].map((_, i) => (
               <div
                 key={i}
                 className="animate-pulse flex flex-col rounded-lg bg-gray-300 dark:bg-gray-700"

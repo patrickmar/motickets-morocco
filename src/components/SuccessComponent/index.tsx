@@ -132,7 +132,7 @@ const SuccessComponent = (props: Props) => {
 
     if (query.get("canceled")) {
       toast.error(
-        "Order canceled -- continue to shop around and checkout when you're ready."
+        "Commande annulée – continuez à faire vos achats et passez à la caisse quand vous êtes prêt."
       );
     }
   }, []);
@@ -221,7 +221,7 @@ const SuccessComponent = (props: Props) => {
                   color: "black",
                 }}
               >
-                The payment is invalid! Please contact admin.
+                Le paiement est invalide ! Veuillez contacter l'administrateur.
               </span>
               <button
                 onClick={() => navigate("/")}
@@ -234,7 +234,7 @@ const SuccessComponent = (props: Props) => {
                 }}
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-black shadow-sm hover:bg-red-700"
               >
-                Go to Homepage
+                Aller à la page d'accueil.
               </button>
             </>
           ) : (
@@ -247,7 +247,7 @@ const SuccessComponent = (props: Props) => {
                   color: "black",
                 }}
               >
-                The tickets have been purchased successfully.
+                Les billets ont été achetés avec succès.
               </span>
               <button
                 onClick={() => navigate("/")}
@@ -260,7 +260,7 @@ const SuccessComponent = (props: Props) => {
                 }}
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-black shadow-sm hover:bg-red-700"
               >
-                Go to Homepage
+                Aller à la page d'accueil.
               </button>
             </>
           )}
@@ -279,7 +279,7 @@ const SuccessComponent = (props: Props) => {
                   marginTop: "1rem",
                 }}
               >
-                Loading...do not refresh.<br></br>
+                Chargement... Ne pas actualiser<br></br>
               </span>
               {[1, 2, 3, 4, 5, 6, 7].map((item, i) => (
                 <div key={i} className="row skeleton"></div>
