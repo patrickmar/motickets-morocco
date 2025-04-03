@@ -318,7 +318,7 @@ const ContactUs = () => {
                     </svg>
                   </dt>
                   <p className="text-white ml-2">
-                    siège social: <br />
+                    Siège Social: <br />
                     Suite 110 <br />
                     150 Midsummer Boulevard <br />
                     Milton Keynes <br />
@@ -389,7 +389,7 @@ const ContactUs = () => {
                     </svg>
                   </dt>
                   <p className="text-white ml-2">
-                    Coordonnées satellitaires <br />
+                    Coordonnées Satellitaires <br />
                     C/O Bloc A4 N 85
                     <br />
                     Cité Alqods <br />
