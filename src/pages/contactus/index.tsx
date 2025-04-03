@@ -318,7 +318,7 @@ const ContactUs = () => {
                     </svg>
                   </dt>
                   <p className="text-white ml-2">
-                    Adresse: <br />
+                    siège social: <br />
                     Suite 110 <br />
                     150 Midsummer Boulevard <br />
                     Milton Keynes <br />
