@@ -428,8 +428,7 @@ const PrivacyPolicy = () => {
       <br></br>
       <h3 className="font-semibold text-xl">Cookies </h3>
       <br></br>
-      We use the following analytical/performance cookies:
-      <br></br>
+      Nous utilisons les cookies analytiques/de performance suivants :<br></br>
       <div className=" mx-auto p-4 contain">
         <table className=" bg-white border border-gray-300 ">
           <thead>
