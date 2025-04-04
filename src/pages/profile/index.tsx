@@ -9,7 +9,7 @@ const Profile = () => {
       </div>
       {/* End of Bannee */}
       <h1 className=" flex justify-center text-4xl text-[#25aae1] py-8">
-        Core Offerings
+        Offres principales
       </h1>
       <div className="relative overflow-hidden bg-gray-900 pt-16 pb-32 space-y-24">
         <div className="relative">
@@ -18,19 +18,19 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    MoTickets Platform:
+                    Plateforme MoTickets:
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    A robust and user-friendly ticketing platform that caters to
-                    a wide range of events, from concerts and festivals to
-                    conferences and local gatherings.
+                    Une plateforme de billetterie robuste et conviviale qui
+                    répond à une large gamme d'événements, des concerts et
+                    festivals aux conférences et rassemblements locaux.
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -57,19 +57,20 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Innovative Solutions:
+                    Solutions innovantes :
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    Continuous integration of innovative features, such as
-                    loyalty programs, digital wallets, and real-time analytics,
-                    to enhance the overall event experience.
+                    Intégration continue de fonctionnalités innovantes, telles
+                    que les programmes de fidélité, les portefeuilles numériques
+                    et les analyses en temps réel, pour améliorer l'expérience
+                    globale de l'événement.
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -96,19 +97,19 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Community Engagement:
+                    Engagement communautaire :
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    A dedicated focus on building a vibrant community around
-                    shared interests, encouraging interaction among event
-                    enthusiasts.
+                    Un focus dédié à la création d'une communauté dynamique
+                    autour d'intérêts communs, favorisant l'interaction entre
+                    les passionnés d'événements.{" "}
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -135,21 +136,22 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Unique Selling Proposition (USP):
+                    Proposition de valeur unique (PVU) :
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    MoTickets stands out through its commitment to innovation,
-                    accessibility, and community building. Our platform goes
-                    beyond conventional ticketing, offering a holistic
-                    experience that extends from the moment of purchase to the
-                    shared joy of attending events.
+                    MoTickets se distingue par son engagement envers
+                    l'innovation, l'accessibilité et la création de communauté.
+                    Notre plateforme va au-delà de la billetterie
+                    conventionnelle, offrant une expérience holistique qui
+                    s'étend du moment de l'achat jusqu'à la joie partagée de
+                    participer aux événements.
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -172,7 +174,7 @@ const Profile = () => {
         </div>
       </div>
       <h1 className=" flex justify-center text-4xl text-[#25aae1] py-8">
-        Key Values
+        Valeurs clés
       </h1>
       <div className="relative overflow-hidden bg-gray-900 pt-16 pb-32 space-y-24">
         <div className="relative">
@@ -181,18 +183,18 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Customer-Centricity:
+                    Orientation client :
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    Placing the needs and satisfaction of our customers at the
-                    forefront of every decision and solution.
+                    Placer les besoins et la satisfaction de nos clients au cœur
+                    de chaque décision et solution.
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -219,18 +221,18 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Integrity:
+                    Intégrité:
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    Upholding the highest standards of integrity in all our
-                    interactions, transactions, and partnerships.
+                    Respecter les normes les plus élevées d'intégrité dans
+                    toutes nos interactions, transactions et partenariats.
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -257,18 +259,18 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Adaptability:
+                    Adaptabilité:
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    Embracing change and staying agile to meet the evolving
-                    needs of the dynamic events industry.
+                    Accepter le changement et rester agile pour répondre aux
+                    besoins évolutifs de l'industrie dynamique des événements.
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>
@@ -295,18 +297,19 @@ const Profile = () => {
               <div>
                 <div className="mt-6">
                   <h2 className="text-3xl font-bold tracking-tight text-white">
-                    Collaboration:
+                    Collaboration :
                   </h2>
                   <p className="mt-4 text-lg text-gray-300">
-                    Fostering collaboration among our team, event organizers,
-                    and attendees to create a united and vibrant community.
+                    Favoriser la collaboration entre notre équipe, les
+                    organisateurs d'événements et les participants pour créer
+                    une communauté unie et dynamique.{" "}
                   </p>
                   <div className="mt-6">
                     <Link
                       className="inline-flex rounded-lg bg-[#25aae1] px-4 py-1.5 text-base font-semibold leading-7 text-white shadow-sm ring-1 ring-[#25aae1] hover:bg-blue-400 hover:ring-blue-400"
                       to="#"
                     >
-                      Learn More
+                      En savoir plus
                     </Link>
                   </div>
                 </div>

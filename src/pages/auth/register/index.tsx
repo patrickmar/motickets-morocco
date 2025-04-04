@@ -137,10 +137,10 @@ const Register = (props: Props) => {
       if ("data" in error) {
         const errorMessage =
           (error as FetchBaseQueryError & { data: LoginError }).data.message ||
-          "Unknown error";
+          "Erreur inconnue";
         toast.error(errorMessage);
       } else {
-        toast.error("An unexpected error occurred.");
+        toast.error("Une erreur inattendue s'est produite.");
       }
     } else if (data) {
       toast.success(data.message);
@@ -152,7 +152,7 @@ const Register = (props: Props) => {
     e.preventDefault();
     if (error) {
       navigate("/");
-      toast.error("Login Failed");
+      toast.error("Échec de la connexion");
     }
 
     // if (!isCaptchaVerified) {

@@ -345,7 +345,7 @@ const CreateEventForm: React.FC = () => {
     if (files) {
       const selectedImagesArray = Array.from(files);
       if (selectedImagesArray.length + selectedImages.length > 5) {
-        toast.error(`Can't select more than five images`);
+        toast.error(`Vous ne pouvez pas sélectionner plus de cinq images`);
         return;
       }
       setSelectedImages((prevImages) => [
@@ -358,7 +358,7 @@ const CreateEventForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!hostid) {
-      toast("Please login");
+      toast("Veuillez vous connecter");
       navigate("/login");
     }
     setIsSubmitting(true);
@@ -423,7 +423,7 @@ const CreateEventForm: React.FC = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create event");
+        throw new Error("Échec de la création de l'événement");
       }
 
       const data = await response.json();
@@ -434,7 +434,9 @@ const CreateEventForm: React.FC = () => {
         throw new Error(data.message || "Unknown error");
       }
     } catch (error: any) {
-      setSubmissionError(error.message || "Error creating event");
+      setSubmissionError(
+        error.message || "Erreur lors de la création de l'événement"
+      );
     } finally {
       setIsSubmitting(false);
     }

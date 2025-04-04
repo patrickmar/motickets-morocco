@@ -61,14 +61,14 @@ const Login: React.FC = () => {
 
   const handleLoginSuccess = (userData: User) => {
     if (!userData || !userData.id) {
-      toast.error("User not found or invalid credentials.");
+      toast.error("Utilisateur introuvable ou identifiants invalides.");
       return; // Prevent navigation
     }
 
     // Assuming userData.id should be the hostId, perform the necessary check
     const hostId = userData.id; // or simply userData.id if it's the same as hostId
     if (!hostId) {
-      toast.error("Host ID not found.");
+      toast.error("ID d'hôte introuvable.");
       return; // Prevent navigation
     }
 
@@ -85,7 +85,7 @@ const Login: React.FC = () => {
 
   const validateInputs = () => {
     if (!email || !password) {
-      toast.error("Please fill in all fields.");
+      toast.error("Veuillez remplir tous les champs.");
       return false;
     }
     return true;
@@ -103,11 +103,18 @@ const Login: React.FC = () => {
       handleLoginSuccess(response);
     } catch (error) {
       const customError = error as FetchBaseQueryError & CustomError;
-      if (customError?.data?.message.includes("wrong user id or password")) {
-        toast.error("User does not exist or wrong password.");
+      if (
+        customError?.data?.message.includes(
+          "Identifiant ou mot de passe incorrect."
+        )
+      ) {
+        toast.error(
+          "L'utilisateur n'existe pas ou le mot de passe est incorrect."
+        );
       } else {
         toast.error(
-          customError?.data?.message || "Login failed. Please try again."
+          customError?.data?.message ||
+            "Échec de la connexion. Veuillez réessayer."
         );
       }
     }
