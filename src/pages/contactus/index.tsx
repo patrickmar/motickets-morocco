@@ -74,7 +74,7 @@ const ContactUs = () => {
                   htmlFor="name"
                   className="block text-sm font-semibold leading-6 text-white"
                 >
-                  Name
+                  nom
                 </label>
                 <div className="mt-2.5">
                   <input
@@ -108,7 +108,7 @@ const ContactUs = () => {
                   htmlFor="number"
                   className="block text-sm font-semibold leading-6 text-white"
                 >
-                  Phone Number
+                  Numéro de téléphone
                 </label>
                 <div className="mt-2.5">
                   <input
@@ -124,7 +124,7 @@ const ContactUs = () => {
                   htmlFor="todo"
                   className="block text-sm font-semibold leading-6 text-white"
                 >
-                  What would you like to discuss?
+                  De quoi aimeriez-vous discuter ?
                 </label>
                 <div className="mt-2.5">
                   <input
@@ -164,7 +164,7 @@ const ContactUs = () => {
                 type="submit"
                 className="w-max  rounded-2xl border-2 border-[#c10006] bg-[#c10006]  px-5 py-1.5 text-sm font-semibold text-white transition-colors duration-150 ease-in-out hover:border-red-400 hover:bg-red-400"
               >
-                Send message
+                Envoyer un message
               </button>
             </div>
           </div>
@@ -241,7 +241,7 @@ const ContactUs = () => {
                     className="hover:text-white text-white"
                     href="mailto:help@motickets.co.uk"
                   >
-                    Email Us:
+                    Envoyez-nous un e-mail:
                   </a>
                   <p className="text-white">
                     Demandes de vente et de partenariat - sales@motickets.co.uk
