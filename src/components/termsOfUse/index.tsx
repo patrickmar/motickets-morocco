@@ -40,14 +40,14 @@ const TermsOfUse = () => {
       situé au 150 Midsummer Boulevard, Milton Keynes, MK9 1FD, Angleterre. Nous
       sommes une société anonyme.
       <br></br>
-      2.4. Pour nous contacter, veuillez help@motickets.co.uk envoyer un e-mail
-      ou téléphoner à notre service clientèle au +441908103520.2.4. « Produits »
-      et « biens » désignent l’ensemble des produits que nous proposons à la
-      vente sur notre application ;<br></br>
-      .5. « Service » ou « Services » fait référence à tous les services que
+      2.4. Pour nous contacter, veuillez contact@thebizznez.com envoyer un
+      e-mail ou téléphoner à notre service clientèle au +44798006598 <br />
+      2.5. « Produits » et « biens » désignent l’ensemble des produits que nous
+      proposons à la vente sur notre application ;<br></br>
+      2.6. « Service » ou « Services » fait référence à tous les services que
       nous proposons via notre site Web (billets),
       <br></br>
-      .6. « Site Internet » désigne notre site Internet Motickets.ma
+      2.7. « Site Internet » désigne notre site Internet Motickets.ma
       <br></br>
       Application mobile » désigne notre application Motickets, disponible en
       versions Android et iOS
@@ -60,8 +60,8 @@ const TermsOfUse = () => {
       sous le numéro d’entreprise 14185160 et notre siège social est situé au
       150 Midsummer Boulevard, Milton Keynes, MK9 1FD, Angleterre. Nous sommes
       une société anonyme. <br></br>
-      3.2. Pour nous contacter, veuillez help@motickets.co.uk envoyer un e-mail
-      ou téléphoner à notre service clientèle au +441908103520.<br></br>
+      3.2. Pour nous contacter, veuillez contact@thebizznez.com envoyer un
+      e-mail ou téléphoner à notre service clientèle au +44798006598.<br></br>
       <br></br>
       4. Prix et paiements
       <br></br>
