@@ -206,7 +206,7 @@ const ContactUs = () => {
               </svg>
             </div>
             <h2 className="text-5xl font-bold tracking-tight text-[#25aae1]">
-              Contact Us
+              Contactez-nous{" "}
             </h2>
             <p className="mt-6 text-sm leading-6 text-white">
               Vous avez une question ou besoin d'aide ? Que vous soyez

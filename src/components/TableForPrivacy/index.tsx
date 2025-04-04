@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const TableForPrivacy = () => {
   return (
@@ -7,7 +7,7 @@ const TableForPrivacy = () => {
         <thead>
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
-              Type of Cookie
+              Type de cookie
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b">
               Purpose
@@ -17,35 +17,40 @@ const TableForPrivacy = () => {
         <tbody>
           <tr className="bg-gray-100 border-b text-black">
             <td className="px-6 py-4 whitespace-wrap">
-              Strictly necessary cookies
+              Cookies strictement nécessaires{" "}
             </td>
             <td className="px-6 py-4 whitespace-wrap">
-              These are cookies that are required for the operation of our
-              website. They include, for example, cookies that enable you to log
-              into secure areas of our website, use a shopping cart or make use
-              of e-billing services.
+              Il s'agit de cookies nécessaires au fonctionnement de notre site
+              web. Il s'agit, par exemple, de cookies qui vous permettent de
+              vous connecter à des zones sécurisées de notre site web,
+              d'utiliser un panier d'achat ou d'utiliser des services de
+              facturation électronique.{" "}
             </td>
           </tr>
           <tr className="bg-white border-b flex-1 text-black">
             <td className="px-6 py-4 nowrap text-black">
-              Analytical/performance cookies
+              Cookies analytiques/de performance{" "}
             </td>
             <td className="px-6 py-4  whitespace-wrap">
-              Analytical/performance cookies They allow us to recognise and
-              count the number of visitors and to see how visitors move around
-              our website when they are using it. This helps us to improve the
-              way our website works, for example, by ensuring that users are
-              finding what they are looking for easily.
+              Cookies analytiques/de performance Ils nous permettent de
+              reconnaître et de compter le nombre de visiteurs et de voir
+              comment les visiteurs se déplacent sur notre site web lorsqu'ils
+              l'utilisent. Cela nous aide à améliorer le fonctionnement de notre
+              site web, par exemple en veillant à ce que les utilisateurs
+              trouvent facilement ce qu'ils cherchent.
             </td>
           </tr>
           <tr className="bg-gray-100 border-b text-black">
-            <td className="px-6 py-4 whitespace-wrap">Functionality cookies</td>
             <td className="px-6 py-4 whitespace-wrap">
-              These are used to recognise you when you return to our website.
-              This enables us to personalise our content for you, greet you by
-              name and remember your preferences (for example, your choice of
-              language or region). By using the Website, you agree to our
-              placement of functionality cookie.
+              Cookies de fonctionnalité
+            </td>
+            <td className="px-6 py-4 whitespace-wrap">
+              Ceux-ci sont utilisés pour vous reconnaître lorsque vous revenez
+              sur notre site Web. Cela nous permet de personnaliser notre
+              contenu pour vous, de vous saluer par votre nom et de mémoriser
+              vos préférences (par exemple, votre choix de langue ou de région).
+              En utilisant le site Web, vous acceptez que nous placions des
+              cookies de fonctionnalité.
             </td>
           </tr>
         </tbody>

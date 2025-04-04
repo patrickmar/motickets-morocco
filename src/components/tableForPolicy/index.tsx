@@ -4,12 +4,13 @@ const TableForPolicy = () => {
       <div className="flex flex-col overflow-x-auto text-xs">
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">Data</p>
+            <p className="text-lg">Données</p>
           </div>
           <div className="flex-1 block px-2 py-3  sm:p-3 sm:w-auto text-sm">
-            collectively all information that you submit to Atendi Ltd. via the
-            Website. This definition incorporates, where applicable, the
-            definitions provided in the Data Protection Laws;
+            collectivement toutes les informations que vous soumettez à
+            Vivalimda Ltd. via le site Web. Cette définition intègre, le cas
+            échéant, les définitions fournies dans les Lois sur la protection
+            des données;
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
@@ -17,71 +18,77 @@ const TableForPolicy = () => {
             <p className="text-lg">Cookies</p>
           </div>
           <div className="flex-1 block px-2 py-3  sm:p-3 sm:w-auto text-sm">
-            a small text file placed on your computer by this Website when you
-            visit certain parts of the Website and/or when you use certain
-            features of the Website. Details of the cookies used by this Website
-            are set out in the clause below (Cookies);
+            un petit fichier texte placé sur votre ordinateur par ce site Web
+            lorsque vous visitez certaines parties du site Web et/ou lorsque
+            vous utilisez certaines fonctionnalités du site Web. Les détails des
+            cookies utilisés par ce site Web sont indiqués dans la clause
+            ci-dessous (Cookies) ;
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">Data Protection Laws</p>
+            <p className="text-lg">Lois sur la protection des données</p>
           </div>
           <div className="flex-1 block px-2 py-3  sm:p-3 sm:w-auto text-sm">
-            any applicable law relating to the processing of personal Data,
-            including but not limited to the GDPR, and any national implementing
-            and supplementary laws, regulations and secondary legislation;
+            toute loi applicable relative au traitement des données
+            personnelles, y compris, mais sans s'y limiter, le RGPD, et toutes
+            les lois, réglementations et législations dérivées nationales
+            d'application et complémentaires ;
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">GDPR</p>
+            <p className="text-lg">Le RGPD</p>
           </div>
           <div className="flex-1 block px-2 py-3 truncate sm:p-3 sm:w-auto text-sm">
-            the UK General Data Protection Regulation;
+            le règlement général sur la protection des données du Royaume-Uni;
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">Atendi Ltd., we or us</p>
+            <p className="text-lg">Vivalimda Ltd., nous ou notre</p>
           </div>
           <div className="flex-1 block px-2 py-3 truncate sm:p-3 sm:w-auto text-sm">
-            Atendi Ltd., a company incorporated in England and Wales with
-            registered number 14185160 whose registered office is at 150
-            Midsummer Boulevard, Milton Keynes, MK9 1FD;
+            Vivalimda Ltd., une société immatriculée en Angleterre et au Pays
+            14185160 de Galles dont le siège social est situé au 150 Midsummer
+            Boulevard, Milton Keynes, MK9 1FD ;
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">UK and EU Cookie Law</p>
+            <p className="text-lg">
+              Loi sur les cookies au Royaume-Uni et dans l'UE
+            </p>
           </div>
           <div className="flex-1 block px-2 py-3 truncate sm:p-3 sm:w-auto text-sm">
-            the Privacy and Electronic Communications (EC Directive) Regulations
-            2003 as amended by the Privacy and Electronic Communications (EC
-            Directive) (Amendment) Regulations 2011 & the Privacy and Electronic
-            Communications (EC Directive) (Amendment) Regulations 2018;
+            le règlement de 2003 sur la protection de la vie privée et les
+            communications électroniques (directive CE), tel que modifié par le
+            règlement de 2011 sur la protection de la vie privée et les
+            communications électroniques (directive CE) (amendement) et le
+            règlement de 2018 sur la protection de la vie privée et les
+            communications électroniques (directive CE) (amendement);
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">User or you</p>
+            <p className="text-lg">Utilisateur ou vous</p>
           </div>
           <div className="flex-1 block px-2 py-3 truncate sm:p-3 sm:w-auto text-sm">
-            any third party that accesses the Website and is not either (i)
-            employed by Atendi Ltd. and acting in the course of their employment
-            or (ii) engaged as a consultant or otherwise providing services to
-            Atendi Ltd. and accessing the Website in connection with the
-            provision of such services; and
+            tout tiers qui accède au site Web et qui n'est pas (i) employé par
+            Vivalimda Ltd. et agissant dans le cadre de son emploi ou (ii)
+            engagé en tant que consultant ou fournissant autrement des services
+            à Vivalimda Ltd. et accédant au site Web dans le cadre de la
+            fourniture de ces services ; et
           </div>
         </div>
         <div className="flex border-b border-opacity-20 dark:border-gray-300 dark:bg-gray-50">
           <div className="w-32 px-2 py-3 sm:p-3">
-            <p className="text-lg">Website</p>
+            <p className="text-lg">Site internet</p>
           </div>
           <div className="flex-1 block px-2 py-3 truncate sm:p-3 sm:w-auto text-sm">
-            the website that you are currently using, www.motickets.co.uk, and
-            any sub-domains of this site unless expressly excluded by their own
-            terms and conditions.{" "}
+            Le site Web que vous utilisez actuellement, www.motickets.co.uk et
+            tous les sous-domaines de ce site, sauf exclusion expresse par leurs
+            propres conditions générales.{" "}
           </div>
         </div>
       </div>

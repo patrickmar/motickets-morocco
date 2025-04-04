@@ -41,7 +41,7 @@ const TermsOfUse = () => {
       sommes une société anonyme.
       <br></br>
       2.4. Pour nous contacter, veuillez contact@thebizznez.com envoyer un
-      e-mail ou téléphoner à notre service clientèle au +44798006598 <br />
+      e-mail ou téléphoner à notre service clientèle au +447830006598 <br />
       2.5. « Produits » et « biens » désignent l’ensemble des produits que nous
       proposons à la vente sur notre application ;<br></br>
       2.6. « Service » ou « Services » fait référence à tous les services que
@@ -61,7 +61,7 @@ const TermsOfUse = () => {
       150 Midsummer Boulevard, Milton Keynes, MK9 1FD, Angleterre. Nous sommes
       une société anonyme. <br></br>
       3.2. Pour nous contacter, veuillez contact@thebizznez.com envoyer un
-      e-mail ou téléphoner à notre service clientèle au +44798006598.<br></br>
+      e-mail ou téléphoner à notre service clientèle au +447830006598.<br></br>
       <br></br>
       4. Prix et paiements
       <br></br>
