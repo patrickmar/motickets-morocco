@@ -13,13 +13,15 @@ import { useAvatar } from "../../context/AvatarContext";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
 }
 
 const Dashboard: React.FC = () => {
+  const location = useLocation();
+
   const [selectedMenu, setSelectedMenu] = useState<string>("Dashboard");
   const [selectedEventOption, setSelectedEventOption] =
     useState<string>("CreateEvent");
@@ -49,11 +51,26 @@ const Dashboard: React.FC = () => {
   };
 
   useEffect(() => {
+    if (location.state?.selectedMenu) {
+      setSelectedMenu(location.state.selectedMenu);
+    }
+    if (location.state?.selectedEventOption) {
+      setSelectedEventOption(location.state.selectedEventOption);
+    }
+  }, [location.state]);
+
+  useEffect(() => {
     if (!hostid) {
       toast.error("Please log in");
       navigate("/login");
     }
   }, [hostid, navigate]);
+
+  useEffect(() => {
+    if (location.state?.CreateEventForm) {
+      setSelectedMenu("Financial"); // Auto-switch to Financial tab
+    }
+  }, [location.state]);
 
   const renderSelectedContent = () => {
     if (selectedMenu === "Financial" && viewingFinancialReport) {

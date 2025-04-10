@@ -9,34 +9,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { customAlphabet } from "nanoid";
-
-// Add the function to convert file to base64
-// const getBase64 = (file: File) => {
-//   return new Promise<string>((resolve) => {
-//     let reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => {
-//       const BaseUrl = reader.result as string;
-//       resolve(BaseUrl);
-//     };
-//   });
-// };
+import FinancialCard from "../dashboard/FinancialCard";
 
 interface User {
   id: string;
 }
-
-// Function to convert data URI to Blob
-// const dataURItoBlob4 = (dataURI: string) => {
-//   const binary = atob(dataURI.split(",")[1]);
-//   const array = [];
-//   for (let i = 0; i < binary.length; i++) {
-//     array.push(binary.charCodeAt(i));
-//   }
-//   return new Blob([new Uint8Array(array)], {
-//     type: "image/png",
-//   });
-// };
 
 interface TicketCategory {
   name: string;
@@ -429,7 +406,12 @@ const CreateEventForm: React.FC = () => {
       const data = await response.json();
       if (data.error === false) {
         toast.success(data.message);
-        navigate("/dashboard");
+        navigate("/dashboard", {
+          state: {
+            selectedMenu: "Event",
+            selectedEventOption: "MyEvent",
+          },
+        });
       } else {
         throw new Error(data.message || "Unknown error");
       }
