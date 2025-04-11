@@ -239,7 +239,7 @@ const ContactUs = () => {
                 <dd>
                   <a
                     className="hover:text-white text-white"
-                    href="mailto:help@motickets.co.uk"
+                    href="mailto:contact@motickets.ma"
                   >
                     Envoyez-nous un e-mail:
                   </a>
@@ -249,7 +249,7 @@ const ContactUs = () => {
                   <p className="text-white">
                     Demandes d'assistance client -{" "}
                     <Link to={""}>Courrier électronique :</Link>
-                    help@motickets.co.uk
+                    contact@motickets.ma
                   </p>
                 </dd>
               </div>
