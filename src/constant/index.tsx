@@ -117,7 +117,7 @@ export const company = [
   //   url: "",
   // },
   {
-    name: "Conditions d'utilisation",
+    name: "Termes et conditions",
     url: "/terms",
   },
   {

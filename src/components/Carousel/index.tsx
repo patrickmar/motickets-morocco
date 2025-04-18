@@ -102,10 +102,6 @@ const Carousel = ({ data, loading, title }: Props) => {
             {<SkItem />}
             {<SkItem />}
             {<SkItem />}
-            {/* {skItem()}
-            {skItem()}
-            {skItem()}
-            {skItem()} */}
           </div>
         )}
       </ContentWrapper>

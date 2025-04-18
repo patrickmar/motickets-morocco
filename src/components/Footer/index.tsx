@@ -2,6 +2,8 @@ import moment from "moment";
 import "moment/locale/fr"; // Import French locale
 import { BsInstagram, BsTwitterX } from "react-icons/bs";
 import logo from "./../../assets/logo/motickets_logo_-.png";
+import box from "./../../assets/images/box.jpg";
+import box2 from "./../../assets/images/box2.png";
 import { company, guests, hosts } from "../../constant";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -54,7 +56,7 @@ const Footer = (props: Props) => {
               {guests.map((item, i) => (
                 <p key={i}>
                   <Link
-                    className="inline-flex gap-x-2 text-gray-700 hover:text-gray-200 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                    className="inline-flex gap-x-2 text-gray-700 hover:text-red-500"
                     to={item.url}
                   >
                     {item.name}
@@ -71,7 +73,7 @@ const Footer = (props: Props) => {
               {hosts.map((item, i) => (
                 <p key={i}>
                   <Link
-                    className="inline-flex gap-x-2 text-gray-700 hover:text-gray-200 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                    className="inline-flex gap-x-2 text-gray-700 hover:text-red-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                     to={item.url}
                   >
                     {item.name}
@@ -88,7 +90,7 @@ const Footer = (props: Props) => {
               {company.map((item, i) => (
                 <p key={i}>
                   <Link
-                    className="inline-flex gap-x-2 text-gray-700 hover:text-gray-200 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
+                    className="inline-flex gap-x-2 text-gray-700 hover:text-red-500 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600"
                     to={item.url}
                   >
                     {item.name}
@@ -135,6 +137,14 @@ const Footer = (props: Props) => {
           {/* End Col */}
         </div>
         {/* End Grid */}
+        <div className="flex flex-col mt-5 md:flex-row">
+          <div>
+            <img src={box} alt="box" />
+          </div>
+          <div>
+            <img src={box2} alt="box2" />
+          </div>
+        </div>
 
         <div className="mt-5 sm:mt-12 grid gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
           <div className="flex justify-between items-center">

@@ -3,7 +3,7 @@ import React from "react";
 const TermsOfUse = () => {
   return (
     <div className="w-3/4 bg-[#04152d] p-4 text-white leading-8">
-      <h2 className="text-[32px] font-bold mb-4">Conditions de vente</h2>
+      <h2 className="text-[32px] font-bold mb-4">Termes et conditions</h2>
       <h3>Avant votre achat sur la plateforme</h3>
       1. Conditions générales de vente
       <br></br>

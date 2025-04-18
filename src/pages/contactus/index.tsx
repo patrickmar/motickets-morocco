@@ -255,7 +255,7 @@ const ContactUs = () => {
               </div>
               <div className="flex gap-x-4 ">
                 <div className="flex">
-                  <dt className="flex-none">
+                  {/* <dt className="flex-none">
                     <span className="sr-only">Adresse </span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -316,8 +316,8 @@ const ContactUs = () => {
                         />
                       </g>
                     </svg>
-                  </dt>
-                  <p className="text-white ml-2">
+                  </dt> */}
+                  {/* <p className="text-white ml-2">
                     Siège Social: <br />
                     Suite 110 <br />
                     150 Midsummer Boulevard <br />
@@ -325,7 +325,7 @@ const ContactUs = () => {
                     MK9 1FD
                     <br />
                     England{" "}
-                  </p>
+                  </p> */}
                   <dt className="flex-none">
                     <span className="sr-only">Adresse</span>
                     <svg
