@@ -244,7 +244,7 @@ const ContactUs = () => {
                     Envoyez-nous un e-mail:
                   </a>
                   <p className="text-white">
-                    Demandes de vente et de partenariat - sales@motickets.co.uk
+                    Demandes de vente et de partenariat - sales@motickets.ma
                   </p>
                   <p className="text-white">
                     Demandes d'assistance client -{" "}
@@ -253,6 +253,32 @@ const ContactUs = () => {
                   </p>
                 </dd>
               </div>
+              <div className="flex gap-x-4">
+                <dt className="flex-none">
+                  <span className="sr-only">Téléphone</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="h-11 w-12 text-white bg-[#25aae1] p-4 rounded-full"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M2.25 6.75c0 8.284 6.716 15 15 15 .966 0 1.91-.092 2.813-.267a1.5 1.5 0 001.187-1.48v-3.31a1.5 1.5 0 00-.897-1.372l-3.25-1.458a1.5 1.5 0 00-1.493.145l-2.208 1.472a11.954 11.954 0 01-5.625-5.625l1.472-2.208a1.5 1.5 0 00.145-1.493L8.68 2.647A1.5 1.5 0 007.308 1.75H4a1.5 1.5 0 00-1.48 1.187A16.964 16.964 0 002.25 6.75z"
+                    />
+                  </svg>
+                </dt>
+                <dd className="text-white">
+                  Appelez-nous : <br />
+                  <a href="tel:+212611132832" className="hover:text-gray-300">
+                    +212 6 11 13 28 32
+                  </a>
+                </dd>
+              </div>
+
               <div className="flex gap-x-4 ">
                 <div className="flex">
                   {/* <dt className="flex-none">

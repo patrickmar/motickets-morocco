@@ -2,8 +2,8 @@ import moment from "moment";
 import "moment/locale/fr"; // Import French locale
 import { BsInstagram, BsTwitterX } from "react-icons/bs";
 import logo from "./../../assets/logo/motickets_logo_-.png";
-import box from "./../../assets/images/box.jpg";
-import box2 from "./../../assets/images/box2.png";
+import fleximage1 from "./../../assets/images/fleximage1.jpeg";
+import fleximage from "./../../assets/images/fleximage.jpeg";
 import { company, guests, hosts } from "../../constant";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -139,10 +139,10 @@ const Footer = (props: Props) => {
         {/* End Grid */}
         <div className="flex flex-col mt-5 md:flex-row">
           <div>
-            <img src={box} alt="box" />
+            <img src={fleximage1} alt="box" />
           </div>
           <div>
-            <img src={box2} alt="box2" />
+            <img src={fleximage} alt="box2" />
           </div>
         </div>
 
@@ -157,7 +157,7 @@ const Footer = (props: Props) => {
 
           {/* Social Brands */}
           <div className="justify-center flex">
-            {/* <a
+            {/* <a  
               className="w-10 h-10 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent text-white hover:bg-white/10 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:ring-1 focus:ring-gray-600"
               href="https://facebook.com"
             >
