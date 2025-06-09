@@ -141,9 +141,9 @@ const Footer = (props: Props) => {
           <div>
             <img src={fleximage1} alt="box" />
           </div>
-          <div>
+          {/* <div>
             <img src={fleximage} alt="box2" />
-          </div>
+          </div> */}
         </div>
 
         <div className="mt-5 sm:mt-12 grid gap-y-2 sm:gap-y-0 sm:flex sm:justify-between sm:items-center">
