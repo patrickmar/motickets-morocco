@@ -517,7 +517,7 @@ function Organisers() {
                     <strong>Standard (Événements Payants)</strong>
                   </p>
                   <h3 className="mb-6 text-3xl">
-                    <strong className="text-black">5% +£0.49</strong>
+                    <strong className="text-black">5% +DH0.49</strong>
                     <small>/Billet</small>
                   </h3>
                   <button
