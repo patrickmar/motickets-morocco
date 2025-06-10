@@ -20,26 +20,27 @@ export const currencies = [
 ];
 
 export const countries = [
-  {
-    name: "Morocco",
-    url: "https://motickets.co.uk",
-    code: "MA",
-  },
+  // {
+  //   name: "Morocco",
+  //   url: "https://motickets.co.uk",
+  //   code: "MA",
+  // },
   // {
   //   name: "United States",
   //   url: "https://motickets.co",
   //   code: "US",
   // },
-  // {
-  //   name: "Nigeria",
-  //   url: "https://motickets.ng",
-  //   code: "NG",
-  // },
-  // {
-  //   name: "Canada",
-  //   url: "https://motickets.co",
-  //   code: "CA",
-  // },
+  {
+    name: "Nigeria",
+    url: "https://motickets.ng",
+    code: "NG",
+  },
+  {
+    name: "United Kingdom",
+    url: "https://motickets.co.uk",
+   code: "GB",
+    
+  },
   // {
   //   name: "Ghana",
   //   url: "https://motickets.co",
