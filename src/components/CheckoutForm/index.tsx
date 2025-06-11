@@ -214,10 +214,10 @@ const CheckoutForm = (props: Props) => {
     mode : 'DEEP_LINK',	// fixed value				
     paymentMethod : 'CREDIT_CARD',	 // fixed value	
     showPaymentProfiles : 'false',	
-    callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api//dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-    successUrl : "http://localhost:3000/success",
-    failureUrl : "http://localhost:3000/failure",
-    cancelUrl : "http://localhost:3000/failure",
+    callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
+    successUrl : "https://motickets.ma",
+    failureUrl : "https://motickets.ma/failure",
+    cancelUrl : "https://motickets.ma/failure",
   
 
  
