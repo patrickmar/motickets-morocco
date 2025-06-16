@@ -190,18 +190,12 @@ const CheckoutForm = (props: Props) => {
   let f= datee.toString();
   let time = (f).substring(0, 10);
   console.log(time);
-  
-  const onSubmit: FormEventHandler<HTMLFormElement> = async (
-    e: FormEvent<HTMLFormElement>
-  ) => {
-    // console.log("got");
-    e.preventDefault();
-    if (!terms) {
-      toast.error("Please accept the terms and conditions");
-    } else {
-      const ticketData = {
-        firstName,
-        lastName,
+
+  console.log(firstName);
+
+   const ticketData = {
+        firstName:firstName,
+        lastName:lastName,
         email,
         phoneNo,
         userConsent,
@@ -211,11 +205,8 @@ const CheckoutForm = (props: Props) => {
         vat,
         tickets,
       };
-
-      
-      setTicketDatas(ticketData);
-
-      const payLoad={
+      console.log(ticketData);
+  const payLoad={
   
     // Authentication parameters
     merchantAccount : MERCHANTACCOUNT,
@@ -249,41 +240,107 @@ const CheckoutForm = (props: Props) => {
 
 }
 
+ 
  // Encode the payload
  const json_payload = JSON.stringify(payLoad);
  console.log(json_payload);
- console.log(PAYWALLSECRETKEY);
- //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
+
+let shaString = sha256(PAYWALLSECRETKEY + json_payload);
  const signature= sha256(PAYWALLSECRETKEY + json_payload);
   console.log(signature);
+
+
+//   const onSubmit: FormEventHandler<HTMLFormElement> = async (
+//     e: FormEvent<HTMLFormElement>
+//   ) => {
+//     // console.log("got");
+//     e.preventDefault();
+//     if (!terms) {
+//       toast.error("Please accept the terms and conditions");
+//     } else {
+      
+//   const ticketData = {
+//         firstName,
+//         lastName,
+//         email,
+//         phoneNo,
+//         userConsent,
+//         terms,
+//         discount,
+//         currencyName,
+//         vat,
+//         tickets,
+//       };
+//       console.log(ticketData);
+//   const payLoad={
   
-      console.log(PAYWALLURL)
-let params = {
-  json_payload: json_payload,
-        signature: signature
-}
-      const res = await fetch(PAYWALLURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-      });
-      // const res = await axios.post(PAYWALLURL, {
-      //   //ticketData: ticketData,
-      //   json_payload: json_payload,
-      //   signature: signature,
-      // });
+//     // Authentication parameters
+//     merchantAccount : MERCHANTACCOUNT,
+//     timestamp: time,
+//     skin : 'vps-1-vue', // fixed value  
+
+//     // Customer parameters
+//     customerId: time, // must be unique for each custumer
+//     customerCountry: 'MA',	  // fixed value
+//     customerLocale: 'en_US',		        
+
+//     // Charge parameters
+//     chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
+//     orderId : 'order1',                  // Optional, to identify the cart 
+//     price    : '10',
+//     currency  : 'MAD',
+//     description   :'A Big Hat',
+//    // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+//     lineitemproperties: tickets, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+//     // Deep linking
+//     mode : 'DEEP_LINK',	// fixed value				
+//     paymentMethod : 'CREDIT_CARD',	 // fixed value	
+//     showPaymentProfiles : 'false',	
+//     callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
+//     successUrl : "https://motickets.ma",
+//     failureUrl : "https://motickets.ma/failure",
+//     cancelUrl : "https://motickets.ma/failure",
+  
+
+ 
+
+// }
+
+ 
+//  // Encode the payload
+//  const json_payload = JSON.stringify(payLoad);
+//  console.log(json_payload);
+//  console.log(PAYWALLSECRETKEY);
+//  //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
+//  const signature= sha256(PAYWALLSECRETKEY + json_payload);
+//   console.log(signature);
+//       console.log(PAYWALLURL)
+// let params = {
+//   json_payload: json_payload,
+//         signature: signature
+// }
+//       const res = await fetch(PAYWALLURL, {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(params),
+//       });
+//       // const res = await axios.post(PAYWALLURL, {
+//       //   //ticketData: ticketData,
+//       //   json_payload: json_payload,
+//       //   signature: signature,
+//       // });
 
 
-      // const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
-      //   ticketData: ticketData,
-      // });
+//       // const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
+//       //   ticketData: ticketData,
+//       // });
 
-       console.log(res);
-      //window.location.href = res.data.url;
-    }
-  };
+//        console.log(res);
+//       //window.location.href = res.data.url;
+//     }
+//   };
 
   const validate = () => {
     validationSchema
@@ -322,8 +379,8 @@ let params = {
               Informations sur le billet
             </h2>
 
-            <form action={PAYWALLURL} method="POST">
-
+          <form action={PAYWALLURL} method="POST"> 
+ 
             <input type="hidden" name="payload" value={json_payload} />
             <input type="hidden" name="signature" value={signature} />
               <div className="grid gap-6 mb-6 md:grid-cols-2 mt-4">
