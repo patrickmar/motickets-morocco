@@ -224,7 +224,7 @@ const CheckoutForm = (props: Props) => {
     price    : '10',
     currency  : 'MAD',
     description   :'A Big Hat',
-   // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+    chargeProperties: ticketData, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
     lineitemproperties: ticketData, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
     // Deep linking
     mode : 'DEEP_LINK',	// fixed value				
