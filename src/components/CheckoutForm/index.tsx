@@ -190,47 +190,6 @@ const CheckoutForm = (props: Props) => {
   let f= datee.toString();
   let time = (f).substring(0, 10);
   console.log(time);
-  const payLoad={
-  
-    // Authentication parameters
-    merchantAccount : MERCHANTACCOUNT,
-    timestamp: time,
-    skin : 'vps-1-vue', // fixed value  
-
-    // Customer parameters
-    customerId: time, // must be unique for each custumer
-    customerCountry: 'MA',	  // fixed value
-    customerLocale: 'en_US',		        
-
-    // Charge parameters
-    chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-    orderId : 'order1',                  // Optional, to identify the cart 
-    price    : '10',
-    currency  : 'MAD',
-    description   :'A Big Hat',
-    chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-    lineitemproperties: tickets, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-    // Deep linking
-    mode : 'DEEP_LINK',	// fixed value				
-    paymentMethod : 'CREDIT_CARD',	 // fixed value	
-    showPaymentProfiles : 'false',	
-    callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-    successUrl : "https://motickets.ma",
-    failureUrl : "https://motickets.ma/failure",
-    cancelUrl : "https://motickets.ma/failure",
-  
-
- 
-
-}
-
- // Encode the payload
- const json_payload = JSON.stringify(payLoad);
- console.log(json_payload);
- console.log(PAYWALLSECRETKEY);
- //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
- const signature= sha256(PAYWALLSECRETKEY + json_payload);
-  console.log(signature);
   
   const onSubmit: FormEventHandler<HTMLFormElement> = async (
     e: FormEvent<HTMLFormElement>
@@ -256,6 +215,48 @@ const CheckoutForm = (props: Props) => {
       
       setTicketDatas(ticketData);
 
+      const payLoad={
+  
+    // Authentication parameters
+    merchantAccount : MERCHANTACCOUNT,
+    timestamp: time,
+    skin : 'vps-1-vue', // fixed value  
+
+    // Customer parameters
+    customerId: time, // must be unique for each custumer
+    customerCountry: 'MA',	  // fixed value
+    customerLocale: 'en_US',		        
+
+    // Charge parameters
+    chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
+    orderId : 'order1',                  // Optional, to identify the cart 
+    price    : '10',
+    currency  : 'MAD',
+    description   :'A Big Hat',
+   // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+    lineitemproperties: ticketData, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+    // Deep linking
+    mode : 'DEEP_LINK',	// fixed value				
+    paymentMethod : 'CREDIT_CARD',	 // fixed value	
+    showPaymentProfiles : 'false',	
+    callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
+    successUrl : "https://motickets.ma",
+    failureUrl : "https://motickets.ma/failure",
+    cancelUrl : "https://motickets.ma/failure",
+  
+
+ 
+
+}
+
+ // Encode the payload
+ const json_payload = JSON.stringify(payLoad);
+ console.log(json_payload);
+ console.log(PAYWALLSECRETKEY);
+ //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
+ const signature= sha256(PAYWALLSECRETKEY + json_payload);
+  console.log(signature);
+  
       console.log(PAYWALLURL)
 let params = {
   json_payload: json_payload,
