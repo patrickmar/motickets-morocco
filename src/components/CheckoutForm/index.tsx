@@ -203,9 +203,17 @@ const CheckoutForm = (props: Props) => {
         discount,
         currencyName,
         vat,
-        tickets,
+       
       };
-      console.log(ticketData);
+     const newdata={ ...tickets[0], firstName, lastName, email,
+        phoneNo,
+        userConsent,
+        terms,
+        discount,
+        currencyName,
+        vat };
+
+      console.log(newdata);
   const payLoad={
   
     // Authentication parameters
@@ -224,8 +232,8 @@ const CheckoutForm = (props: Props) => {
     price    : '10',
     currency  : 'MAD',
     description   :'A Big Hat',
-    chargeProperties: ticketData, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-    lineitemproperties: ticketData, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+    chargeProperties: newdata, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+    lineitemproperties: newdata, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
     // Deep linking
     mode : 'DEEP_LINK',	// fixed value				
     paymentMethod : 'CREDIT_CARD',	 // fixed value	
@@ -243,11 +251,11 @@ const CheckoutForm = (props: Props) => {
  
  // Encode the payload
  const json_payload = JSON.stringify(payLoad);
- console.log(json_payload);
+ //console.log(json_payload);
 
 let shaString = sha256(PAYWALLSECRETKEY + json_payload);
  const signature= sha256(PAYWALLSECRETKEY + json_payload);
-  console.log(signature);
+ // console.log(signature);
 
 
 //   const onSubmit: FormEventHandler<HTMLFormElement> = async (
