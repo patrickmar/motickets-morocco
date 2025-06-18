@@ -104,13 +104,13 @@ const CreateEventForm: React.FC = () => {
       {
         name: "Regular",
         price: "200",
-        discountPrice: "5",
+        discountPrice: "0",
         walletDiscount: "0",
         qty: "10",
         numOfPeople: "1",
       },
     ],
-    chargesBearer: "",
+    chargesBearer: "client",
     currency: "",
     eventType: "",
     banner: [],
@@ -158,11 +158,11 @@ const CreateEventForm: React.FC = () => {
   const handleAddCategory = () => {
     const newCategory: Category = {
       name: "",
-      price: eventData.currency ? currencySymbolMap[eventData.currency] : "",
-      discountPrice: "",
-      walletDiscount: "",
+      price: "",
+      discountPrice: "0",
+      walletDiscount: "0",
       qty: "",
-      numOfPeople: "1",
+      numOfPeople: "",
     };
 
     setEventData((prevData) => ({
@@ -735,7 +735,7 @@ const CreateEventForm: React.FC = () => {
           {step === 4 && (
             <>
               <div className="flex space-x-4 mb-4">
-                <div className="flex-1">
+                <div className="flex-1" style={{ display: "none" }}>
                   <label
                     htmlFor="bearer"
                     className="block mb-2 text-sm font-medium text-gray-900"
@@ -795,12 +795,12 @@ const CreateEventForm: React.FC = () => {
                       <th className="px-4 py-2">
                         Prix ({currencySymbolMap[eventData.currency]})
                       </th>
-                      <th className="px-4 py-2">
+                      {/* <th className="px-4 py-2">
                         Prix réduit(
                         {currencySymbolMap[eventData.currency]})
-                      </th>
+                      </th> */}
 
-                      <th className="px-4 py-2">Réduction portefeuille</th>
+                      {/* <th className="px-4 py-2">Réduction portefeuille</th> */}
                       <th className="px-4 py-2">Qty</th>
                       <th className="px-4 py-2">Nombre de personnes</th>
                       <th className="px-4 py-2">Action</th>
@@ -837,7 +837,10 @@ const CreateEventForm: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="border px-4 py-2">
+                        <td
+                          className="border px-4 py-2"
+                          style={{ display: "none" }}
+                        >
                           <input
                             type="text"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
@@ -851,7 +854,10 @@ const CreateEventForm: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="border px-4 py-2">
+                        <td
+                          className="border px-4 py-2"
+                          style={{ display: "none" }}
+                        >
                           <input
                             type="text"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"

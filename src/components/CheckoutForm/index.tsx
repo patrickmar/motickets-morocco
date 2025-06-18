@@ -350,7 +350,7 @@ const CheckoutForm = (props: Props) => {
                 <div className="ms-2 text-sm">
                   <label
                     htmlFor="terms"
-                    className="font-medium text-gray-800 dark:text-gray-300"
+                    className="font-medium text-blue-500  dark:text-blue-300 underline"
                   >
                     J'accepte le/la/les{" "}
                     <Link to="/terms">termes et conditions</Link>
@@ -361,7 +361,7 @@ const CheckoutForm = (props: Props) => {
                 </div>
               </div>
 
-              <div className="flex mb-6">
+              {/* <div className="flex mb-6">
                 <div className="flex items-center h-5">
                   <input
                     id="userConsent"
@@ -382,7 +382,8 @@ const CheckoutForm = (props: Props) => {
                     Créer un compte avec les informations ci-dessus.
                   </label>
                 </div>
-              </div>
+              
+              </div> */}
               {/* <StripeCheckout
        name = "MoTickets "
        image = "https://moloyal.com/images/moticketsicon.png"
