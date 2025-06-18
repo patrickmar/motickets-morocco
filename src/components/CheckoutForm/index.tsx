@@ -16,7 +16,7 @@ import { validationSchema } from "./validation";
 import { NumericFormat } from "react-number-format";
 import { Link, useNavigate } from "react-router-dom";
 import { getCurrency, getCurrencyName } from "../../utils/functions";
-import { sha256, sha224 } from 'js-sha256';
+import { sha256, sha224 } from "js-sha256";
 //import { json_encode } from 'json_encode';
 
 import usePost from "../../hooks/usePost";
@@ -61,12 +61,12 @@ const CheckoutForm = (props: Props) => {
     userConsent: false,
     terms: false,
   };
-  const MERCHANTACCOUNT= process.env.REACT_APP_MERCHANTACCOUNT;
-  const PAYWALLSECRETKEY= process.env.REACT_APP_PAYWALLSECRETKEY;
-  const PAYWALLURL= process.env.REACT_APP_PAYWALLURL;
-  const NOTIFICATIONKEY= process.env.REACT_APP_NOTIFICATIONKEY;
-  
-   //$signature    = hash('sha256', $paywallSecretKey . $json_payload)
+  const MERCHANTACCOUNT = process.env.REACT_APP_MERCHANTACCOUNT;
+  const PAYWALLSECRETKEY = process.env.REACT_APP_PAYWALLSECRETKEY;
+  const PAYWALLURL = process.env.REACT_APP_PAYWALLURL;
+  const NOTIFICATIONKEY = process.env.REACT_APP_NOTIFICATIONKEY;
+
+  //$signature    = hash('sha256', $paywallSecretKey . $json_payload)
   // console.log(tickets);
   const [formData, setFormData] = useState<ICheckoutForm>(initialValues);
   const [errors, setErrors] = useState<ICheckoutForm>(initialValues);
@@ -184,171 +184,163 @@ const CheckoutForm = (props: Props) => {
     validate();
   }, [formData]);
 
-
   console.log(tickets[0]);
-  const datee=  Date.now();
-  let f= datee.toString();
-  let time = (f).substring(0, 10);
+  const datee = Date.now();
+  let f = datee.toString();
+  let time = f.substring(0, 10);
   console.log(time);
 
   console.log(firstName);
 
-   const ticketData = {
-        firstName:firstName,
-        lastName:lastName,
-        email,
-        phoneNo,
-        userConsent,
-        terms,
-        discount,
-        currencyName,
-        vat,
-       
-      };
-     const newdata={ ...tickets[0], firstName, lastName, email,
-        phoneNo,
-        userConsent,
-        terms,
-        discount,
-        currencyName,
-        vat };
+  const ticketData = {
+    firstName: firstName,
+    lastName: lastName,
+    email,
+    phoneNo,
+    userConsent,
+    terms,
+    discount,
+    currencyName,
+    vat,
+  };
+  const newdata = {
+    ...tickets[0],
+    firstName,
+    lastName,
+    email,
+    phoneNo,
+    userConsent,
+    terms,
+    discount,
+    currencyName,
+    vat,
+  };
 
-      console.log(newdata);
-  const payLoad={
-  
+  console.log(newdata);
+  const payLoad = {
     // Authentication parameters
-    merchantAccount : MERCHANTACCOUNT,
+    merchantAccount: MERCHANTACCOUNT,
     timestamp: time,
-    skin : 'vps-1-vue', // fixed value  
+    skin: "vps-1-vue", // fixed value
 
     // Customer parameters
     customerId: time, // must be unique for each custumer
-    customerCountry: 'MA',	  // fixed value
-    customerLocale: 'en_US',		        
+    customerCountry: "MA", // fixed value
+    customerLocale: "en_US",
 
     // Charge parameters
-    chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-    orderId : 'order1',                  // Optional, to identify the cart 
-    price    : '10',
-    currency  : 'MAD',
-    description   :'A Big Hat',
+    chargeId: time, // Optional, if defined, it must be unique for each redirection to the payment page
+    orderId: "order1", // Optional, to identify the cart
+    price: "10",
+    currency: "MAD",
+    description: "A Big Hat",
     chargeProperties: newdata, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
     lineitemproperties: newdata, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
     // Deep linking
-    mode : 'DEEP_LINK',	// fixed value				
-    paymentMethod : 'CREDIT_CARD',	 // fixed value	
-    showPaymentProfiles : 'false',	
-    callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-    successUrl : "https://motickets.ma",
-    failureUrl : "https://motickets.ma/failure",
-    cancelUrl : "https://motickets.ma/failure",
-  
+    mode: "DEEP_LINK", // fixed value
+    paymentMethod: "CREDIT_CARD", // fixed value
+    showPaymentProfiles: "false",
+    callbackUrl:
+      "https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma", // Optional, if defined, it will be used to redirect the user after payment
+    successUrl: "https://motickets.ma",
+    failureUrl: "https://motickets.ma/failure",
+    cancelUrl: "https://motickets.ma/failure",
+  };
 
- 
+  // Encode the payload
+  const json_payload = JSON.stringify(payLoad);
+  //console.log(json_payload);
 
-}
+  let shaString = sha256(PAYWALLSECRETKEY + json_payload);
+  const signature = sha256(PAYWALLSECRETKEY + json_payload);
+  // console.log(signature);
 
- 
- // Encode the payload
- const json_payload = JSON.stringify(payLoad);
- //console.log(json_payload);
+  //   const onSubmit: FormEventHandler<HTMLFormElement> = async (
+  //     e: FormEvent<HTMLFormElement>
+  //   ) => {
+  //     // console.log("got");
+  //     e.preventDefault();
+  //     if (!terms) {
+  //       toast.error("Please accept the terms and conditions");
+  //     } else {
 
-let shaString = sha256(PAYWALLSECRETKEY + json_payload);
- const signature= sha256(PAYWALLSECRETKEY + json_payload);
- // console.log(signature);
+  //   const ticketData = {
+  //         firstName,
+  //         lastName,
+  //         email,
+  //         phoneNo,
+  //         userConsent,
+  //         terms,
+  //         discount,
+  //         currencyName,
+  //         vat,
+  //         tickets,
+  //       };
+  //       console.log(ticketData);
+  //   const payLoad={
 
+  //     // Authentication parameters
+  //     merchantAccount : MERCHANTACCOUNT,
+  //     timestamp: time,
+  //     skin : 'vps-1-vue', // fixed value
 
-//   const onSubmit: FormEventHandler<HTMLFormElement> = async (
-//     e: FormEvent<HTMLFormElement>
-//   ) => {
-//     // console.log("got");
-//     e.preventDefault();
-//     if (!terms) {
-//       toast.error("Please accept the terms and conditions");
-//     } else {
-      
-//   const ticketData = {
-//         firstName,
-//         lastName,
-//         email,
-//         phoneNo,
-//         userConsent,
-//         terms,
-//         discount,
-//         currencyName,
-//         vat,
-//         tickets,
-//       };
-//       console.log(ticketData);
-//   const payLoad={
-  
-//     // Authentication parameters
-//     merchantAccount : MERCHANTACCOUNT,
-//     timestamp: time,
-//     skin : 'vps-1-vue', // fixed value  
+  //     // Customer parameters
+  //     customerId: time, // must be unique for each custumer
+  //     customerCountry: 'MA',	  // fixed value
+  //     customerLocale: 'en_US',
 
-//     // Customer parameters
-//     customerId: time, // must be unique for each custumer
-//     customerCountry: 'MA',	  // fixed value
-//     customerLocale: 'en_US',		        
+  //     // Charge parameters
+  //     chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
+  //     orderId : 'order1',                  // Optional, to identify the cart
+  //     price    : '10',
+  //     currency  : 'MAD',
+  //     description   :'A Big Hat',
+  //    // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+  //     lineitemproperties: tickets, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+  //     // Deep linking
+  //     mode : 'DEEP_LINK',	// fixed value
+  //     paymentMethod : 'CREDIT_CARD',	 // fixed value
+  //     showPaymentProfiles : 'false',
+  //     callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
+  //     successUrl : "https://motickets.ma",
+  //     failureUrl : "https://motickets.ma/failure",
+  //     cancelUrl : "https://motickets.ma/failure",
 
-//     // Charge parameters
-//     chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-//     orderId : 'order1',                  // Optional, to identify the cart 
-//     price    : '10',
-//     currency  : 'MAD',
-//     description   :'A Big Hat',
-//    // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-//     lineitemproperties: tickets, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-//     // Deep linking
-//     mode : 'DEEP_LINK',	// fixed value				
-//     paymentMethod : 'CREDIT_CARD',	 // fixed value	
-//     showPaymentProfiles : 'false',	
-//     callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-//     successUrl : "https://motickets.ma",
-//     failureUrl : "https://motickets.ma/failure",
-//     cancelUrl : "https://motickets.ma/failure",
-  
+  // }
 
- 
+  //  // Encode the payload
+  //  const json_payload = JSON.stringify(payLoad);
+  //  console.log(json_payload);
+  //  console.log(PAYWALLSECRETKEY);
+  //  //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
+  //  const signature= sha256(PAYWALLSECRETKEY + json_payload);
+  //   console.log(signature);
+  //       console.log(PAYWALLURL)
+  // let params = {
+  //   json_payload: json_payload,
+  //         signature: signature
+  // }
+  //       const res = await fetch(PAYWALLURL, {
+  //         method: 'POST',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         body: JSON.stringify(params),
+  //       });
+  //       // const res = await axios.post(PAYWALLURL, {
+  //       //   //ticketData: ticketData,
+  //       //   json_payload: json_payload,
+  //       //   signature: signature,
+  //       // });
 
-// }
+  //       // const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
+  //       //   ticketData: ticketData,
+  //       // });
 
- 
-//  // Encode the payload
-//  const json_payload = JSON.stringify(payLoad);
-//  console.log(json_payload);
-//  console.log(PAYWALLSECRETKEY);
-//  //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
-//  const signature= sha256(PAYWALLSECRETKEY + json_payload);
-//   console.log(signature);
-//       console.log(PAYWALLURL)
-// let params = {
-//   json_payload: json_payload,
-//         signature: signature
-// }
-//       const res = await fetch(PAYWALLURL, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(params),
-//       });
-//       // const res = await axios.post(PAYWALLURL, {
-//       //   //ticketData: ticketData,
-//       //   json_payload: json_payload,
-//       //   signature: signature,
-//       // });
-
-
-//       // const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
-//       //   ticketData: ticketData,
-//       // });
-
-//        console.log(res);
-//       //window.location.href = res.data.url;
-//     }
-//   };
+  //        console.log(res);
+  //       //window.location.href = res.data.url;
+  //     }
+  //   };
 
   const validate = () => {
     validationSchema
@@ -387,10 +379,9 @@ let shaString = sha256(PAYWALLSECRETKEY + json_payload);
               Informations sur le billet
             </h2>
 
-          <form action={PAYWALLURL} method="POST"> 
- 
-            <input type="hidden" name="payload" value={json_payload} />
-            <input type="hidden" name="signature" value={signature} />
+            <form action={PAYWALLURL} method="POST">
+              <input type="hidden" name="payload" value={json_payload} />
+              <input type="hidden" name="signature" value={signature} />
               <div className="grid gap-6 mb-6 md:grid-cols-2 mt-4">
                 <div>
                   <label

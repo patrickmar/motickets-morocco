@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
         );
       default:
         return (
-          <div className="card--container bg-gray-100">
+          <div className="card--container ">
             <div className="card--container">
               <h3 className="main--title">Données d'aujourd'hui</h3>
               <div className="card--wrapper">
