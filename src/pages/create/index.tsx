@@ -77,8 +77,6 @@ const BaseUrl = `${process.env.REACT_APP_BASEURL}/host_create/eventticket`;
 const CreateEventForm: React.FC = () => {
   const formats = QuillFormats;
   const [step, setStep] = useState<number>(1);
-  // const [startDate, setStartDate] = useState<string>("");
-  // const [endDate, setEndDate] = useState<string>("");
   // const [selectedState, setSelectedState] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
