@@ -770,6 +770,7 @@ const EditEventForm: React.FC = () => {
                     <option value="USD">USD</option>
                     <option value="NGN">NGN</option>
                     <option value="EUR">EUR</option>
+                    <option value="MAD">MAD</option>
                   </select>
                 </div>
               </div>
