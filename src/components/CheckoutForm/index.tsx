@@ -153,7 +153,7 @@ const CheckoutForm = (props: Props) => {
 
   //   stripeToken && MakeRequest();
   // }, [stripeToken, navigate])
-
+ console.log(ticketDatas);
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -193,65 +193,64 @@ const CheckoutForm = (props: Props) => {
 
   console.log(firstName);
 
-   const ticketData = {
-        firstName:firstName,
-        lastName:lastName,
+   const userDatads = {  firstName,
+        lastName,
         email,
         phoneNo,
-        userConsent,
-        terms,
+       
+        
         discount,
-        currencyName,
-        vat,
+        currencyName
+        
        
       };
-     const newdata={ ...tickets[0], firstName, lastName, email,
-        phoneNo,
-        userConsent,
-        terms,
-        discount,
-        currencyName,
-        vat };
+  //  const newdata= {...tickets,firstName, lastName, email, phoneNo,userConsent,terms, discount, currencyName, vat}
+      console.log(userDatads);
 
-      console.log(newdata);
+      console.log(tickets)
   const payLoad={
   
     // Authentication parameters
-    merchantAccount : MERCHANTACCOUNT,
-    timestamp: time,
-    skin : 'vps-1-vue', // fixed value  
+    "merchantAccount" : MERCHANTACCOUNT,
+    "timestamp": time,
+    "skin" : "vps-1-vue", // fixed value  
 
     // Customer parameters
-    customerId: time, // must be unique for each custumer
-    customerCountry: 'MA',	  // fixed value
-    customerLocale: 'en_US',		        
+    "customerId": time, // must be unique for each custumer
+    "customerCountry": "MA",	  // fixed value
+    "customerLocale": "en_US",		        
 
     // Charge parameters
-    chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-    orderId : 'order1',                  // Optional, to identify the cart 
-    price    : '10',
-    currency  : 'MAD',
-    description   :'A Big Hat',
-    chargeProperties: newdata, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-    lineitemproperties: newdata, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+    "chargeId":    time,					// Optional, if defined, it must be unique for each redirection to the payment page
+    "orderId" : "order1",                  // Optional, to identify the cart 
+    "price"    : totalAmount.toString(),
+    "currency"  : "MAD",
+    "description"   :"A Big Hat",
+    "customerName": firstName+" "+lastName,
+    "customerEmail": email,
+    //chargeProperties: userDatads,
+    "chargeProperties":  {"firstName":firstName,"lastName":lastName,"email":email,"subtotal":subTotal.toString(), "vat":vat.toString(), "bookfee":totalbookingFee.toString(), "currencyName":"MAD"}, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
+   //"lineItemProperties": tickets,
+   
+    "memo": JSON.stringify(tickets) ,
+    // Array of objects, each object is a ticket with its properties like name, price, qty etc.
     // Deep linking
-    mode : 'DEEP_LINK',	// fixed value				
-    paymentMethod : 'CREDIT_CARD',	 // fixed value	
-    showPaymentProfiles : 'false',	
-    callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-    successUrl : "https://motickets.ma",
-    failureUrl : "https://motickets.ma/failure",
-    cancelUrl : "https://motickets.ma/failure",
+    "mode" : "DEEP_LINK",	// fixed value				
+    "paymentMethod" : "CREDIT_CARD",	 // fixed value	
+    "showPaymentProfiles" : "true",	
+    "callbackUrl" : "https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma", // Optional, if defined, it will be used to redirect the user after payment
+    "successUrl" : "https://motickets.ma",
+    "failureUrl" : "https://motickets.ma/failure",
+    "cancelUrl" : "https://motickets.ma/failure",
   
 
- 
-
-}
+  }
 
  
  // Encode the payload
  const json_payload = JSON.stringify(payLoad);
- //console.log(json_payload);
+ console.log(payLoad);
+  console.log(json_payload);
 
 let shaString = sha256(PAYWALLSECRETKEY + json_payload);
  const signature= sha256(PAYWALLSECRETKEY + json_payload);
