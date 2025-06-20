@@ -114,7 +114,7 @@ const EditEventForm: React.FC = () => {
         numOfPeople: "10",
       },
     ],
-    chargesBearer: "",
+    chargesBearer: "client",
     currency: "",
     eventType: "",
     banner: [],
@@ -147,8 +147,8 @@ const EditEventForm: React.FC = () => {
           ticketCategories: event.ticketCategories.map((category) => ({
             name: category.name,
             price: category.price,
-            discountPrice: category.discount_price,
-            walletDiscount: category.wallet_discount,
+            discountPrice: "0",
+            walletDiscount: "0",
             qty: category.quantity,
             numOfPeople: category.noofpeople,
           })),
@@ -199,9 +199,9 @@ const EditEventForm: React.FC = () => {
   const handleAddCategory = () => {
     const newCategory: Category = {
       name: "",
-      price: eventData.currency ? currencySymbolMap[eventData.currency] : "",
-      discountPrice: "",
-      walletDiscount: "",
+      price: "",
+      discountPrice: "0",
+      walletDiscount: "0",
       qty: "",
       numOfPeople: "",
     };
@@ -674,7 +674,7 @@ const EditEventForm: React.FC = () => {
                   formats={formats}
                   value={eventData.description}
                   onChange={handleDescriptionChange}
-                  className="add-new-post__editor mb-1 text-white"
+                  className="add-new-post__editor mb-1 text-gray-900"
                   theme="snow"
                 />
                 <p className="text-xs text-gray-400">
@@ -726,7 +726,7 @@ const EditEventForm: React.FC = () => {
           {step === 4 && (
             <>
               <div className="flex space-x-4 mb-4">
-                <div className="flex-1">
+                <div className="flex-1" style={{ display: "none" }}>
                   <label
                     htmlFor="bearer"
                     className="block mb-2 text-sm font-medium text-white"
@@ -770,6 +770,7 @@ const EditEventForm: React.FC = () => {
                     <option value="USD">USD</option>
                     <option value="NGN">NGN</option>
                     <option value="EUR">EUR</option>
+                    <option value="MAD">MAD</option>
                   </select>
                 </div>
               </div>
@@ -785,12 +786,12 @@ const EditEventForm: React.FC = () => {
                       <th className="px-4 py-2">
                         Prix ({currencySymbolMap[eventData.currency]})
                       </th>
-                      <th className="px-4 py-2">
+                      <th className="px-4 py-2" style={{ display: "none" }}>
                         Prix réduit(
                         {currencySymbolMap[eventData.currency]})
                       </th>
 
-                      <th className="px-4 py-2">Réduction portefeuille</th>
+                      {/* <th className="px-4 py-2">Réduction portefeuille</th> */}
                       <th className="px-4 py-2">Qty</th>
                       <th className="px-4 py-2">Nombre de personnes</th>
                       <th className="px-4 py-2">Action</th>
@@ -827,7 +828,10 @@ const EditEventForm: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="border px-4 py-2">
+                        <td
+                          className="border px-4 py-2"
+                          style={{ display: "none" }}
+                        >
                           <input
                             type="text"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
@@ -841,7 +845,10 @@ const EditEventForm: React.FC = () => {
                             }
                           />
                         </td>
-                        <td className="border px-4 py-2">
+                        <td
+                          className="border px-4 py-2"
+                          style={{ display: "none" }}
+                        >
                           <input
                             type="text"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
