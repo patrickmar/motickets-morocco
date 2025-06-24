@@ -223,7 +223,7 @@ const CheckoutForm = (props: Props) => {
 
     // Charge parameters
     "chargeId":    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-    "orderId" : "order1",                  // Optional, to identify the cart 
+    //"orderId" : "order1",                  // Optional, to identify the cart 
     "price"    : totalAmount.toString(),
     "currency"  : "MAD",
     "description"   :title,
@@ -239,7 +239,7 @@ const CheckoutForm = (props: Props) => {
     "mode" : "DEEP_LINK",	// fixed value				
     "paymentMethod" : "CREDIT_CARD",	 // fixed value	
     "showPaymentProfiles" : "true",	
-    "callbackUrl" : "https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma", // Optional, if defined, it will be used to redirect the user after payment
+    "callbackUrl" : "https://moloyal.com/mosave-ma/script/api/dispense_ticket/payzone_ma", // Optional, if defined, it will be used to redirect the user after payment
     "successUrl" : "https://motickets.ma",
     "failureUrl" : "https://motickets.ma/failure",
     "cancelUrl" : "https://motickets.ma/failure",
