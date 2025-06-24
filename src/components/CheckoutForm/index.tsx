@@ -208,7 +208,7 @@ const CheckoutForm = (props: Props) => {
       // console.log(userDatads);
 
       // console.log(tickets)
-      // const title=data.title;
+       const title=data.title;
        const payLoad={
   
     // Authentication parameters
