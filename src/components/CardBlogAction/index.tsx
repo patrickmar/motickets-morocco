@@ -8,10 +8,13 @@ import { Link } from "react-router-dom";
 
 export default function CardBlogAction() {
   const currency = process.env.REACT_APP_CURRENCY;
+
   const [endpoint, setEndpoint] = useState(`/eventspercurrency/${currency}`);
 
-  const { data, loading } = useFetch(endpoint);
-  const eventData = data?.data;
+  const { data, loading } = useFetch(endpoint); // Fetch data from the API
+  const eventData = data?.data; // Ensure you access the correct array
+  console.log(currency);
+
   const imageURL = process.env.REACT_APP_IMAGEURL;
 
   return (
