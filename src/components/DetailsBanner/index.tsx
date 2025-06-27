@@ -80,48 +80,48 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
         name: "Catégorie",
         value: newData?.event_cat,
       },
-      {
-        name: "Jours",
-        value: differenceInDays(newData),
-      },
+      // {
+      //   name: "Jours",
+      //   value: differenceInDays(newData),
+      // },
     ];
     return options;
   };
 
-  const dateInfo = (newData: any) => {
-    const options = [
-      {
-        name: "Date de début",
-        value: moment(newData?.from_date).format("MMM D, YYYY."),
-      },
-      {
-        name: "Date de fin",
-        value: newData?.to_date
-          ? moment(newData?.to_date).format("MMM D, YYYY.")
-          : "",
-      },
-      {
-        name: "Heure",
-        value: moment(newData?.from_date + " " + newData?.from_time).format(
-          "hh:mmA"
-        ),
-      },
-    ];
-    return options;
-  };
+  // const dateInfo = (newData: any) => {
+  //   const options = [
+  //     {
+  //       name: "Date de début",
+  //       value: moment(newData?.from_date).format("MMM D, YYYY."),
+  //     },
+  //     {
+  //       name: "Date de fin",
+  //       value: newData?.to_date
+  //         ? moment(newData?.to_date).format("MMM D, YYYY.")
+  //         : "",
+  //     },
+  //     {
+  //       name: "Heure",
+  //       value: moment(newData?.from_date + " " + newData?.from_time).format(
+  //         "hh:mmA"
+  //       ),
+  //     },
+  //   ];
+  //   return options;
+  // };
 
-  const differenceInDays = (newData: any) => {
-    const startDateMoment = newData?.from_date
-      ? moment(newData?.from_date)
-      : moment();
-    const endDateMoment =
-      newData?.to_date && newData?.to_date !== ""
-        ? moment(newData?.to_date)
-        : moment(newData?.from_date);
+  // const differenceInDays = (newData: any) => {
+  // const startDateMoment = newData?.from_date
+  // ? moment(newData?.from_date)
+  // : moment();
+  // const endDateMoment =
+  // newData?.to_date && newData?.to_date !== ""
+  // ? moment(newData?.to_date)
+  // : moment(newData?.from_date);
 
-    // Calculate the difference in days
-    return endDateMoment.diff(startDateMoment, "days") + 1;
-  };
+  // Calculate the difference in days
+  // return endDateMoment.diff(startDateMoment, "days") + 1;
+  // };
   //console.log(tickets);
   const currency = getCurrency(newData);
   const currencyName = getCurrencyName(newData);
@@ -264,7 +264,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                     </div>
 
                     <div className="info">
-                      {dateInfo(newData).map((item: any, i: number) => {
+                      {/* {dateInfo(newData).map((item: any, i: number) => {
                         return (
                           item.value != null &&
                           item.value !== "" && (
@@ -274,11 +274,11 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                             </div>
                           )
                         );
-                      })}
+                      })} */}
                     </div>
                     <div className="overview">
                       <div className="heading">Description</div>
-                      <div className="description">
+                      <div className="description text-black">
                         {convertHTMLCode(newData?.des)}
                       </div>
                     </div>
