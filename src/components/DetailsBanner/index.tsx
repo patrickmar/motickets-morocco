@@ -241,11 +241,13 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                   </div>
 
                   <div className="right">
-                    {/* <div className="title">{`${newData.title}`}</div>
-                    <div className="subtitle">{newData.tagline}</div>
-                    <Tags data={getTags(newData?.tags)} /> */}
+                    {/* <div className="title">{`${newData.title}`}</div> */}
+                    {/* <div className="subtitle">{newData.tagline}</div> */}
+                    {/* <Tags data={getTags(newData?.tags)} /> */}
 
-                    <div className="title text-[#25aae1] text-center p-8">{`${newData.title}`}</div>
+                    <div className="title leading-30  text-[#25aae1] text-center py-8 px-1.5">
+                      {newData.title}
+                    </div>
 
                     <div className="info">
                       {eventInfo(newData).map((item: any, i: number) => {
