@@ -245,7 +245,7 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                     {/* <div className="subtitle">{newData.tagline}</div> */}
                     {/* <Tags data={getTags(newData?.tags)} /> */}
 
-                    <div className="title leading-30  text-[#25aae1] text-center py-8 px-1.5">
+                    <div className="leading-30  text-[#25aae1] md:text-3xl text-xl text-center py-8 px-1.5 ">
                       {newData.title}
                     </div>
 
@@ -278,7 +278,16 @@ const DetailsBanner = ({ id, data, loading, error }: Props) => {
                     </div>
                     <div className="overview">
                       <div className="heading">Description</div>
-                      <div className="description text-black">
+                      <div
+                        className="description text-black"
+                        style={{
+                          textAlign: "left",
+                          padding: "0 10px",
+                          wordBreak: "break-word",
+                          lineHeight: "1.5",
+                          fontSize: "1rem",
+                        }}
+                      >
                         {convertHTMLCode(newData?.des)}
                       </div>
                     </div>
