@@ -11,6 +11,7 @@ import { customAlphabet } from "nanoid";
 import { useGetHostEventByIdQuery } from "../../redux/api/eventApi";
 import { setUpdateStatus } from "../../features/eventSlice";
 import { Link } from "react-router-dom";
+import Editor from "react-simple-wysiwyg";
 
 interface User {
   id: string;
@@ -192,8 +193,11 @@ const EditEventForm: React.FC = () => {
     setStep(step - 1);
   };
 
-  const handleDescriptionChange = (description: string) => {
-    setEventData({ ...eventData, description });
+  const handleDescriptionChange = (e: { target: { value: string } }) => {
+    setEventData((prev) => ({
+      ...prev,
+      description: e.target.value,
+    }));
   };
 
   const handleAddCategory = () => {
@@ -430,7 +434,7 @@ const EditEventForm: React.FC = () => {
   return (
     <div className="flex items-center justify-center">
       <div className="bg-gray-300/10 p-8 rounded shadow-lg w-4/5 lg:w-3/5 mt-24">
-        <h2 className="text-2xl font-semibold mb-4 text-white">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-900">
           Mettre à jour l'événement
         </h2>
         <form onSubmit={handleSubmit}>
@@ -666,21 +670,27 @@ const EditEventForm: React.FC = () => {
               <div className="mb-4" data-name="description">
                 <label
                   htmlFor="description"
-                  className="block mb-2 text-sm font-medium text-white "
+                  className="block mb-2 text-sm font-medium text-gray-900"
                 >
                   Description
                 </label>
-                <ReactQuill
-                  formats={formats}
-                  value={eventData.description}
+                <Editor
+                  value={eventData.description || ""}
                   onChange={handleDescriptionChange}
-                  className="add-new-post__editor mb-1 text-gray-900"
-                  theme="snow"
+                  containerProps={{
+                    className:
+                      "add-new-post__editor mb-1 text-gray-900 bg-gray-50",
+                    style: {
+                      height: "400px", // Set your desired height
+                      width: "800px", // Set your desired width
+                    },
+                  }}
                 />
                 <p className="text-xs text-gray-400">
                   Donnez une description complète. Pas plus de 3000 mots.
                 </p>
               </div>
+
               <div className="mb-4">
                 <select
                   id="eventType"

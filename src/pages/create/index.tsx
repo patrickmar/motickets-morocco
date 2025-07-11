@@ -10,6 +10,7 @@ import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { customAlphabet } from "nanoid";
 import FinancialCard from "../dashboard/FinancialCard";
+import Editor from "react-simple-wysiwyg";
 
 interface User {
   id: string;
@@ -149,8 +150,11 @@ const CreateEventForm: React.FC = () => {
     setStep(step - 1);
   };
 
-  const handleDescriptionChange = (description: string) => {
-    setEventData({ ...eventData, description });
+  const handleDescriptionChange = (e: { target: { value: string } }) => {
+    setEventData((prev) => ({
+      ...prev,
+      description: e.target.value,
+    }));
   };
 
   const handleAddCategory = () => {
@@ -677,12 +681,17 @@ const CreateEventForm: React.FC = () => {
                 >
                   Description
                 </label>
-                <ReactQuill
-                  formats={formats}
-                  value={eventData.description}
+                <Editor
+                  value={eventData.description || ""}
                   onChange={handleDescriptionChange}
-                  className="add-new-post__editor mb-1 text-black"
-                  theme="snow"
+                  containerProps={{
+                    className:
+                      "add-new-post__editor mb-1 text-gray-900 bg-gray-50",
+                    style: {
+                      height: "400px", // Set your desired height
+                      width: "800px", // Set your desired width
+                    },
+                  }}
                 />
                 <p className="text-xs text-gray-400">
                   Donnez une description complète. Pas plus de 3000 mots.

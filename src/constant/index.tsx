@@ -38,8 +38,7 @@ export const countries = [
   {
     name: "United Kingdom",
     url: "https://motickets.co.uk",
-   code: "GB",
-    
+    code: "GB",
   },
   // {
   //   name: "Ghana",
