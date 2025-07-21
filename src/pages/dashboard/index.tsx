@@ -1,82 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./style.css";
-// import avatar from "../../assets/images/default_avatar.jpg";
+import avatar from "../../assets/images/default_avatar.jpg";
 import HostProfile from "./HostProfile";
 import CreateEventForm from "../create";
-import Financial from "./Financial";
 import TermsAndConditions from "../terms";
 import MyEvent from "./MyEvent";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FinancialCard from "./FinancialCard";
-import EditProfile from "./EditProfile"; // Import the new EditProfile component
+import FinancialTable from "./Financial"; // Corrected import path
+import EditProfile from "./EditProfile";
 import { useAvatar } from "../../context/AvatarContext";
-import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import toast from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom";
-
-interface User {
-  id: string;
-}
 
 const Dashboard: React.FC = () => {
-  const location = useLocation();
-
   const [selectedMenu, setSelectedMenu] = useState<string>("Dashboard");
   const [selectedEventOption, setSelectedEventOption] =
     useState<string>("CreateEvent");
   const [selectedProfileOption, setSelectedProfileOption] =
-    useState<string>("ViewProfile"); // New state for profile dropdown
-  const [viewingFinancialReport, setViewingFinancialReport] =
-    useState<boolean>(false);
+    useState<string>("ViewProfile");
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
-  // const navigate = useNavigate();
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const navigate = useNavigate();
   const { avatarUrl } = useAvatar();
-
-  const user = useSelector(
-    (state: RootState) => state.auth.user
-  ) as User | null;
-  const hostid = user?.id || "";
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const navigate = useNavigate();
-
   const handleMenuClick = (menu: string) => {
     setSelectedMenu(menu);
-    setViewingFinancialReport(false);
-    setIsSidebarOpen(false); // Close sidebar on menu item click
+    setSelectedEventId(null); // Reset event ID when switching menus
+    setIsSidebarOpen(false);
   };
 
-  useEffect(() => {
-    if (location.state?.selectedMenu) {
-      setSelectedMenu(location.state.selectedMenu);
-    }
-    if (location.state?.selectedEventOption) {
-      setSelectedEventOption(location.state.selectedEventOption);
-    }
-  }, [location.state]);
-
-  useEffect(() => {
-    if (!hostid) {
-      toast.error("Please log in");
-      navigate("/login");
-    }
-  }, [hostid, navigate]);
-
-  useEffect(() => {
-    if (location.state?.CreateEventForm) {
-      setSelectedMenu("Financial"); // Auto-switch to Financial tab
-    }
-  }, [location.state]);
-
   const renderSelectedContent = () => {
-    if (selectedMenu === "Financial" && viewingFinancialReport) {
-      return <Financial />;
-    }
-
     switch (selectedMenu) {
       case "Profile":
         return selectedProfileOption === "EditProfile" ? (
@@ -85,8 +41,13 @@ const Dashboard: React.FC = () => {
           <HostProfile />
         );
       case "Financial":
-        return (
-          <FinancialCard onViewReport={() => setViewingFinancialReport(true)} />
+        return selectedEventId ? (
+          <FinancialTable
+            eventid={selectedEventId}
+            onBack={() => setSelectedEventId(null)}
+          />
+        ) : (
+          <FinancialCard onViewReport={setSelectedEventId} />
         );
       case "FAQ":
         return <TermsAndConditions />;

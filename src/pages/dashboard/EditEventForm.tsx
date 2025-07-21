@@ -16,6 +16,10 @@ import Editor from "react-simple-wysiwyg";
 interface User {
   id: string;
 }
+interface SelectedImage {
+  file: File;
+  preview: string;
+}
 
 interface TicketCategory {
   name: string;
@@ -83,7 +87,7 @@ const EditEventForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [showInformation, setShowInformation] = useState(false);
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [selectedImages, setSelectedImages] = useState<SelectedImage[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
 
   const dispatch = useDispatch();
@@ -170,6 +174,12 @@ const EditEventForm: React.FC = () => {
       }
     }
   }, [events, sn]);
+
+  useEffect(() => {
+    return () => {
+      selectedImages.forEach((image) => URL.revokeObjectURL(image.preview));
+    };
+  }, [selectedImages]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -287,13 +297,11 @@ const EditEventForm: React.FC = () => {
 
   const handleImageDelete = (index: number, isExisting: boolean) => {
     if (isExisting) {
-      const updatedImages = [...existingImages];
-      updatedImages.splice(index, 1);
-      setExistingImages(updatedImages);
+      // Mark existing image for deletion on backend
+      setExistingImages((prev) => prev.filter((_, i) => i !== index));
     } else {
-      const updatedImages = [...selectedImages];
-      updatedImages.splice(index, 1);
-      setSelectedImages(updatedImages);
+      // Remove from new images selection
+      setSelectedImages((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
@@ -312,15 +320,27 @@ const EditEventForm: React.FC = () => {
     return new Blob([arrayBuffer], { type: "image/png" }); // Adjust the type accordingly
   };
 
-  const handleNewImageChange = (files: FileList | null) => {
-    if (files) {
-      const selectedImagesArray = Array.from(files);
-      if (selectedImagesArray.length > 5) {
-        toast.error(`Can't select more than five images`);
+  const handleNewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const selectedFiles = Array.from(files);
+
+      // Check total images won't exceed 5
+      const totalImages =
+        selectedFiles.length + selectedImages.length + existingImages.length;
+
+      if (totalImages > 5) {
+        toast.error(`Can't select more than five images total`);
         return;
       }
-      setSelectedImages(selectedImagesArray);
-      setExistingImages([]);
+
+      // Create new image objects with previews
+      const newImages = selectedFiles.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+
+      setSelectedImages((prev) => [...prev, ...newImages]);
     }
   };
 
@@ -330,9 +350,53 @@ const EditEventForm: React.FC = () => {
     setSubmissionError("");
 
     try {
+      // First, handle the image updates separately with 11-digit names
+      if (selectedImages.length > 0) {
+        const imageFormData = new FormData();
+        imageFormData.append("hostid", hostid);
+        imageFormData.append("eventid", sn || "");
+
+        const nanoid = customAlphabet("123456789", 11); // 11-digit generator
+
+        // Process each selected image
+        for (const image of selectedImages) {
+          const elevenDigitName = nanoid();
+          const fileExtension = image.file.name.split(".").pop();
+          const renamedFile = new File(
+            [image.file],
+            `${elevenDigitName}.${fileExtension}`,
+            { type: image.file.type }
+          );
+
+          imageFormData.append("images[]", renamedFile);
+          console.log(`Uploading image as: ${renamedFile.name}`);
+        }
+
+        // Upload images to the dedicated endpoint
+        const imageResponse = await fetch(
+          "https://moloyal.com/mosave-ma/adminscript/api/ticket_images/eventhost/addpics",
+          {
+            method: "POST",
+            body: imageFormData,
+          }
+        );
+
+        if (!imageResponse.ok) {
+          const errorData = await imageResponse.json();
+          throw new Error(errorData.message || "Failed to update event images");
+        }
+      }
+
+      // Then handle the rest of the form data
       const formData = new FormData();
       formData.append("hostid", hostid);
 
+      // Include existing images that haven't been deleted
+      existingImages.forEach((imageUrl) => {
+        formData.append("existingImages[]", imageUrl);
+      });
+
+      // Process other form data
       Object.entries(eventData).forEach(([key, value]) => {
         if (key === "ticketCategories") {
           value.forEach((category: any, index: number) => {
@@ -349,39 +413,12 @@ const EditEventForm: React.FC = () => {
               formData.append(`${key}[${index}][${subKey}]`, String(subValue));
             });
           });
-        } else {
+        } else if (key !== "selectedImages" && key !== "banner") {
           formData.append(key, String(value));
         }
       });
 
-      const nanoid = customAlphabet("123456789", 11);
-
-      for (let i = 0; i < selectedImages.length; i++) {
-        const base64 = await getBase64(selectedImages[i]);
-        const blob = base64ToBlob(base64);
-        const elevenDigitName = nanoid();
-        const fileExtension = selectedImages[i].name.split(".").pop();
-        const banner = new File([blob], `${elevenDigitName}.${fileExtension}`, {
-          type: selectedImages[i].type,
-          lastModified: selectedImages[i].lastModified,
-        });
-        formData.append("banner[]", banner);
-        // console.log(`Renamed Image: ${banner.name}`);
-      }
-
-      const logObject: { [key: string]: any } = {};
-      formData.forEach((value, key) => {
-        if (key === "banner[]") {
-          if (!logObject[key]) {
-            logObject[key] = [];
-          }
-          logObject[key].push(value);
-        } else {
-          logObject[key] = value;
-        }
-      });
-      // console.log(logObject);
-
+      // Submit main form data
       const response = await fetch(
         `${process.env.REACT_APP_BASEURL}/update/eventticket/${sn}`,
         {
@@ -391,22 +428,21 @@ const EditEventForm: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Fail to update event");
+        throw new Error("Failed to update event");
       }
-      // console.log(response);
-      const data = await response.json();
-      // console.log(data);
 
+      const data = await response.json();
       if (data.error === false) {
         toast.success(data.message);
-        dispatch(setUpdateStatus(true)); // Dispatch the action to update status
-        // navigate("/dashboard");
-        setIsSubmitting(true);
+        dispatch(setUpdateStatus(true));
+        setSelectedImages([]); // Clear selected images after success
       } else {
         throw new Error(data.message || "Unknown error");
       }
     } catch (error: any) {
-      setSubmissionError(error.message || "Error creating event");
+      console.error("Submission error:", error);
+      setSubmissionError(error.message || "Error updating event");
+      toast.error(error.message || "Error updating event");
     } finally {
       setIsSubmitting(false);
     }
@@ -487,7 +523,7 @@ const EditEventForm: React.FC = () => {
                       name="banner"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => handleNewImageChange(e.target.files)}
+                      onChange={handleNewImageChange} // Remove the inline function
                       ref={fileInputRef}
                       multiple
                       required
@@ -532,10 +568,10 @@ const EditEventForm: React.FC = () => {
                     </div>
                   ))}
                   {selectedImages.map((image, index) => (
-                    <div key={index} className="mr-2 mb-2 relative">
+                    <div key={`new-${index}`} className="mr-2 mb-2 relative">
                       <img
-                        src={URL.createObjectURL(image)}
-                        alt={`evently-${index + 1}`}
+                        src={image.preview} // Use the preview URL from our object
+                        alt={`new-${index}`}
                         className="h-24 w-24 object-cover border rounded-md"
                       />
                       <button
@@ -543,20 +579,7 @@ const EditEventForm: React.FC = () => {
                         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                         onClick={() => handleImageDelete(index, false)}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                        ×
                       </button>
                     </div>
                   ))}
