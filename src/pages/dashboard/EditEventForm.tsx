@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from "react";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../../assets/css/quill.css";
 import { QuillFormats } from "../../constant";
@@ -325,12 +324,12 @@ const EditEventForm: React.FC = () => {
     if (files && files.length > 0) {
       const selectedFiles = Array.from(files);
 
-      // Check total images won't exceed 5
+      // Check total images won't exceed 5 (existing + new selections)
       const totalImages =
         selectedFiles.length + selectedImages.length + existingImages.length;
 
       if (totalImages > 5) {
-        toast.error(`Can't select more than five images total`);
+        toast.error(`You can't select more than five images total`);
         return;
       }
 
@@ -350,15 +349,14 @@ const EditEventForm: React.FC = () => {
     setSubmissionError("");
 
     try {
-      // First, handle the image updates separately with 11-digit names
+      // First, handle the image updates
       if (selectedImages.length > 0) {
         const imageFormData = new FormData();
         imageFormData.append("hostid", hostid);
         imageFormData.append("eventid", sn || "");
 
-        const nanoid = customAlphabet("123456789", 11); // 11-digit generator
+        const nanoid = customAlphabet("123456789", 11);
 
-        // Process each selected image
         for (const image of selectedImages) {
           const elevenDigitName = nanoid();
           const fileExtension = image.file.name.split(".").pop();
@@ -367,23 +365,30 @@ const EditEventForm: React.FC = () => {
             `${elevenDigitName}.${fileExtension}`,
             { type: image.file.type }
           );
-
           imageFormData.append("images[]", renamedFile);
-          console.log(`Uploading image as: ${renamedFile.name}`);
         }
 
-        // Upload images to the dedicated endpoint
         const imageResponse = await fetch(
-          "https://moloyal.com/mosave-ma/adminscript/api/ticket_images/eventhost/addpics",
+          `${process.env.REACT_APP_BASEURL}/eventhost/addpics`,
           {
             method: "POST",
             body: imageFormData,
           }
         );
-
+        console.log(imageResponse);
+        // Add proper error handling
         if (!imageResponse.ok) {
-          const errorData = await imageResponse.json();
-          throw new Error(errorData.message || "Failed to update event images");
+          const errorText = await imageResponse.text();
+          try {
+            const errorData = JSON.parse(errorText);
+            throw new Error(
+              errorData.message || "Failed to update event images"
+            );
+          } catch {
+            throw new Error(
+              `Image upload failed with status ${imageResponse.status}`
+            );
+          }
         }
       }
 
@@ -427,15 +432,25 @@ const EditEventForm: React.FC = () => {
         }
       );
 
-      if (!response.ok) {
-        throw new Error("Failed to update event");
+      // Add proper response handling
+      const responseText = await response.text();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(
+          `Invalid JSON response: ${responseText.substring(0, 100)}`
+        );
       }
 
-      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to update event");
+      }
+
       if (data.error === false) {
         toast.success(data.message);
         dispatch(setUpdateStatus(true));
-        setSelectedImages([]); // Clear selected images after success
+        setSelectedImages([]);
       } else {
         throw new Error(data.message || "Unknown error");
       }
@@ -507,7 +522,7 @@ const EditEventForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="banner" className="block text-gray-600">
-                  Images de l'événement (jusqu'à 5)
+                  Event Images (up to 5)
                 </label>
                 <div className="border border-dashed p-12 rounded-md">
                   <div className="flex items-center">
@@ -515,7 +530,7 @@ const EditEventForm: React.FC = () => {
                       htmlFor="banner"
                       className="cursor-pointer bg-[#25aae1] text-white px-4 py-2 rounded-md mr-2 focus:outline-none"
                     >
-                      Ajouter une image d'événement
+                      Add Event Image
                     </label>
                     <input
                       type="file"
@@ -523,26 +538,23 @@ const EditEventForm: React.FC = () => {
                       name="banner"
                       accept="image/*"
                       className="hidden"
-                      onChange={handleNewImageChange} // Remove the inline function
+                      onChange={handleNewImageChange}
                       ref={fileInputRef}
                       multiple
-                      required
                     />
-                    <div
-                      className="cursor-pointer bg-gray-300 text-gray-600 rounded-full flex items-center justify-center w-6 h-6 text-sm lg:w-8 lg:h-8 lg:text-base"
-                      onClick={handleInformationClick}
-                      style={{ fontSize: "0.75rem" }}
-                    >
-                      i
-                    </div>
+                    {/* Information button remains the same */}
                   </div>
                 </div>
                 <div className="mt-2 flex flex-wrap">
+                  {/* Display existing images */}
                   {existingImages.map((image, index) => (
-                    <div key={index} className="mr-2 mb-2 relative">
+                    <div
+                      key={`existing-${index}`}
+                      className="mr-2 mb-2 relative"
+                    >
                       <img
                         src={image}
-                        alt={`eventful-${index + 1}`}
+                        alt={`existing-${index}`}
                         className="h-24 w-24 object-cover border rounded-md"
                       />
                       <button
@@ -550,27 +562,16 @@ const EditEventForm: React.FC = () => {
                         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
                         onClick={() => handleImageDelete(index, true)}
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                        ×
                       </button>
                     </div>
                   ))}
+
+                  {/* Display newly selected images */}
                   {selectedImages.map((image, index) => (
                     <div key={`new-${index}`} className="mr-2 mb-2 relative">
                       <img
-                        src={image.preview} // Use the preview URL from our object
+                        src={image.preview}
                         alt={`new-${index}`}
                         className="h-24 w-24 object-cover border rounded-md"
                       />

@@ -9,12 +9,34 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { customAlphabet } from "nanoid";
-import FinancialCard from "../dashboard/FinancialCard";
-import Editor from "react-simple-wysiwyg";
+
+// Add the function to convert file to base64
+// const getBase64 = (file: File) => {
+//   return new Promise<string>((resolve) => {
+//     let reader = new FileReader();
+//     reader.readAsDataURL(file);
+//     reader.onload = () => {
+//       const BaseUrl = reader.result as string;
+//       resolve(BaseUrl);
+//     };
+//   });
+// };
 
 interface User {
   id: string;
 }
+
+// Function to convert data URI to Blob
+// const dataURItoBlob4 = (dataURI: string) => {
+//   const binary = atob(dataURI.split(",")[1]);
+//   const array = [];
+//   for (let i = 0; i < binary.length; i++) {
+//     array.push(binary.charCodeAt(i));
+//   }
+//   return new Blob([new Uint8Array(array)], {
+//     type: "image/png",
+//   });
+// };
 
 interface TicketCategory {
   name: string;
@@ -40,6 +62,8 @@ type CurrencySymbolMap = {
   USD: "$";
   NGN: "₦";
   EUR: "€";
+  MAD: "د.م."; // Moroccan Dirham symbol
+
   // Add more currencies if needed
 };
 
@@ -48,6 +72,8 @@ const currencySymbolMap: CurrencySymbolMap = {
   USD: "$",
   NGN: "₦",
   EUR: "€",
+  MAD: "د.م.", // Moroccan Dirham symbol
+
   // Add more currencies if needed
 };
 
@@ -71,6 +97,7 @@ interface EventData {
   banner: File[];
   start: StartInfo[];
   end: StartInfo[];
+  youtubeUrl: string;
 }
 
 const BaseUrl = `${process.env.REACT_APP_BASEURL}/host_create/eventticket`;
@@ -78,6 +105,8 @@ const BaseUrl = `${process.env.REACT_APP_BASEURL}/host_create/eventticket`;
 const CreateEventForm: React.FC = () => {
   const formats = QuillFormats;
   const [step, setStep] = useState<number>(1);
+  // const [startDate, setStartDate] = useState<string>("");
+  // const [endDate, setEndDate] = useState<string>("");
   // const [selectedState, setSelectedState] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
@@ -125,7 +154,36 @@ const CreateEventForm: React.FC = () => {
         time: "",
       },
     ],
+    youtubeUrl: "",
   });
+
+  // Function to extract YouTube video ID from URL
+  const extractYouTubeId = (url: string): string | null => {
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return match && match[2].length === 11 ? match[2] : null;
+  };
+
+  // Function to validate YouTube URL
+  const isValidYouTubeUrl = (url: string): boolean => {
+    if (!url) return true; // This line makes it optional
+    const videoId = extractYouTubeId(url);
+    return videoId !== null;
+  };
+
+  // Handle YouTube URL change
+  const handleYoutubeUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setEventData({ ...eventData, youtubeUrl: url });
+  };
+
+  // Function to generate YouTube embed URL
+  const getYouTubeEmbedUrl = (url: string): string => {
+    if (!url) return "";
+    const videoId = extractYouTubeId(url);
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : "";
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -150,11 +208,8 @@ const CreateEventForm: React.FC = () => {
     setStep(step - 1);
   };
 
-  const handleDescriptionChange = (e: { target: { value: string } }) => {
-    setEventData((prev) => ({
-      ...prev,
-      description: e.target.value,
-    }));
+  const handleDescriptionChange = (description: string) => {
+    setEventData({ ...eventData, description });
   };
 
   const handleAddCategory = () => {
@@ -309,7 +364,6 @@ const CreateEventForm: React.FC = () => {
     setEventData({ ...eventData, eventType: value });
   };
   // Function to convert base64 string to Blob
-  // Function to convert base64 string to Blob
   const base64ToBlob = (base64String: string): Blob => {
     const byteString = atob(base64String.split(",")[1]);
     const arrayBuffer = new ArrayBuffer(byteString.length);
@@ -324,7 +378,7 @@ const CreateEventForm: React.FC = () => {
     if (files) {
       const selectedImagesArray = Array.from(files);
       if (selectedImagesArray.length + selectedImages.length > 5) {
-        toast.error(`Vous ne pouvez pas sélectionner plus de cinq images`);
+        toast.error(`Can't select more than five images`);
         return;
       }
       setSelectedImages((prevImages) => [
@@ -336,18 +390,36 @@ const CreateEventForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!hostid) {
-      toast("Veuillez vous connecter");
-      navigate("/login");
-    }
     setIsSubmitting(true);
 
     try {
       const formData = new FormData();
       formData.append("hostid", hostid);
 
-      Object.entries(eventData).forEach(([key, value]) => {
-        if (key === "ticketCategories") {
+      // 1. VERIFICATION: Log initial YouTube URL value
+      console.log("[DEBUG] Initial youtubeurl value:", eventData.youtubeUrl);
+
+      // 2. EXPLICITLY add youtubeurl to formData (with verification)
+      if (eventData.youtubeUrl) {
+        formData.append("youtubeUrl", eventData.youtubeUrl);
+        console.log(
+          "[DEBUG] YouTube URL added to FormData:",
+          eventData.youtubeUrl
+        );
+      } else {
+        console.log("[DEBUG] No YouTube URL provided (optional field)");
+      }
+
+      // Add all other form data
+      const sanitizedEventData = {
+        ...eventData,
+        description: eventData.description
+          .replace(/'/g, "\\'") // Escape single quotes
+          .replace(/"/g, '\\"'), // Escape double quotes
+      };
+
+      Object.entries(sanitizedEventData).forEach(([key, value]) => {
+        if (key === "ticketCategories" && Array.isArray(value)) {
           value.forEach((category: any, index: number) => {
             Object.entries(category).forEach(([subKey, subValue]) => {
               formData.append(
@@ -367,65 +439,62 @@ const CreateEventForm: React.FC = () => {
         }
       });
 
-      const nanoid = customAlphabet("123456789", 11); // Define custom alphabet
-
+      // Process images
+      const nanoid = customAlphabet("123456789", 11);
       for (let i = 0; i < selectedImages.length; i++) {
         const base64 = await getBase64(selectedImages[i]);
         const blob = base64ToBlob(base64);
-        const elevenDigitName = nanoid(); // Generate an eleven-digit name
-        const fileExtension = selectedImages[i].name.split(".").pop(); // Get the file extension
+        const elevenDigitName = nanoid();
+        const fileExtension = selectedImages[i].name.split(".").pop();
         const banner = new File([blob], `${elevenDigitName}.${fileExtension}`, {
           type: selectedImages[i].type,
           lastModified: selectedImages[i].lastModified,
         });
         formData.append("banner[]", banner);
-        console.log(`Renamed Image: ${banner.name}`);
       }
 
-      // Create an object to log
-      const logObject: { [key: string]: any } = {};
+      // 3. FINAL VERIFICATION: Check if youtubeurl exists in FormData
+      console.log("[DEBUG] Final FormData contents:");
+      const formDataObj: Record<string, any> = {};
       formData.forEach((value, key) => {
         if (key === "banner[]") {
-          if (!logObject[key]) {
-            logObject[key] = [];
-          }
-          logObject[key].push(value);
+          if (!formDataObj[key]) formDataObj[key] = [];
+          formDataObj[key].push(value instanceof File ? value.name : value);
         } else {
-          logObject[key] = value;
+          formDataObj[key] = value;
         }
       });
-      console.log(logObject);
+      console.log(formDataObj);
 
+      // 4. VERIFY the actual request payload
+      console.log("[DEBUG] Sending request to:", BaseUrl);
       const response = await fetch(BaseUrl, {
         method: "POST",
         body: formData,
       });
 
+      // 5. Verify server response
+      console.log("[DEBUG] Response status:", response.status);
+      const responseData = await response.json();
+      console.log("[DEBUG] Server response:", responseData);
+
       if (!response.ok) {
-        throw new Error("Échec de la création de l'événement");
+        throw new Error(responseData.message || "Failed to create event");
       }
 
-      const data = await response.json();
-      if (data.error === false) {
-        toast.success(data.message);
-        navigate("/dashboard", {
-          state: {
-            selectedMenu: "Event",
-            selectedEventOption: "MyEvent",
-          },
-        });
+      if (responseData.error === false) {
+        toast.success(responseData.message);
+        navigate("/dashboard");
       } else {
-        throw new Error(data.message || "Unknown error");
+        throw new Error(responseData.message || "Unknown error");
       }
     } catch (error: any) {
-      setSubmissionError(
-        error.message || "Erreur lors de la création de l'événement"
-      );
+      console.error("[ERROR] Submission failed:", error);
+      setSubmissionError(error.message || "Error creating event");
     } finally {
       setIsSubmitting(false);
     }
   };
-
   const getBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -454,26 +523,25 @@ const CreateEventForm: React.FC = () => {
   const handleInformationClick = () => {
     setShowInformation((prevShowInformation) => !prevShowInformation);
   };
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    if (!hostid) {
-      toast.error("Please log in");
+    if (!isAuthenticated || !user?.id) {
+      toast("hostId not found, kindly login again");
       navigate("/login");
     }
-  }, [hostid, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <div className="flex items-center justify-center">
-      <div className="bg-gray-100 p-8 rounded shadow-lg w-4/5 lg:w-3/5 mt-24">
-        <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-          Créer un événement
-        </h2>
+      <div className="bg-gray-300/10 p-8 rounded shadow-lg w-4/5 lg:w-3/5 mt-24">
+        <h2 className="text-2xl font-semibold mb-4 text-white">Create Event</h2>
         <form onSubmit={handleSubmit}>
           {step === 1 && (
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600 mb-2">
-                  Titre de l'événement
+                  Event Title
                 </label>
                 <input
                   type="text"
@@ -486,9 +554,10 @@ const CreateEventForm: React.FC = () => {
                   placeholder="Da Ministry reunion"
                 />
               </div>
+
               <div className="mb-4">
                 <label htmlFor="venue" className="block text-gray-600 mb-2">
-                  Lieu de l'événement
+                  Event Venue
                 </label>
                 <input
                   type="text"
@@ -501,9 +570,53 @@ const CreateEventForm: React.FC = () => {
                   placeholder="London, England"
                 />
               </div>
+
+              {/* YouTube Video URL Field */}
+              <div className="mb-4">
+                <label
+                  htmlFor="youtubeUrl"
+                  className="block text-gray-600 mb-2"
+                >
+                  YouTube Video URL (Optional)
+                </label>
+                <input
+                  type="url"
+                  id="youtubeUrl" // This can stay as is for the ID
+                  name="youtubeUrl" // Make sure this matches your state property name
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                  value={eventData.youtubeUrl}
+                  onChange={handleYoutubeUrlChange}
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+                {eventData.youtubeUrl &&
+                  !isValidYouTubeUrl(eventData.youtubeUrl) && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Please enter a valid YouTube URL
+                    </p>
+                  )}
+                {eventData.youtubeUrl &&
+                  isValidYouTubeUrl(eventData.youtubeUrl) && (
+                    <div className="mt-4">
+                      <h4 className="text-gray-600 mb-2">Video Preview:</h4>
+                      <div className="aspect-w-16 aspect-h-9">
+                        <iframe
+                          width="100%"
+                          height="315"
+                          src={getYouTubeEmbedUrl(eventData.youtubeUrl)}
+                          title="YouTube video player"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="rounded-md"
+                        ></iframe>
+                      </div>
+                    </div>
+                  )}
+              </div>
+
               <div className="mb-4">
                 <label htmlFor="banner" className="block text-gray-600">
-                  Images de l'événement (jusqu'à 5)
+                  Event Images (Up to 5)
                 </label>
                 <div className="border border-dashed p-12 rounded-md">
                   <div className="flex items-center">
@@ -511,7 +624,7 @@ const CreateEventForm: React.FC = () => {
                       htmlFor="banner"
                       className="cursor-pointer bg-[#25aae1] text-white px-4 py-2 rounded-md mr-2 focus:outline-none"
                     >
-                      Ajouter une image de l'événement
+                      Add Event Image
                     </label>
                     <input
                       type="file"
@@ -524,7 +637,6 @@ const CreateEventForm: React.FC = () => {
                       multiple
                       required
                     />
-                    {/* Information icon */}
                     <div
                       className="cursor-pointer bg-gray-300 text-gray-600 rounded-full flex items-center justify-center w-6 h-6 text-sm lg:w-8 lg:h-8 lg:text-base"
                       onClick={handleInformationClick}
@@ -537,13 +649,11 @@ const CreateEventForm: React.FC = () => {
                 <div className="mt-2 flex flex-wrap">
                   {selectedImages.map((banner, index) => (
                     <div key={index} className="mr-2 mb-2 relative">
-                      {/* Image preview */}
                       <img
                         src={URL.createObjectURL(banner)}
-                        alt={`Event  ${index + 1}`}
+                        alt={`Event ${index + 1}`}
                         className="h-24 w-24 object-cover border rounded-md"
                       />
-                      {/* Delete button */}
                       <button
                         type="button"
                         className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
@@ -569,15 +679,12 @@ const CreateEventForm: React.FC = () => {
                 </div>
               </div>
 
-              {/* Add information tooltip or modal */}
               {showInformation && (
                 <div className="bg-white p-4 border rounded-md">
-                  <p className=" italic text-blue-400">
-                    Les graphiques de l'événement doivent de préférence inclure
-                    les dimensions (220 par 330 px) et (500 par 550 px), mais
-                    toute taille fournie peut être redimensionnée pour
-                    s'adapter. Les formats pris en charge sont jpg, jpeg, png,
-                    gif.
+                  <p className="italic text-blue-400">
+                    Event graphics preferably include dimensions (220 by 330 px)
+                    and (500 by 550 px) but any size provided may be resized to
+                    fit. Supported formats are jpg, jpeg, png, gif.
                   </p>
                 </div>
               )}
@@ -588,7 +695,7 @@ const CreateEventForm: React.FC = () => {
             <>
               <div className="mb-4">
                 <label htmlFor="startDate" className="block text-gray-600 mb-2">
-                  Date de début
+                  Start Date
                 </label>
                 <input
                   type="date"
@@ -602,7 +709,7 @@ const CreateEventForm: React.FC = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="endDate" className="block text-gray-600 mb-2">
-                  Date de fin
+                  End Date
                 </label>
                 <input
                   type="date"
@@ -617,7 +724,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="startTime" className="block text-gray-600 mb-2">
-                  Heure de début
+                  Start Time
                 </label>
                 <div className="flex items-center">
                   <input
@@ -645,7 +752,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="endTime" className="block text-gray-600 mb-2">
-                  Heure de fin
+                  End Time
                 </label>
                 <div className="flex items-center">
                   <input
@@ -677,24 +784,19 @@ const CreateEventForm: React.FC = () => {
               <div className="mb-4" data-name="description">
                 <label
                   htmlFor="description"
-                  className="block mb-2 text-sm font-medium text-black "
+                  className="block mb-2 text-sm font-medium text-white "
                 >
                   Description
                 </label>
-                <Editor
-                  value={eventData.description || ""}
+                <ReactQuill
+                  formats={formats}
+                  value={eventData.description}
                   onChange={handleDescriptionChange}
-                  containerProps={{
-                    className:
-                      "add-new-post__editor mb-1 text-gray-900 bg-gray-50",
-                    style: {
-                      height: "400px", // Set your desired height
-                      width: "800px", // Set your desired width
-                    },
-                  }}
+                  className="add-new-post__editor mb-1 text-white"
+                  theme="snow"
                 />
                 <p className="text-xs text-gray-400">
-                  Donnez une description complète. Pas plus de 3000 mots.
+                  Give a full description. Not more than 3000 words
                 </p>
               </div>
               <div className="mb-4">
@@ -705,35 +807,33 @@ const CreateEventForm: React.FC = () => {
                   value={eventData.eventType}
                   onChange={handleEventTypeChange}
                 >
-                  <option value="">Sélectionner le type d'événement</option>
+                  <option value="">Select Event Type</option>
                   <option value="Festival">Festival</option>
-                  <option value="Conference">Conférence</option>
-                  <option value="Seminar">Séminaire</option>
-                  <option value="Executive Meeting">Réunion exécutive</option>
-                  <option value="Webinar">Webinaire</option>
-                  <option value="Comedy and Standup">
-                    Comédie et Stand-up
-                  </option>
-                  <option value="Musical Show">Spectacle musical</option>
-                  <option value="Trade Fair">Foire commerciale</option>
+                  <option value="Conference">Conference</option>
+                  <option value="Seminar">Seminar</option>
+                  <option value="Executive Meeting">Executive Meeting</option>
+                  <option value="Webinar">Webinar</option>
+                  <option value="Comedy and Standup">Comedy and Standup</option>
+                  <option value="Musical Show">Musical Show</option>
+                  <option value="Trade Fair">Trade Fair</option>
                   <option value="Charity Events/Fundraisers">
-                    Événements caritatifs/Collectes de fonds
+                    Charity Events/Fundraisers
                   </option>
                   <option value="Club Nights and Bars">
-                    Soirées en club et bars
+                    Club Nights and Bars
                   </option>
                   <option value="Concerts">Concerts</option>
-                  <option value="Cultural Events">Événements culturels</option>
-                  <option value="Trade Show">Salon professionnel</option>
-                  <option value="Film Screenings">Projections de films</option>
-                  <option value="Galas/Dinners">Galas/Dîners</option>
-                  <option value="Gigs">Concerts</option>
-                  <option value="Sports Events">Événements sportifs</option>
+                  <option value="Cultural Events">Cultural Events</option>
+                  <option value="Trade Show">Trade Show</option>
+                  <option value="Film Screenings">Film Screenings</option>
+                  <option value="Galas/Dinners">Galas/Dinners</option>
+                  <option value="Gigs">Gigs</option>
+                  <option value="Sports Events">Sports Events</option>
                   <option value="Theatre/Performing Arts">
-                    Théâtre/Arts de la scène
+                    Theatre/Performing Arts
                   </option>
-                  <option value="Workshops">Ateliers</option>
-                  <option value="Others">Autres</option>
+                  <option value="Workshops">Workshops</option>
+                  <option value="Others">Others</option>
                 </select>
               </div>
             </>
@@ -747,7 +847,7 @@ const CreateEventForm: React.FC = () => {
                     htmlFor="bearer"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Responsable des frais
+                    Charge Bearer
                   </label>
                   <select
                     id="bearer"
@@ -761,7 +861,7 @@ const CreateEventForm: React.FC = () => {
                       })
                     }
                   >
-                    <option value="">Sélectionner le porteur</option>
+                    <option value="">Select Bearer</option>
                     <option value="client">Client</option>
                     <option value="moloyal">MoTickets</option>
                   </select>
@@ -772,7 +872,7 @@ const CreateEventForm: React.FC = () => {
                     htmlFor="currency"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Monnaie
+                    Currency
                   </label>
                   <select
                     id="currency"
@@ -786,30 +886,30 @@ const CreateEventForm: React.FC = () => {
                     <option value="USD">USD</option>
                     <option value="NGN">NGN</option>
                     <option value="EUR">EUR</option>
-                    <option value="MAD">MAD</option>
+                    <option value="MAD">MAD</option> {/* Add this line */}
                   </select>
                 </div>
               </div>
 
-              <h3 className="text-xl font-semibold mb-4 text-black">
-                Catégories de billets
+              <h3 className="text-xl font-semibold mb-4 text-white">
+                Ticket Categories
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full mb-4">
                   <thead className="bg-[#25aae1]">
                     <tr>
-                      <th className="px-4 py-2">Nom</th>
+                      <th className="px-4 py-2">Name</th>
                       <th className="px-4 py-2">
-                        Prix ({currencySymbolMap[eventData.currency]})
+                        Price ({currencySymbolMap[eventData.currency]})
                       </th>
                       {/* <th className="px-4 py-2">
-                        Prix réduit(
+                        Discount Price(
                         {currencySymbolMap[eventData.currency]})
                       </th> */}
 
-                      {/* <th className="px-4 py-2">Réduction portefeuille</th> */}
+                      {/* <th className="px-4 py-2">Wallet Discount</th> */}
                       <th className="px-4 py-2">Qty</th>
-                      <th className="px-4 py-2">Nombre de personnes</th>
+                      <th className="px-4 py-2">Guest Per Unit</th>
                       <th className="px-4 py-2">Action</th>
                     </tr>
                   </thead>
@@ -844,10 +944,7 @@ const CreateEventForm: React.FC = () => {
                             }
                           />
                         </td>
-                        <td
-                          className="border px-4 py-2"
-                          style={{ display: "none" }}
-                        >
+                        {/* <td className="border px-4 py-2">
                           <input
                             type="text"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
@@ -860,11 +957,8 @@ const CreateEventForm: React.FC = () => {
                               )
                             }
                           />
-                        </td>
-                        <td
-                          className="border px-4 py-2"
-                          style={{ display: "none" }}
-                        >
+                        </td> */}
+                        {/* <td className="border px-4 py-2">
                           <input
                             type="text"
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
@@ -877,7 +971,7 @@ const CreateEventForm: React.FC = () => {
                               )
                             }
                           />
-                        </td>
+                        </td> */}
                         <td className="border px-4 py-2">
                           <input
                             type="text"
@@ -908,7 +1002,7 @@ const CreateEventForm: React.FC = () => {
                             className="text-red-500"
                             onClick={() => handleDeleteCategory(index)}
                           >
-                            Supprimer
+                            Delete
                           </button>
                         </td>
                       </tr>
@@ -922,7 +1016,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-4 py-2 rounded-md"
                 onClick={handleAddCategory}
               >
-                Ajouter une catégorie{" "}
+                Add Category
               </button>
             </>
           )}
@@ -934,7 +1028,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#c10006] px-6 py-2 rounded-md"
                 onClick={handlePreviousStep}
               >
-                Précédent
+                Previous
               </button>
             )}
             {step !== 4 ? (
@@ -944,7 +1038,7 @@ const CreateEventForm: React.FC = () => {
                 onClick={handleNextStep}
                 disabled={!isStepFieldsFilled()}
               >
-                Suivant
+                Next
               </button>
             ) : (
               <button
@@ -952,7 +1046,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-6 py-2 rounded-md disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={!isLastStepFieldsFilled() || isSubmitting}
               >
-                {isSubmitting ? "Soumission en cours..." : "Soumettre"}
+                {isSubmitting ? "Submitting..." : "Submit"}
               </button>
             )}
           </div>
