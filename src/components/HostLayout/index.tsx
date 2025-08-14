@@ -84,7 +84,6 @@ const HostLayer: React.FC = () => {
   const user = useSelector(
     (state: RootState) => state.auth.user
   ) as User | null;
-  // console.log(user);
 
   const [updateHost, { isLoading, isSuccess, error }] = useUpdateHostMutation();
 
@@ -126,22 +125,9 @@ const HostLayer: React.FC = () => {
   const handlePreviousStep = () => {
     setCurrentStep((prevStep) => prevStep - 1);
   };
-  // const validateSortCode = (sortCode: string): boolean => {
-  //   // Regular expression to match sort code format: xx-xx-xx or xxxxxx
-  //   const sortCodeRegex = /^(\d{2}-\d{2}-\d{2}|\d{6})$/;
-  //   return sortCodeRegex.test(sortCode);
-  // };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // console.log("Submitting form data:", formData);
-
-    // if (!validateSortCode(formData.sortCode)) {
-    //   toast.error(
-    //     "Invalid sort code. Sort code should be in format xx-xx-xx or xxxxxx"
-    //   );
-    //   return;
-    // }
 
     if (!isValidPhoneNumber(formData.phone)) {
       toast.error("Invalid phone number");
@@ -153,7 +139,6 @@ const HostLayer: React.FC = () => {
         ...formData,
         hostid: user?.id, // safely append user id
       };
-      // console.log("Data to send:", dataToSend); /
 
       await updateHost(dataToSend).unwrap();
       dispatch(setUpdateFlag(1)); // Ensure this line is executed

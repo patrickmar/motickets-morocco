@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import Carousel from "../../components/Carousel";
 import ContentWrapper from "../../components/ContentWrapper";

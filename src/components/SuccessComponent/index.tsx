@@ -16,8 +16,6 @@ import ContentWrapper from "../../components/ContentWrapper";
 import { NumericFormat } from "react-number-format";
 import { Link, useNavigate } from "react-router-dom";
 import { getCurrency, getCurrencyName } from "../../utils/functions";
-// import StripeCheckout from "react-stripe-checkout";
-// import usePost from "../../hooks/usePost";
 
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";

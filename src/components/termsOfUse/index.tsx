@@ -1,5 +1,3 @@
-import React from "react";
-
 const TermsOfUse = () => {
   return (
     <div className="w-3/4 bg-[#04152d] p-4 text-white leading-8">

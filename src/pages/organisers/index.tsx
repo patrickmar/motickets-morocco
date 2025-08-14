@@ -13,13 +13,10 @@ import star1 from "../../assets/images/star1.png";
 
 import { FaMailBulk } from "react-icons/fa";
 
-// import Navbar from './constants/Navbar';
-
 function Organisers() {
   return (
     <div className="bg-gray-100">
       {/* <Navbar /> */}
-      {/* Banner section */}
       <section
         className="lg:h-[721px] bg-gray-700"
         style={{

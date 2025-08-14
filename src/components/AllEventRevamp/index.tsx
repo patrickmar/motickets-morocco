@@ -52,9 +52,6 @@ export default function AllEventRevamp() {
                     <p className="text-base text-gray-600">
                       {moment(item.from_date).format("MMM D, YYYY")}
                     </p>
-                    {/* <p className="mt-4 text-base text-gray-800">
-                      {item.description || "No description available."}
-                    </p> */}
                   </div>
                 </div>
               );

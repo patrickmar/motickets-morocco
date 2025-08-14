@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import { HiOutlineSearch } from "react-icons/hi";
 import { SlMenu } from "react-icons/sl";
 import { VscChromeClose } from "react-icons/vsc";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -61,11 +60,6 @@ const Header: React.FC = () => {
   ) as User | null;
 
   const hostid = user?.id || "";
-  // console.log("User:", user);
-  // console.log("isAuthenticated:", isAuthenticated);
-  // console.log("hostid:", hostid);
-  // console.log(avatarUrl);
-  // console.log(setQuery);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -90,17 +84,6 @@ const Header: React.FC = () => {
       window.removeEventListener("scroll", controlNavbar);
     };
   }, [lastScrollY]);
-
-  // const searchQueryHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (event.key === "Enter" && query.length > 0) {
-  //     navigate(`/search/${query}`);
-  //     setTimeout(() => {}, 1000);
-  //   }
-  // };
-
-  // const openSearch = () => {
-  //   setMobileMenu(false);
-  // };
 
   const toggleMobileMenu = () => {
     setMobileMenu(!mobileMenu);

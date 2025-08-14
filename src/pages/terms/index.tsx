@@ -1,5 +1,3 @@
-import React from "react";
-
 const TermsAndConditions = () => {
   return (
     <div className="py-4 bg-[#04152d] ">

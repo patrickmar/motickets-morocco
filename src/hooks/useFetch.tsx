@@ -12,15 +12,12 @@ const useFetch = (url: string) => {
 
     fetchDataFromApi(url)
       .then((res: any) => {
-        // setLoading(false);
-        // setData(res?.name === "AxiosError" ? null : res);
         setTimeout(() => {
           setLoading(false);
           setData(res?.name === "AxiosError" ? null : res);
         }, 3000 * 1);
       })
       .catch((err: any) => {
-        
         setLoading(false);
         setError("Something went wrong!");
       });

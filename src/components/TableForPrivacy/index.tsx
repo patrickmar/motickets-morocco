@@ -1,5 +1,3 @@
-import React from "react";
-
 const TableForPrivacy = () => {
   return (
     <div className=" mx-auto p-4 contain">

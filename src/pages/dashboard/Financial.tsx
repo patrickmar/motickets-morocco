@@ -47,7 +47,6 @@ const FinancialTable: React.FC<FinancialTableProps> = ({ eventid, onBack }) => {
     const fetchTicketData = async () => {
       try {
         const response = await fetch(
-          // `https://moloyal.com/test/mosave-ukdemo/script/api/eventhost/ticketsales_report/${eventid}`
           `${process.env.REACT_APP_BASEURL}/eventhost/ticketsales_report/${eventid}`
         );
         if (!response.ok) {

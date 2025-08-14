@@ -1,7 +1,5 @@
-// import React from "react";
 import { useLocation } from "react-router-dom";
 import CheckoutForm from "../../components/CheckoutForm";
-// import { useParams } from "react-router-dom";
 
 type Props = {};
 
@@ -9,7 +7,7 @@ const Checkout = (props: Props) => {
   const location = useLocation();
   const tickets = location?.state?.tickets.filter((i: any) => i.qty > 0);
   const data = location?.state?.data;
-   console.log(tickets);
+  console.log(tickets);
   // Calculate the sum of the amounts
   const calculateTotalAmount = (prices: any) => {
     const price = prices?.reduce(

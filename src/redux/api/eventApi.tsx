@@ -53,8 +53,6 @@ export const eventApi = createApi({
     prepareHeaders: (headers) => {
       // Add any required headers here
       headers.set("Content-Type", "application/json");
-      // Example for Authorization header
-      // headers.set('Authorization', `Bearer ${token}`);
       return headers;
     },
   }),

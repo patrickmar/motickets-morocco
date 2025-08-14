@@ -155,7 +155,6 @@ const MyEvent: React.FC = () => {
 
           // Append to formData - try both variations
           formData.append("images[]", processedFile); // Most common array format
-          // formData.append("images", processedFile); // Alternative single field format
 
           console.log(`Processed and renamed image: ${uniqueName}`);
         } catch (fileError) {

@@ -1,9 +1,6 @@
 import { useState } from "react";
 import useFetch from "../../hooks/useFetch";
-// import Card from "../Card";
 import AllEventRevamp from "../AllEventRevamp";
-// import CardBlogAction from "../CardBlogAction";
-// import AllEventRevamp from "../AllEventRevamp";
 
 type Props = {};
 

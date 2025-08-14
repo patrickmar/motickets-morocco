@@ -13,24 +13,6 @@ const Search = (props: Props) => {
   );
   const { data, loading } = useFetch(endpoint);
 
-  // const filteredData=data.filter((item:any) =>
-  // item.currency.includes('GBP')
-
-  // const filteredData = data.filter((item:any) =>
-  // item.currency.includes('GBP')
-  // );
-  // console.log(filteredData);
-
-  // const res= (data.filter(function(item){
-  //   return item.type == "ar";
-  // }));
-  // var filtered = data.filter(a => a.currency == "GBP");
-
-  // const filteredData = data.filter((item:any) =>
-  // item.currency.includes('GBP')
-  // );
-  //console.log(filteredData);
-
   const onTabChange = (tab: string) => {
     setEndpoint(
       tab === "This Week" ? `/eventspercurrency/${currency}` : `/weekly/events`

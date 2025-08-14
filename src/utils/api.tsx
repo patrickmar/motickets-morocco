@@ -15,7 +15,6 @@ export const fetchDataFromApi = async (url: string, params?: any) => {
     });
     return data;
   } catch (err) {
-    //console.log(err);
     return err;
   }
 };
@@ -28,7 +27,6 @@ export const postDataFromApi = async (url: string, params?: any) => {
     });
     return data;
   } catch (err) {
-    //console.log(err);
     return err;
   }
 };

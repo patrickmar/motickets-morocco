@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import logo from "../../../assets/logo/motickets_logo.png";
-// import { MdArrowDropDown } from "react-icons/md";
-// import { useCountries, Country } from "../../../constant/useCountries";
-// import ReCAPTCHA from "react-google-recaptcha";
+
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,57 +10,6 @@ import { countries } from "countries-list";
 
 type Props = {};
 
-// type ICountry = {
-//   name: string;
-//   native: string;
-//   phone: string;
-//   continent: string;
-//   capital: string;
-//   currency: string;
-//   languages: string[];
-//   emoji: string;
-//   emojiU: string;
-// };
-
-// type Country = {
-//   name: string;
-//   native: string;
-//   phone: string;
-//   continent: string;
-//   capital: string;
-//   currency: string;
-//   languages: string[];
-//   emoji: string;
-//   emojiU: string;
-// };
-
-// Define the structure of the imported countries object
-// type Countries = {
-//   [code: string]: Country;
-// };
-
-// Define the expected type for the login response
-// interface LoginResponse {
-//   email: string;
-//   image: string | null;
-//   submerchantId: string | null;
-//   fullname: string;
-//   lastname: string | null;
-//   agentId: string | null;
-//   branchId: string;
-//   accountNo: string;
-//   city: string;
-//   state: string;
-//   accountName: string;
-//   dateOfBirth: string;
-//   gender: string;
-//   bank: string;
-//   bankcode: string;
-//   bvn: string;
-//   message: string;
-// }
-
-// Define the expected type for the error response
 interface LoginError {
   error: boolean;
   message: string;

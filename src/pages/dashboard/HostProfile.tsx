@@ -45,11 +45,6 @@ interface User {
   time: string;
   ip: string;
 }
-// Define an interface for CSS classes
-// interface CSSClasses {
-//   cls1: string;
-//   cls2: string;
-// }
 
 const HostProfile = () => {
   // Define CSS classes

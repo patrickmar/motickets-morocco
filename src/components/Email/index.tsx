@@ -1,4 +1,3 @@
-import React from "react";
 import motickets from "../../assets/logo/motickets_logo_-.png";
 
 const EmailTemplate = () => {

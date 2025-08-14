@@ -1,7 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Assume this is the unified User interface used across your app
-// Unified User interface across the application
 interface User {
   id: string;
   email: string;
@@ -29,9 +27,6 @@ interface User {
   phone: string | null;
   country: string;
 }
-
-// Use the same interface for LoginResponse
-// type LoginResponse = User;
 
 interface UserState {
   user: User | null;

@@ -14,7 +14,6 @@ import Terms from "./pages/terms";
 import Faq from "./pages/faq";
 import Profile from "./pages/profile";
 import Philosophy from "./pages/philosophy";
-// import Create from './pages/create';
 import Login from "./pages/auth/login";
 import ContactUs from "./pages/contactus";
 import CreateEventForm from "./pages/create";
@@ -26,16 +25,12 @@ import UserProfile from "./pages/auth/User/UserProfile";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import ProfileChange from "./pages/auth/User/UserProfile/ProfileChange";
 import ForgotPassword from "./pages/auth/User/UserProfile/ForgotPassword";
-// import { useSelector } from "react-redux";
-// import { RootState } from "./redux/store";
 import EditEventForm from "./pages/dashboard/EditEventForm";
 import AvatarUploadForm from "./pages/auth/User/UserProfile/AvatarUploadForm";
 import ResetPassword from "./pages/auth/User/UserProfile/ResetPassword";
 import EmailTemplate from "./components/Email";
 
 function App() {
-  // const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-
   return (
     <>
       <ToastContainer />

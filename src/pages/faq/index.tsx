@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TermsOfUse from "../../components/termsOfUse";
 import AcceptableUsePolicy from "../../components/AcceptableUsePolicy.tsx";
 import PrivacyPolicy from "../../components/PrivacyPolicy";

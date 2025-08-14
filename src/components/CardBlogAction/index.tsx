@@ -13,7 +13,7 @@ export default function CardBlogAction() {
 
   const { data, loading } = useFetch(endpoint); // Fetch data from the API
   const eventData = data?.data; // Ensure you access the correct array
-  console.log(currency);
+  console.log(setEndpoint);
 
   const imageURL = process.env.REACT_APP_IMAGEURL;
 

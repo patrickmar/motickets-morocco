@@ -3,40 +3,15 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import "../../assets/css/quill.css";
 import { QuillFormats } from "../../constant";
-// import moment from "moment";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { customAlphabet } from "nanoid";
 
-// Add the function to convert file to base64
-// const getBase64 = (file: File) => {
-//   return new Promise<string>((resolve) => {
-//     let reader = new FileReader();
-//     reader.readAsDataURL(file);
-//     reader.onload = () => {
-//       const BaseUrl = reader.result as string;
-//       resolve(BaseUrl);
-//     };
-//   });
-// };
-
 interface User {
   id: string;
 }
-
-// Function to convert data URI to Blob
-// const dataURItoBlob4 = (dataURI: string) => {
-//   const binary = atob(dataURI.split(",")[1]);
-//   const array = [];
-//   for (let i = 0; i < binary.length; i++) {
-//     array.push(binary.charCodeAt(i));
-//   }
-//   return new Blob([new Uint8Array(array)], {
-//     type: "image/png",
-//   });
-// };
 
 interface TicketCategory {
   name: string;
@@ -193,12 +168,6 @@ const CreateEventForm: React.FC = () => {
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // const handleImageClick = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
 
   const handleNextStep = () => {
     setStep(step + 1);
