@@ -26,6 +26,12 @@ interface User {
   id: string;
 }
 
+interface EmailApiResponse {
+  status: boolean;
+  message: string;
+  data?: any;
+}
+
 const MyEvent: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector(
@@ -47,6 +53,7 @@ const MyEvent: React.FC = () => {
     subject: "",
     message: "",
   });
+  const [includeEventDetails, setIncludeEventDetails] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [uploadingImages, setUploadingImages] = useState(false);
@@ -113,6 +120,8 @@ const MyEvent: React.FC = () => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  const nanoid = customAlphabet("123456789", 11);
+
   const handleAddImages = async (eventid: string) => {
     if (files.length === 0) {
       toast.error("Please select at least one image to upload");
@@ -126,135 +135,61 @@ const MyEvent: React.FC = () => {
       formData.append("eventid", eventid);
       formData.append("hostid", user?.id || "");
 
-      const nanoid = customAlphabet("123456789", 11);
-
-      // Process each file sequentially to avoid memory issues
+      // Process images with nanoid naming
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        try {
-          console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
-
-          // Get the correct MIME type from the original file
-          const fileType = file.type || "image/jpeg"; // Fallback to jpeg if type not available
-
-          // Convert to base64
-          const base64 = await getBase64(file);
-
-          // Convert to blob with correct type
-          const blob = base64ToBlob(base64, fileType);
-
-          // Generate unique filename
-          const fileExtension = file.name.split(".").pop() || "jpg";
-          const uniqueName = `${nanoid()}.${fileExtension}`;
-
-          // Create new file with processed data
-          const processedFile = new File([blob], uniqueName, {
-            type: fileType,
-            lastModified: file.lastModified,
-          });
-
-          // Append to formData - try both variations
-          formData.append("images[]", processedFile); // Most common array format
-
-          console.log(`Processed and renamed image: ${uniqueName}`);
-        } catch (fileError) {
-          console.error(`Error processing file ${file.name}:`, fileError);
-          throw new Error(`Failed to process file ${file.name}`);
-        }
+        const elevenDigitName = nanoid();
+        const fileExtension = file.name.split(".").pop();
+        const banner = new File([file], `${elevenDigitName}.${fileExtension}`, {
+          type: file.type,
+          lastModified: file.lastModified,
+        });
+        formData.append("banner[]", banner);
       }
 
-      // Debug: Log formData contents
       console.log("FormData contents:");
-      formData.forEach((value, key) => {
-        if (value instanceof File) {
-          console.log(key, value.name, value.size, value.type);
-        } else {
-          console.log(key, value);
-        }
-      });
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value instanceof File ? value.name : value);
+      }
 
       const response = await fetch(
         `${process.env.REACT_APP_BASEURL}/eventhost/addpics`,
         {
           method: "POST",
           body: formData,
-          // Don't set Content-Type header - let the browser set it with boundary
         }
       );
 
-      // Log the raw response for debugging
       const responseText = await response.text();
-      console.log("Raw response:", responseText);
-
-      if (!response.ok) {
-        console.error("Upload failed with status:", response.status);
-        throw new Error(
-          `Upload failed: ${response.status} ${response.statusText}`
-        );
-      }
-
       let result;
       try {
         result = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error("Failed to parse response:", parseError);
-        throw new Error("Invalid server response format");
+      } catch (e) {
+        result = { message: responseText };
       }
 
-      if (!result.status) {
-        console.error("Server returned error:", result.message);
-        throw new Error(result.message || "Server rejected the upload");
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to upload images");
       }
 
-      toast.success("Images uploaded successfully!");
-      setIsImageModalOpen(false);
-      setFiles([]);
-      dispatch(setUpdateStatus((prev: boolean) => !prev));
+      if (result.status || response.ok) {
+        toast.success(result.message || "Images uploaded successfully!");
+        setIsImageModalOpen(false);
+        setFiles([]);
+        dispatch(setUpdateStatus((prev: boolean) => !prev));
+      } else {
+        throw new Error(result.message || "Failed to upload images");
+      }
     } catch (error) {
       console.error("Image upload error:", error);
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to upload images. Please check console for details."
+        error instanceof Error ? error.message : "Failed to upload images"
       );
     } finally {
       setUploadingImages(false);
     }
   };
 
-  // Add these utility functions to your component
-  const getBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        if (reader.result && typeof reader.result === "string") {
-          resolve(reader.result);
-        } else {
-          reject(new Error("Failed to read file as data URL."));
-        }
-      };
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
-  // Update the function signature to accept both parameters
-  const base64ToBlob = (
-    base64String: string,
-    contentType: string = "image/png"
-  ): Blob => {
-    const byteString = atob(base64String.split(",")[1]);
-    const arrayBuffer = new ArrayBuffer(byteString.length);
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    for (let i = 0; i < byteString.length; i++) {
-      uint8Array[i] = byteString.charCodeAt(i);
-    }
-
-    return new Blob([arrayBuffer], { type: contentType });
-  };
-
-  // Then update the handleSendEmail function in your component
   const handleSendEmail = async () => {
     if (!selectedEvent) return;
 
@@ -271,16 +206,13 @@ const MyEvent: React.FC = () => {
     setIsSending(true);
 
     try {
-      // Prepare the request body
       const requestBody = {
         eventid: selectedEvent.sn,
         subject: emailData.subject,
-        content: emailData.message, // Using just the message without event details
+        content: emailData.message,
       };
 
-      // Make the API call
       const response = await fetch(
-        // "https://moloyal.com/mosave_ukdemo/script/api/host/email_customer",
         `${process.env.REACT_APP_BASEURL}/host/email_customer`,
         {
           method: "POST",
@@ -291,12 +223,10 @@ const MyEvent: React.FC = () => {
         }
       );
 
-      // First check if response is OK (status 200-299)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Try to parse JSON, but handle cases where response might be empty
       let data;
       const text = await response.text();
       try {
@@ -306,7 +236,6 @@ const MyEvent: React.FC = () => {
         data = {};
       }
 
-      // If we got here, the request was successful
       toast.success("Email sent successfully!");
       setIsEmailModalOpen(false);
       setEmailData({
@@ -324,6 +253,7 @@ const MyEvent: React.FC = () => {
       setIsSending(false);
     }
   };
+
   const getPriceRange = (ticketCategories: { price: string }[]) => {
     const prices = ticketCategories.map((tc) => parseFloat(tc.price));
     const minPrice = Math.min(...prices);
@@ -331,7 +261,6 @@ const MyEvent: React.FC = () => {
     return { minPrice, maxPrice };
   };
 
-  // Quill editor configuration
   const quillModules = {
     toolbar: [
       [{ header: [1, 2, 3, false] }],
@@ -354,10 +283,9 @@ const MyEvent: React.FC = () => {
   ];
 
   const eventList: Event[] = events?.data || [];
-  console.log(selectedEvent);
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto px-4">
       {/* Enhanced Email Modal */}
       {isEmailModalOpen && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -365,7 +293,7 @@ const MyEvent: React.FC = () => {
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">
-                Envoyer un e-mail aux participants
+                Send Email to Attendees
               </h2>
               <button
                 onClick={() => setIsEmailModalOpen(false)}
@@ -392,7 +320,7 @@ const MyEvent: React.FC = () => {
             <div className="overflow-y-auto scrollbar p-6 flex-1">
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Événement
+                  Event
                 </label>
                 <div className="p-3 bg-gray-50 rounded-md">
                   <p className="font-medium">{selectedEvent.title}</p>
@@ -412,7 +340,7 @@ const MyEvent: React.FC = () => {
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Objet
+                  Subject
                 </label>
                 <input
                   type="text"
@@ -452,7 +380,7 @@ const MyEvent: React.FC = () => {
                 onClick={() => setIsEmailModalOpen(false)}
                 className="mr-3 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                Annuler
+                Cancel
               </button>
               <button
                 type="button"
@@ -482,10 +410,10 @@ const MyEvent: React.FC = () => {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Envoi en cours...
+                    Sending...
                   </>
                 ) : (
-                  "Envoyer un e-mail"
+                  "Send Email"
                 )}
               </button>
             </div>
@@ -499,7 +427,7 @@ const MyEvent: React.FC = () => {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-xl font-semibold text-gray-800">
-                Télécharger des images de l'événement
+                Upload Event Images
               </h2>
               <button
                 onClick={() => {
@@ -686,10 +614,13 @@ const MyEvent: React.FC = () => {
         {eventList.map((event: Event) => {
           const { minPrice, maxPrice } = getPriceRange(event.ticketCategories);
           return (
-            <div key={event.sn} className="w-full sm:w-1/2 md:w-1/3 px-2 mb-4">
-              <div className="bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70 flex flex-col h-full">
+            <div
+              key={event.sn}
+              className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 px-2 mb-4"
+            >
+              <div className="bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70 flex flex-col h-full hover:shadow-lg transition-shadow duration-300">
                 <img
-                  className="w-full h-64 object-cover rounded-t-xl"
+                  className="w-full h-48 sm:h-56 md:h-64 object-cover rounded-t-xl"
                   src={
                     event.imgs[0]?.img
                       ? `${process.env.REACT_APP_IMAGEURL}/${event.imgs[0]?.img}`
@@ -701,53 +632,144 @@ const MyEvent: React.FC = () => {
                   }}
                 />
                 <div className="p-4 md:p-5 flex flex-col flex-grow">
-                  <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-white line-clamp-2 mb-2 text-center">
                     {event.title}
                   </h3>
-                  <p className="mt-1 text-gray-500 dark:text-neutral-400">
+                  <p className="text-gray-500 dark:text-neutral-400 mb-2 text-center">
                     {event.currency}{" "}
                     {minPrice === maxPrice
                       ? minPrice
                       : `${minPrice} - ${maxPrice}`}
                   </p>
-                  <p className="mt-5 text-xs text-gray-500 dark:text-neutral-500">
+                  <p className="text-xs text-gray-500 dark:text-neutral-500 mb-4 text-center">
                     {event.date}
                   </p>
-                  <div className="mt-auto flex justify-end space-x-2">
-                    <button
-                      onClick={() => navigate(`/details/${event.slug}`)}
-                      className="bg-[#25aae1] text-white px-3 py-1 rounded hover:bg-[#1a8abf]"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => navigate(`/update-event/${event.sn}`)}
-                      className="text-white bg-[#0A0D36] py-1.5 px-4"
-                    >
-                      Edit
-                    </button>
-                    {/* Add Images Button */}
-                    <button
-                      onClick={() => {
-                        setSelectedEvent(event);
-                        setIsImageModalOpen(true);
-                      }}
-                      className="bg-purple-500 text-white px-3 py-1 rounded hover:bg-purple-600"
-                    >
-                      Add Images
-                    </button>
-                    <button
-                      onClick={() => handleEmailButtonClick(event)}
-                      className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                    >
-                      Email
-                    </button>
-                    <button
-                      onClick={() => deleteEventHandler(event.sn)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Delete
-                    </button>
+
+                  {/* Centered Responsive Button Container */}
+                  <div className="mt-auto flex justify-center">
+                    {/* Mobile: Vertical Stack - Centered */}
+                    <div className="flex flex-col space-y-2 w-full max-w-xs sm:hidden">
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => navigate(`/details/${event.slug}`)}
+                          className="bg-[#25aae1] text-white px-2 py-2 rounded hover:bg-[#1a8abf] text-sm font-medium transition-colors duration-200"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => navigate(`/update-event/${event.sn}`)}
+                          className="bg-[#0A0D36] text-white px-2 py-2 rounded hover:bg-[#070920] text-sm font-medium transition-colors duration-200"
+                        >
+                          Edit Event
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => {
+                            setSelectedEvent(event);
+                            setIsImageModalOpen(true);
+                          }}
+                          className="bg-purple-500 text-white px-2 py-2 rounded hover:bg-purple-600 text-sm font-medium transition-colors duration-200"
+                        >
+                          Images
+                        </button>
+                        <button
+                          onClick={() => handleEmailButtonClick(event)}
+                          className="bg-green-500 text-white px-2 py-2 rounded hover:bg-green-600 text-sm font-medium transition-colors duration-200"
+                        >
+                          Email
+                        </button>
+                      </div>
+                      <button
+                        onClick={() => deleteEventHandler(event.sn)}
+                        className="bg-red-500 text-white px-2 py-2 rounded hover:bg-red-600 text-sm font-medium transition-colors duration-200 w-full"
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    {/* Tablet: Compact Grid - Centered */}
+                    <div className="hidden sm:flex md:hidden flex-col space-y-2 w-full max-w-sm">
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          onClick={() => navigate(`/details/${event.slug}`)}
+                          className="bg-[#25aae1] text-white px-2 py-2 rounded hover:bg-[#1a8abf] text-xs font-medium transition-colors duration-200"
+                        >
+                          View
+                        </button>
+                        <button
+                          onClick={() => navigate(`/update-event/${event.sn}`)}
+                          className="bg-[#0A0D36] text-white px-2 py-2 rounded hover:bg-[#070920] text-xs font-medium transition-colors duration-200"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedEvent(event);
+                            setIsImageModalOpen(true);
+                          }}
+                          className="bg-purple-500 text-white px-2 py-2 rounded hover:bg-purple-600 text-xs font-medium transition-colors duration-200"
+                        >
+                          Images
+                        </button>
+                      </div>
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={() => handleEmailButtonClick(event)}
+                          className="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-xs font-medium transition-colors duration-200 flex-1 max-w-[100px]"
+                        >
+                          Email
+                        </button>
+                        <button
+                          onClick={() => deleteEventHandler(event.sn)}
+                          className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 text-xs font-medium transition-colors duration-200 flex-1 max-w-[100px]"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Desktop: Horizontal Layout - Centered */}
+                    <div className="hidden md:flex flex-wrap gap-2 justify-center w-full">
+                      <button
+                        onClick={() => navigate(`/details/${event.slug}`)}
+                        className="bg-[#25aae1] text-white px-3 py-2 rounded hover:bg-[#1a8abf] text-sm font-medium transition-colors duration-200 flex items-center justify-center min-w-[60px]"
+                        title="View Event"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => navigate(`/update-event/${event.sn}`)}
+                        className="bg-[#0A0D36] text-white px-3 py-2 rounded hover:bg-[#070920] text-sm font-medium transition-colors duration-200 flex items-center justify-center min-w-[60px]"
+                        title="Edit Event"
+                      >
+                        Edit Event
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedEvent(event);
+                          setIsImageModalOpen(true);
+                        }}
+                        className="bg-purple-500 text-white px-3 py-2 rounded hover:bg-purple-600 text-sm font-medium transition-colors duration-200 flex items-center justify-center min-w-[70px]"
+                        title="Add Images"
+                      >
+                        Add Images
+                      </button>
+                      <button
+                        onClick={() => handleEmailButtonClick(event)}
+                        className="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-sm font-medium transition-colors duration-200 flex items-center justify-center min-w-[60px]"
+                        title="Email Attendees"
+                      >
+                        Email
+                      </button>
+                      <button
+                        onClick={() => deleteEventHandler(event.sn)}
+                        className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 text-sm font-medium transition-colors duration-200 flex items-center justify-center min-w-[70px]"
+                        title="Delete Event"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

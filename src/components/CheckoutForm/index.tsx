@@ -17,11 +17,10 @@ import { NumericFormat } from "react-number-format";
 import { Link, useNavigate } from "react-router-dom";
 import { getCurrency, getCurrencyName } from "../../utils/functions";
 import { sha256, sha224 } from "js-sha256";
-
 import usePost from "../../hooks/usePost";
-
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { loadStripe } from "@stripe/stripe-js";
 
 type Props = {
   tickets: Array<any>;
@@ -51,7 +50,12 @@ const CheckoutForm = (props: Props) => {
   const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
   const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
   const baseUrl = process.env.REACT_APP_BASEURL;
+  const MERCHANTACCOUNT = process.env.REACT_APP_MERCHANTACCOUNT;
+  const PAYWALLSECRETKEY = process.env.REACT_APP_PAYWALLSECRETKEY;
+  const PAYWALLURL = process.env.REACT_APP_PAYWALLURL;
+  const NOTIFICATIONKEY = process.env.REACT_APP_NOTIFICATIONKEY;
   const STRIPE_KEY = process.env.REACT_APP_STRIPE_KEY;
+
   const initialValues = {
     firstName: "",
     lastName: "",
@@ -60,13 +64,7 @@ const CheckoutForm = (props: Props) => {
     userConsent: false,
     terms: false,
   };
-  const MERCHANTACCOUNT = process.env.REACT_APP_MERCHANTACCOUNT;
-  const PAYWALLSECRETKEY = process.env.REACT_APP_PAYWALLSECRETKEY;
-  const PAYWALLURL = process.env.REACT_APP_PAYWALLURL;
-  const NOTIFICATIONKEY = process.env.REACT_APP_NOTIFICATIONKEY;
 
-  //$signature    = hash('sha256', $paywallSecretKey . $json_payload)
-  //console.log(data);
   const [formData, setFormData] = useState<ICheckoutForm>(initialValues);
   const [errors, setErrors] = useState<ICheckoutForm>(initialValues);
   const [touched, setTouched] = useState<IBoolean>({
@@ -77,40 +75,26 @@ const CheckoutForm = (props: Props) => {
     terms: false,
   });
   const [disabled, setDisabled] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    "payzone" | "stripe" | null
+  >(null);
   const [discount, setDiscount] = useState("");
   const [ticketDatas, setTicketDatas] = useState("");
   const { firstName, lastName, email, phoneNo, userConsent, terms } = formData;
-  const [stripeToken, setStripeToken] = useState(null);
   const navigate = useNavigate();
 
-  const onToken = (token: any) => {
-    // console.log(token);
-    setStripeToken(token);
-  };
   const currency = data && getCurrency(data);
   const currencyName = data && getCurrencyName(data);
   const query = new URLSearchParams(window.location.search);
 
   useEffect(() => {
-    // Check to see if this is a redirect back from Checkout
     const customId = "toastid";
 
     if (query.get("success")) {
       toast.success("Order placed! You will receive an email confirmation.", {
         toastId: customId,
       });
-
-      // console.log(tickets);
-
-      // console.log(ticketDatas);
-      // navigate("/success", {
-      //   state: {
-
-      //     tickets: tickets,
-      //     ticketData: ticketDatas,
-      //     data: { data, totalAmount, subTotal, vat  } },
-      //   replace: true
-      //   })
     }
 
     if (query.get("canceled")) {
@@ -120,39 +104,6 @@ const CheckoutForm = (props: Props) => {
     }
   }, [query]);
 
-  // useEffect(() => {
-  //   const MakeRequest = async ()=>{
-
-  //          try {
-
-  //       const res= await axios.post(`${baseUrl}/stripe/payment`, {
-  //            tokenId : stripeToken.id,
-  //            amount: totalAmount*100,
-  //            currency: currencycode
-  //       });
-
-  //       console.log(tickets);
-
-  //       console.log(ticketDatas);
-  //       // navigate("/success", {
-  //       // state: {
-  //       //   stripeData: res.data,
-  //       //   tickets: tickets,
-  //       //   ticketData: ticketDatas,
-  //       //   data: { data, totalAmount, subTotal, vat  } },
-  //       // replace: true
-  //       // })
-
-  //      console.log(stripeData);
-  //   } catch (error) {
-  //       console.log(error);
-
-  //   }
-  //   };
-
-  //   stripeToken && MakeRequest();
-  // }, [stripeToken, navigate])
-  //console.log(ticketDatas);
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData((prevState) => ({
       ...prevState,
@@ -183,48 +134,35 @@ const CheckoutForm = (props: Props) => {
     validate();
   }, [formData]);
 
-  // console.log(tickets[0]);
   const datee = Date.now();
   let f = datee.toString();
   let time = f.substring(0, 10);
-  // console.log(time);
-
-  // console.log(firstName);
 
   const userDatads = {
     firstName,
     lastName,
     email,
     phoneNo,
-
     discount,
     currencyName,
   };
-  //  const newdata= {...tickets,firstName, lastName, email, phoneNo,userConsent,terms, discount, currencyName, vat}
-  // console.log(userDatads);
 
-  // console.log(tickets)
   const title = data.title;
-  const payLoad = {
-    // Authentication parameters
+
+  // Payzone Payload
+  const payzonePayload = {
     merchantAccount: MERCHANTACCOUNT,
     timestamp: time,
-    skin: "vps-1-vue", // fixed value
-
-    // Customer parameters
-    customerId: time, // must be unique for each custumer
-    customerCountry: "MA", // fixed value
+    skin: "vps-1-vue",
+    customerId: time,
+    customerCountry: "MA",
     customerLocale: "en_US",
-
-    // Charge parameters
-    chargeId: time, // Optional, if defined, it must be unique for each redirection to the payment page
-    //"orderId" : "order1",                  // Optional, to identify the cart
+    chargeId: time,
     price: totalAmount.toString(),
     currency: "MAD",
     description: title,
     customerName: firstName + " " + lastName,
     customerEmail: email,
-    //chargeProperties: tickets,
     chargeProperties: {
       firstName: firstName,
       title: title,
@@ -234,230 +172,66 @@ const CheckoutForm = (props: Props) => {
       vat: vat.toString(),
       bookfee: totalbookingFee.toString(),
       currencyName: "MAD",
-    }, // a ticket with its properties like name, price, qty etc.
-    //"lineItemProperties": tickets,
-
-    memo: JSON.stringify(tickets), // Array of objects, each object is,
-    // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-    // Deep linking
-    mode: "DEEP_LINK", // fixed value
-    paymentMethod: "CREDIT_CARD", // fixed value
+    },
+    memo: JSON.stringify(tickets),
+    mode: "DEEP_LINK",
+    paymentMethod: "CREDIT_CARD",
     showPaymentProfiles: "true",
     callbackUrl:
-      "https://moloyal.com/mosave-ma/script/api/dispense_ticket/payzone_ma", // Optional, if defined, it will be used to redirect the user after payment
+      "https://moloyal.com/mosave-ma/script/api/dispense_ticket/payzone_ma",
     successUrl: "https://motickets.ma",
     failureUrl: "https://motickets.ma/failure",
     cancelUrl: "https://motickets.ma/failure",
   };
 
-  // Encode the payload
-  const json_payload = JSON.stringify(payLoad);
-  //  console.log(payLoad);
-  //   console.log(json_payload);
-
-  let shaString = sha256(PAYWALLSECRETKEY + json_payload);
+  const json_payload = JSON.stringify(payzonePayload);
   const signature = sha256(PAYWALLSECRETKEY + json_payload);
-  // console.log(signature);
 
-  //   const onSubmit: FormEventHandler<HTMLFormElement> = async (
-  //     e: FormEvent<HTMLFormElement>
-  //   ) => {
-  //     // console.log("got");
-  //     e.preventDefault();
-  //     if (!terms) {
-  //       toast.error("Please accept the terms and conditions");
-  //     } else {
+  // Stripe Payment Handler
+  const handleStripePayment = async () => {
+    if (!terms) {
+      toast.error("Please accept the terms and conditions");
+      return;
+    }
 
-  //   const ticketData = {
-  //         firstName,
-  //         lastName,
-  //         email,
-  //         phoneNo,
-  //         userConsent,
-  //         terms,
-  //         discount,
-  //         currencyName,
-  //         vat,
-  //         tickets,
-  //       };
-  //       console.log(ticketData);
-  //   const payLoad={
+    setIsProcessing(true);
+    try {
+      const ticketData = {
+        firstName,
+        lastName,
+        email,
+        phoneNo,
+        userConsent,
+        terms,
+        discount,
+        currencyName,
+        vat,
+        tickets,
+        totalAmount,
+        subTotal,
+        totalbookingFee,
+      };
 
-  //     // Authentication parameters
-  //     merchantAccount : MERCHANTACCOUNT,
-  //     timestamp: time,
-  //     skin : 'vps-1-vue', // fixed value
+      const response = await axios.post(`${baseUrl}/checkout/stripe_session`, {
+        ticketData,
+        amount: totalAmount,
+        currency: currencyName || "MAD",
+        successUrl: `${window.location.origin}/success`,
+        cancelUrl: `${window.location.origin}/checkout`,
+      });
 
-  //     // Customer parameters
-  //     customerId: time, // must be unique for each custumer
-  //     customerCountry: 'MA',	  // fixed value
-  //     customerLocale: 'en_US',
-
-  //     // Charge parameters
-  //     chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-  //     orderId : 'order1',                  // Optional, to identify the cart
-  //     price    : '10',
-  //     currency  : 'MAD',
-  //     description   :'A Big Hat',
-  //    // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-  //     lineitemproperties: tickets, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-  //     // Deep linking
-  //     mode : 'DEEP_LINK',	// fixed value
-  //     paymentMethod : 'CREDIT_CARD',	 // fixed value
-  //     showPaymentProfiles : 'false',
-  //     callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-  //     successUrl : "https://motickets.ma",
-  //     failureUrl : "https://motickets.ma/failure",
-  //     cancelUrl : "https://motickets.ma/failure",
-
-  // }
-
-  //  // Encode the payload
-  //  const json_payload = JSON.stringify(payLoad);
-  //  console.log(json_payload);
-  //  console.log(PAYWALLSECRETKEY);
-  //  //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
-  //  const signature= sha256(PAYWALLSECRETKEY + json_payload);
-  //   console.log(signature);
-  //       console.log(PAYWALLURL)
-  // let params = {
-  //   json_payload: json_payload,
-  //         signature: signature
-  // }
-  //       const res = await fetch(PAYWALLURL, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify(params),
-  //       });
-  //       // const res = await axios.post(PAYWALLURL, {
-  //       //   //ticketData: ticketData,
-  //       //   json_payload: json_payload,
-  //       //   signature: signature,
-  //       // });
-
-  //       // const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
-  //       //   ticketData: ticketData,
-  //       // });
-
-  //        console.log(res);
-  //       //window.location.href = res.data.url;
-  //     }
-  //   };
-
-  const ticketData = {
-    firstName: firstName,
-    lastName: lastName,
-    email,
-    phoneNo,
-    userConsent,
-    terms,
-    discount,
-    currencyName,
-    vat,
+      if (response.data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = response.data.url;
+      } else {
+        throw new Error("No checkout URL received from server");
+      }
+    } catch (error) {
+      console.error("Stripe payment error:", error);
+      toast.error("Failed to initiate Stripe payment. Please try again.");
+      setIsProcessing(false);
+    }
   };
-  const newdata = {
-    ...tickets[0],
-    firstName,
-    lastName,
-    email,
-    phoneNo,
-    userConsent,
-    terms,
-    discount,
-    currencyName,
-    vat,
-  };
-
-  // console.log(signature);
-
-  //   const onSubmit: FormEventHandler<HTMLFormElement> = async (
-  //     e: FormEvent<HTMLFormElement>
-  //   ) => {
-  //     // console.log("got");
-  //     e.preventDefault();
-  //     if (!terms) {
-  //       toast.error("Please accept the terms and conditions");
-  //     } else {
-
-  //   const ticketData = {
-  //         firstName,
-  //         lastName,
-  //         email,
-  //         phoneNo,
-  //         userConsent,
-  //         terms,
-  //         discount,
-  //         currencyName,
-  //         vat,
-  //         tickets,
-  //       };
-  //       console.log(ticketData);
-  //   const payLoad={
-
-  //     // Authentication parameters
-  //     merchantAccount : MERCHANTACCOUNT,
-  //     timestamp: time,
-  //     skin : 'vps-1-vue', // fixed value
-
-  //     // Customer parameters
-  //     customerId: time, // must be unique for each custumer
-  //     customerCountry: 'MA',	  // fixed value
-  //     customerLocale: 'en_US',
-
-  //     // Charge parameters
-  //     chargeId:    time,					// Optional, if defined, it must be unique for each redirection to the payment page
-  //     orderId : 'order1',                  // Optional, to identify the cart
-  //     price    : '10',
-  //     currency  : 'MAD',
-  //     description   :'A Big Hat',
-  //    // chargeProperties: tickets[0], // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-  //     lineitemproperties: tickets, // Array of objects, each object is a ticket with its properties like name, price, qty etc.
-  //     // Deep linking
-  //     mode : 'DEEP_LINK',	// fixed value
-  //     paymentMethod : 'CREDIT_CARD',	 // fixed value
-  //     showPaymentProfiles : 'false',
-  //     callbackUrl : 'https://moloyal.com/test/mosave-ma/script/api/dispense_ticket/payzone_ma', // Optional, if defined, it will be used to redirect the user after payment
-  //     successUrl : "https://motickets.ma",
-  //     failureUrl : "https://motickets.ma/failure",
-  //     cancelUrl : "https://motickets.ma/failure",
-
-  // }
-
-  //  // Encode the payload
-  //  const json_payload = JSON.stringify(payLoad);
-  //  console.log(json_payload);
-  //  console.log(PAYWALLSECRETKEY);
-  //  //let shaString = sha256(PAYWALLSECRETKEY + json_payload);
-  //  const signature= sha256(PAYWALLSECRETKEY + json_payload);
-  //   console.log(signature);
-  //       console.log(PAYWALLURL)
-  // let params = {
-  //   json_payload: json_payload,
-  //         signature: signature
-  // }
-  //       const res = await fetch(PAYWALLURL, {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify(params),
-  //       });
-  //       // const res = await axios.post(PAYWALLURL, {
-  //       //   //ticketData: ticketData,
-  //       //   json_payload: json_payload,
-  //       //   signature: signature,
-  //       // });
-
-  //       // const res = await axios.post(`${baseUrl}/checkout/stripe_session`, {
-  //       //   ticketData: ticketData,
-  //       // });
-
-  //        console.log(res);
-  //       //window.location.href = res.data.url;
-  //     }
-  //   };
 
   const validate = () => {
     validationSchema
@@ -483,28 +257,136 @@ const CheckoutForm = (props: Props) => {
   const onDiscountClick = () => {};
 
   return tickets ? (
-    <div className="mx-auto max-w-2xl bg-gray-200 px-4 pb-24 pt-32 sm:px-6 lg:max-w-7xl lg:px-8">
-      <div className="xl:gap-x-16 lg:gap-x-12 lg:grid-cols-2 grid max-w-[1200px]">
-        <div>
-          <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-800">
-              Paiement
-            </h2>
-          </div>
-          <div className="mt-10">
-            <h2 className="font-medium text-gray-800 text-lg">
-              Informations sur le billet
-            </h2>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-[#25aae1] to-blue-800 bg-clip-text text-transparent mb-4">
+            Paiement Sécurisé
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Complete your purchase with confidence
+          </p>
+          <div className="w-24 h-1 bg-gradient-to-r from-[#25aae1] to-[#c10006] mx-auto rounded-full mt-4"></div>
+        </div>
 
-            <form action={PAYWALLURL} method="POST">
-              <input type="hidden" name="payload" value={json_payload} />
-              <input type="hidden" name="signature" value={signature} />
-              <div className="grid gap-6 mb-6 md:grid-cols-2 mt-4">
-                <div>
+        <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
+          {/* Left Column - Form */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 bg-gradient-to-r from-[#25aae1] to-[#1e8fc5] rounded-full flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Informations Personnelles
+              </h2>
+            </div>
+
+            {/* Payment Method Selection */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Choose Payment Method
+              </h3>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("stripe")}
+                  className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                    selectedPaymentMethod === "stripe"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                      : "border-gray-200 dark:border-gray-600 hover:border-blue-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                        selectedPaymentMethod === "stripe"
+                          ? "border-blue-500 bg-blue-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {selectedPaymentMethod === "stripe" && (
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <div className="font-semibold text-gray-900 dark:text-white">
+                        Stripe
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        International Payment
+                      </div>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPaymentMethod("payzone")}
+                  className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                    selectedPaymentMethod === "payzone"
+                      ? "border-green-500 bg-green-50 dark:bg-green-900/20"
+                      : "border-gray-200 dark:border-gray-600 hover:border-green-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                        selectedPaymentMethod === "payzone"
+                          ? "border-green-500 bg-green-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {selectedPaymentMethod === "payzone" && (
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      )}
+                    </div>
+                    <div className="text-left">
+                      <div className="font-semibold text-gray-900 dark:text-white">
+                        Payzone
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Local Payment
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              {/* Name Fields */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
                   <label
                     htmlFor="firstName"
-                    className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
+                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
+                    <svg
+                      className="w-4 h-4 text-[#25aae1]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
                     Prénom
                   </label>
                   <input
@@ -515,16 +397,18 @@ const CheckoutForm = (props: Props) => {
                     onChange={onChange}
                     onFocus={onFocus}
                     onBlur={onBlur}
-                    className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-800 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="w-full px-4 py-3 bg-white/80 dark:bg-gray-700/80 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-[#25aae1] focus:ring-2 focus:ring-[#25aae1]/20 transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Enter your first name"
                   />
-                  <small className="form-error">
+                  <small className="form-error text-red-500 text-sm">
                     {touched?.firstName && errors?.firstName}
                   </small>
                 </div>
-                <div>
+
+                <div className="space-y-2">
                   <label
                     htmlFor="lastName"
-                    className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
+                    className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
                   >
                     Nom de famille
                   </label>
@@ -536,40 +420,74 @@ const CheckoutForm = (props: Props) => {
                     onChange={onChange}
                     onFocus={onFocus}
                     onBlur={onBlur}
-                    className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-800 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="w-full px-4 py-3 bg-white/80 dark:bg-gray-700/80 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-[#25aae1] focus:ring-2 focus:ring-[#25aae1]/20 transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    placeholder="Enter your last name"
                   />
-                  <small className="form-error">
+                  <small className="form-error text-red-500 text-sm">
                     {touched?.lastName && errors?.lastName}
                   </small>
                 </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
+              </div>
+
+              {/* Email Field */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  <svg
+                    className="w-4 h-4 text-[#25aae1]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Adresse e-mail
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={email}
-                    onChange={onChange}
-                    onFocus={onFocus}
-                    onBlur={onBlur}
-                    className="bg-gray-50 border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-800 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                  />
-                  <small className="form-error">
-                    {touched?.email && errors?.email}
-                  </small>
-                </div>
-                <div>
-                  <label
-                    htmlFor="phoneNo"
-                    className="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-800"
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Adresse e-mail
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={email}
+                  onChange={onChange}
+                  onFocus={onFocus}
+                  onBlur={onBlur}
+                  className="w-full px-4 py-3 bg-white/80 dark:bg-gray-700/80 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-[#25aae1] focus:ring-2 focus:ring-[#25aae1]/20 transition-all duration-300 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                  placeholder="your.email@example.com"
+                />
+                <small className="form-error text-red-500 text-sm">
+                  {touched?.email && errors?.email}
+                </small>
+              </div>
+
+              {/* Phone Field */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="phoneNo"
+                  className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300"
+                >
+                  <svg
+                    className="w-4 h-4 text-[#25aae1]"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Numéro de téléphone
-                  </label>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                  Numéro de téléphone
+                </label>
+                <div className="relative">
                   <PhoneInput
                     defaultCountry={defaultCountryCode as CountryCode}
                     name="phoneNo"
@@ -579,16 +497,17 @@ const CheckoutForm = (props: Props) => {
                     onFocus={onFocus}
                     onChange={handleChange}
                     onBlur={onBlur}
-                    className="inputClass"
+                    className="w-full px-4 py-3 bg-white/80 dark:bg-gray-700/80 border-2 border-gray-200 dark:border-gray-600 rounded-xl focus:border-[#25aae1] focus:ring-2 focus:ring-[#25aae1]/20 transition-all duration-300 text-gray-900 dark:text-white"
                   />
-                  <small className="form-error">
-                    {touched?.phoneNo && errors?.phoneNo}
-                  </small>
                 </div>
+                <small className="form-error text-red-500 text-sm">
+                  {touched?.phoneNo && errors?.phoneNo}
+                </small>
               </div>
 
-              <div className="flex mb-6">
-                <div className="flex items-center h-5">
+              {/* Terms Checkbox */}
+              <div className="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-800">
+                <div className="flex items-center h-5 mt-1">
                   <input
                     id="terms"
                     name="terms"
@@ -597,25 +516,31 @@ const CheckoutForm = (props: Props) => {
                     onFocus={onFocus}
                     onChange={onChange}
                     onBlur={onBlur}
-                    className="w-4 h-4 text-red-600 bg-white border-gray-900 rounded focus:ring-red-600 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-5 h-5 text-[#25aae1] bg-white border-2 border-gray-300 rounded focus:ring-[#25aae1] focus:ring-2"
                   />
                 </div>
-                <div className="ms-2 text-sm">
+                <div className="text-sm">
                   <label
                     htmlFor="terms"
-                    className="font-medium text-blue-500  dark:text-blue-300 underline"
+                    className="font-medium text-gray-700 dark:text-gray-300"
                   >
                     J'accepte le/la/les{" "}
-                    <Link to="/terms">termes et conditions</Link>
+                    <Link
+                      to="/terms"
+                      className="text-[#25aae1] hover:text-[#1e8fc5] underline font-semibold"
+                    >
+                      termes et conditions
+                    </Link>
                   </label>
-                  <p className="form-error">
+                  <p className="form-error text-red-500 text-sm mt-1">
                     {touched?.terms && errors?.terms}
                   </p>
                 </div>
               </div>
 
-              {/* <div className="flex mb-6">
-                <div className="flex items-center h-5">
+              {/* User Consent Checkbox */}
+              <div className="flex items-start space-x-3 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                <div className="flex items-center h-5 mt-1">
                   <input
                     id="userConsent"
                     name="userConsent"
@@ -624,189 +549,309 @@ const CheckoutForm = (props: Props) => {
                     onFocus={onFocus}
                     onChange={onChange}
                     onBlur={onBlur}
-                    className="w-4 h-4 text-red-600 bg-white border-[#25aae1] rounded focus:ring-red-600 dark:focus:ring-red-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-5 h-5 text-[#25aae1] bg-white border-2 border-gray-300 rounded focus:ring-[#25aae1] focus:ring-2"
                   />
                 </div>
-                <div className="ms-2 text-sm">
+                <div className="text-sm">
                   <label
                     htmlFor="userConsent"
-                    className="font-medium text-gray-800 dark:text-gray-300"
+                    className="font-medium text-gray-700 dark:text-gray-300"
                   >
                     Créer un compte avec les informations ci-dessus.
                   </label>
                 </div>
-              
-              </div> */}
-              {/* <StripeCheckout
-       name = "MoTickets "
-       image = "https://moloyal.com/images/moticketsicon.png"
-      //  billingAddress
-      //  shippingAddress
-      currency={currencycode}
-      email={email}
-      description={`Your total amount is ${currency}${totalAmount}`}
-       amount={totalAmount*100}
-       token={onToken}
-      stripeKey={STRIPE_KEY}
-      > 
-       */}
-              <button
-                type="submit"
-                disabled={disabled}
-                className={`${
-                  disabled ? "disabled" : ""
-                } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700`}
-              >
-                Payer &nbsp;
-                <NumericFormat
-                  value={Number(totalAmount).toFixed(2)}
-                  displayType={"text"}
-                  thousandSeparator={true}
-                  prefix={`${currency}`}
-                />
-              </button>
-              {/* </StripeCheckout> */}
-            </form>
-          </div>
-        </div>
+              </div>
 
-        <div className="mt-10 lg:mt-0">
-          <h2 className="text-lg font-medium text-gray-800">
-            Résumé du billet
-          </h2>
-          <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-            <div className="px-4 py-6 sm:px-6">
-              {/* <form>
-                <label
-                  htmlFor="discount"
-                  className="block font-medium text-sm text-black1"
-                >
-                  Discount code
-                </label>
-                <div className="mt-1 flex abj">
-                  <input
-                    type="text"
-                    id="discount"
-                    name="discount"
-                    value={discount}
-                    onChange={onDiscountChange}
-                    className="block w-full p-2.5 rounded-md border border-gray-300 shadow-sm sm:text-sm"
-                  />
+              {/* Payment Buttons */}
+              <div className="space-y-4">
+                {/* Stripe Payment Button - Only show when Stripe is selected */}
+                {selectedPaymentMethod === "stripe" && (
                   <button
                     type="button"
-                    onClick={onDiscountClick}
-                    disabled={discount?.length == 0}
-                    className={`${
-                      discount?.length == 0
-                        ? "bg-gray-200 text-gray-600 disabled"
-                        : "bg-red-600 text-gray-800"
-                    } rounded-md px-4 text-sm font-medium bie bmz bne bnq bog bok`}
+                    onClick={handleStripePayment}
+                    disabled={disabled || isProcessing}
+                    className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                      disabled || isProcessing
+                        ? "bg-gray-400 cursor-not-allowed text-gray-200"
+                        : "bg-gradient-to-r from-[#635bff] to-[#8a85ff] hover:from-[#544fe5] hover:to-[#7a75e5] hover:shadow-2xl hover:scale-105 text-white shadow-lg"
+                    }`}
                   >
-                    Apply
+                    {isProcessing ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-6 h-6"
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                        >
+                          <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.622 15.697 0 12.165 0 9.667 0 7.75.654 6.417 1.918 5.2 3.094 4.446 4.733 4.446 6.787c0 4.016 2.73 5.435 6.899 6.546 2.172.806 3.356 1.426 3.356 2.409 0 .748-.558 1.305-1.762 1.305-2.484 0-5.25-.956-7.02-1.8L5 21.828c1.2.515 3.28.956 5.96.956 2.72 0 4.77-.645 6.16-1.8 1.35-1.14 2.022-2.78 2.022-4.765 0-4.237-2.73-5.435-6.899-6.546z" />
+                        </svg>
+                        Pay with Stripe -{" "}
+                        <NumericFormat
+                          value={Number(totalAmount).toFixed(2)}
+                          displayType={"text"}
+                          thousandSeparator={true}
+                          prefix={`${currency}`}
+                        />
+                      </>
+                    )}
                   </button>
-                </div>
-              </form> */}
+                )}
+
+                {/* Payzone Payment Form - Only show when Payzone is selected */}
+                {selectedPaymentMethod === "payzone" && (
+                  <form action={PAYWALLURL} method="POST">
+                    <input type="hidden" name="payload" value={json_payload} />
+                    <input type="hidden" name="signature" value={signature} />
+                    <button
+                      type="submit"
+                      disabled={disabled || isProcessing}
+                      className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3 ${
+                        disabled || isProcessing
+                          ? "bg-gray-400 cursor-not-allowed text-gray-200"
+                          : "bg-gradient-to-r from-[#25aae1] to-[#c10006] hover:from-[#1e8fc5] hover:to-[#a80005] hover:shadow-2xl hover:scale-105 text-white shadow-lg"
+                      }`}
+                    >
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                      </svg>
+                      Pay with Payzone -{" "}
+                      <NumericFormat
+                        value={Number(totalAmount).toFixed(2)}
+                        displayType={"text"}
+                        thousandSeparator={true}
+                        prefix={`${currency}`}
+                      />
+                    </button>
+                  </form>
+                )}
+
+                {/* Show message when no payment method is selected */}
+                {!selectedPaymentMethod && (
+                  <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
+                    <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+                      Please select a payment method to continue
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Order Summary */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border border-white/20">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 bg-gradient-to-r from-[#c10006] to-[#a80005] rounded-full flex items-center justify-center">
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Résumé du billet
+              </h2>
             </div>
 
-            <dl className="aby border-t border-gray-200 px-4 py-6 sm:px-6">
+            {/* Tickets List */}
+            <div className="space-y-4 mb-6">
               {tickets.map((item, i) => (
-                <div className="flex items-center justify-between" key={i}>
-                  <dt className="text-base text-customBlack">{`${item?.qty} * ${item?.name}`}</dt>
-                  <dd className="text-base font-medium text-customBlack">
+                <div
+                  key={i}
+                  className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600"
+                >
+                  <div>
+                    <div className="font-semibold text-gray-900 dark:text-white">
+                      {item?.name}
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {item?.qty} x{" "}
+                      <NumericFormat
+                        value={Number(item.price).toFixed(2)}
+                        displayType={"text"}
+                        thousandSeparator={true}
+                        prefix={`${currency}`}
+                      />
+                    </div>
+                  </div>
+                  <div className="font-bold text-gray-900 dark:text-white">
                     <NumericFormat
                       value={Number(item.price * item.qty).toFixed(2)}
                       displayType={"text"}
                       thousandSeparator={true}
                       prefix={`${currency}`}
                     />
-                  </dd>
+                  </div>
                 </div>
               ))}
+            </div>
 
-              <div className="flex items-center justify-between">
-                <dt className="text-base text-customBlack">Total partiel</dt>
-                <dd className="text-base font-medium text-customBlack">
+            {/* Price Breakdown */}
+            <div className="space-y-3 border-t border-gray-200 dark:border-gray-600 pt-6">
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span>Total partiel</span>
+                <span>
                   <NumericFormat
                     value={Number(subTotal).toFixed(2)}
                     displayType={"text"}
                     thousandSeparator={true}
                     prefix={`${currency}`}
                   />
-                </dd>
+                </span>
               </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-base text-customBlack">
-                  Frais de réservation
-                </dt>
-                <dd className="text-base font-medium text-customBlack">
+
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span>Frais de réservation</span>
+                <span>
                   <NumericFormat
                     value={Number(totalbookingFee).toFixed(2)}
                     displayType={"text"}
                     thousandSeparator={true}
                     prefix={`${currency}`}
                   />
-                </dd>
+                </span>
               </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-base text-customBlack">
+
+              <div className="flex justify-between text-gray-600 dark:text-gray-400">
+                <span className="flex items-center gap-2">
                   TVA
-                  <span className="ml-2 rounded-lg bg-gray-200 px-2 py-1 text-xs tracking-wide text-gray-600">
+                  <span className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-full text-xs">
                     {taxPercent}%
                   </span>
-                </dt>
-                <dd className="text-base font-medium text-customBlack">
+                </span>
+                <span>
                   <NumericFormat
                     value={Number(vat).toFixed(2)}
                     displayType={"text"}
                     thousandSeparator={true}
                     prefix={`${currency}`}
                   />
-                </dd>
+                </span>
               </div>
 
-              <div className="flex items-center justify-between border-t border-gray-500 pt-6">
-                <dt className="text-lg text-customBlack font-bold">Total</dt>
-                <dd className="text-base font-bold text-customBlack">
+              {/* Total */}
+              <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-600">
+                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                  Total
+                </span>
+                <span className="text-2xl font-black text-[#c10006]">
                   <NumericFormat
                     value={Number(totalAmount).toFixed(2)}
                     displayType={"text"}
                     thousandSeparator={true}
                     prefix={`${currency}`}
                   />
-                </dd>
+                </span>
               </div>
-            </dl>
-            <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-              {/* <StripeCheckout
-       name = "MoTickets"
-       image = "https://moloyal.com/images/moticketsicon.png"
-      //  billingAddress
-      //  shippingAddress
-      currency={currencycode}
-      email={email}
-       description={`Your total amount is ${currency}${totalAmount}`}
-       amount={totalAmount*100}
-       token={onToken}
-      stripeKey={STRIPE_KEY}
-      >  */}
+            </div>
 
-              {/* <button
-                type="submit"
-                disabled={disabled}
-                className={`${
-                  disabled ? "disabled" : ""
-                } flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-gray-800 shadow-sm hover:bg-red-700`}
-              >
-                Pay &nbsp;
-                <NumericFormat
-                  value={Number(totalAmount).toFixed(2)}
-                  displayType={"text"}
-                  thousandSeparator={true}
-                  prefix={`${currency}`}
-                />
-              </button> */}
+            {/* Payment Method Info */}
+            <div className="mt-8 space-y-4">
+              {selectedPaymentMethod === "stripe" && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.622 15.697 0 12.165 0 9.667 0 7.75.654 6.417 1.918 5.2 3.094 4.446 4.733 4.446 6.787c0 4.016 2.73 5.435 6.899 6.546 2.172.806 3.356 1.426 3.356 2.409 0 .748-.558 1.305-1.762 1.305-2.484 0-5.25-.956-7.02-1.8L5 21.828c1.2.515 3.28.956 5.96.956 2.72 0 4.77-.645 6.16-1.8 1.35-1.14 2.022-2.78 2.022-4.765 0-4.237-2.73-5.435-6.899-6.546z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-blue-800 dark:text-blue-300">
+                        Stripe Secure Payment
+                      </div>
+                      <div className="text-sm text-blue-600 dark:text-blue-400">
+                        Accepts all major credit and debit cards
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
-              {/* </StripeCheckout> */}
+              {selectedPaymentMethod === "payzone" && (
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-green-800 dark:text-green-300">
+                        Payzone Secure Payment
+                      </div>
+                      <div className="text-sm text-green-600 dark:text-green-400">
+                        Local payment gateway with enhanced security
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!selectedPaymentMethod && (
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                      <svg
+                        className="w-4 h-4 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-800 dark:text-gray-200">
+                        Select Payment Method
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        Choose between Stripe or Payzone to proceed with payment
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

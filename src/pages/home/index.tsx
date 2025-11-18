@@ -1,6 +1,7 @@
 import HeroBanner from "../../components/HeroBanner";
 import CardBlogAction from "../../components/CardBlogAction";
 import { ToastContainer } from "react-toastify";
+import PastEvent from "../../components/PastEvents";
 
 type Props = {};
 
@@ -11,7 +12,7 @@ const Home = (props: Props) => {
       <CardBlogAction />
       {/* <Offers /> */}
       {/* <Trending /> */}
-      {/* <PastEvent /> */}
+      <PastEvent />
       {/* <TopRated /> */}
       <ToastContainer />
     </div>

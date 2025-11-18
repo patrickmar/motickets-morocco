@@ -37,7 +37,8 @@ type CurrencySymbolMap = {
   USD: "$";
   NGN: "₦";
   EUR: "€";
-  MAD: "د.م."; // Moroccan Dirham symbol
+  MAD: "د.م.";
+  // MAD: "mad";
 
   // Add more currencies if needed
 };
@@ -47,7 +48,8 @@ const currencySymbolMap: CurrencySymbolMap = {
   USD: "$",
   NGN: "₦",
   EUR: "€",
-  MAD: "د.م.", // Moroccan Dirham symbol
+  MAD: "د.م.",
+  // MAD: "mad",
 
   // Add more currencies if needed
 };
@@ -77,17 +79,26 @@ interface EventData {
 
 const BaseUrl = `${process.env.REACT_APP_BASEURL}/host_create/eventticket`;
 
+// Image validation constants
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+const ACCEPTED_IMAGE_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/gif",
+];
+const MAX_IMAGE_DIMENSIONS = {
+  width: 5000, // Maximum width in pixels
+  height: 5000, // Maximum height in pixels
+};
+
 const CreateEventForm: React.FC = () => {
   const formats = QuillFormats;
   const [step, setStep] = useState<number>(1);
-  // const [startDate, setStartDate] = useState<string>("");
-  // const [endDate, setEndDate] = useState<string>("");
-  // const [selectedState, setSelectedState] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [showInformation, setShowInformation] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  // const [formData, setFormData] = useState<FormData>(new FormData());
   const navigate = useNavigate();
 
   const user = useSelector(
@@ -131,6 +142,65 @@ const CreateEventForm: React.FC = () => {
     ],
     youtubeUrl: "",
   });
+
+  // Function to validate image file
+  const validateImageFile = (
+    file: File
+  ): { isValid: boolean; error?: string } => {
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      return {
+        isValid: false,
+        error: `Image "${file.name}" C’est trop grand. La taille maximale est de 5 Mo.`,
+      };
+    }
+
+    // Check file type
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      return {
+        isValid: false,
+        error: `Type de fichier non valide pour "${file.name}". Seules les images JPEG, PNG et GIF sont autorisées.`,
+      };
+    }
+
+    return { isValid: true };
+  };
+
+  // Function to check image dimensions
+  const checkImageDimensions = (
+    file: File
+  ): Promise<{ isValid: boolean; error?: string }> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+
+        if (
+          img.width > MAX_IMAGE_DIMENSIONS.width ||
+          img.height > MAX_IMAGE_DIMENSIONS.height
+        ) {
+          resolve({
+            isValid: false,
+            error: `Image "${file.name}" dimensions (${img.width}x${img.height}) sont trop grandes. Les dimensions maximales autorisées sont ${MAX_IMAGE_DIMENSIONS.width}x${MAX_IMAGE_DIMENSIONS.height} pixels.`,
+          });
+        } else {
+          resolve({ isValid: true });
+        }
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve({
+          isValid: false,
+          error: `Failed to load image "${file.name}" for dimension validation.`,
+        });
+      };
+
+      img.src = url;
+    });
+  };
 
   // Function to extract YouTube video ID from URL
   const extractYouTubeId = (url: string): string | null => {
@@ -332,6 +402,7 @@ const CreateEventForm: React.FC = () => {
     const { value } = e.target;
     setEventData({ ...eventData, eventType: value });
   };
+
   // Function to convert base64 string to Blob
   const base64ToBlob = (base64String: string): Blob => {
     const byteString = atob(base64String.split(",")[1]);
@@ -343,18 +414,46 @@ const CreateEventForm: React.FC = () => {
     return new Blob([arrayBuffer], { type: "image/png" }); // Adjust the type accordingly
   };
 
-  const handleNewImageChange = (files: FileList | null) => {
-    if (files) {
-      const selectedImagesArray = Array.from(files);
-      if (selectedImagesArray.length + selectedImages.length > 5) {
-        toast.error(`Can't select more than five images`);
+  const handleNewImageChange = async (files: FileList | null) => {
+    if (!files) return;
+
+    const selectedImagesArray = Array.from(files);
+
+    // Check total number of images
+    if (selectedImagesArray.length + selectedImages.length > 5) {
+      toast.error(`Impossible de sélectionner plus de cinq images.`);
+      return;
+    }
+
+    // Validate each image
+    for (const file of selectedImagesArray) {
+      // Basic file validation
+      const fileValidation = validateImageFile(file);
+      if (!fileValidation.isValid) {
+        toast.error(fileValidation.error);
         return;
       }
-      setSelectedImages((prevImages) => [
-        ...prevImages,
-        ...selectedImagesArray,
-      ]);
+
+      // Dimension validation
+      try {
+        const dimensionValidation = await checkImageDimensions(file);
+        if (!dimensionValidation.isValid) {
+          toast.error(dimensionValidation.error);
+          return;
+        }
+      } catch (error) {
+        toast.error(`Erreur lors de la validation de l’image. "${file.name}"`);
+        console.error("Erreur de validation de l’image :", error);
+        return;
+      }
     }
+
+    // If all validations pass, add images to state
+    setSelectedImages((prevImages) => [...prevImages, ...selectedImagesArray]);
+
+    toast.success(
+      `${selectedImagesArray.length} Image(s) ajoutée(s) avec succès.`
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -362,6 +461,11 @@ const CreateEventForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      // Final image validation before submission
+      if (selectedImages.length === 0) {
+        throw new Error("Au moins une image d’événement est requise.");
+      }
+
       const formData = new FormData();
       formData.append("hostid", hostid);
 
@@ -372,11 +476,11 @@ const CreateEventForm: React.FC = () => {
       if (eventData.youtubeUrl) {
         formData.append("youtubeUrl", eventData.youtubeUrl);
         console.log(
-          "[DEBUG] YouTube URL added to FormData:",
+          "[DEBUG] URL YouTube ajoutée à FormData :",
           eventData.youtubeUrl
         );
       } else {
-        console.log("[DEBUG] No YouTube URL provided (optional field)");
+        console.log("[DEBUG] Aucune URL YouTube fournie (champ facultatif)");
       }
 
       // Add all other form data
@@ -448,7 +552,9 @@ const CreateEventForm: React.FC = () => {
       console.log("[DEBUG] Server response:", responseData);
 
       if (!response.ok) {
-        throw new Error(responseData.message || "Failed to create event");
+        throw new Error(
+          responseData.message || "Échec de la création de l’événement."
+        );
       }
 
       if (responseData.error === false) {
@@ -459,11 +565,17 @@ const CreateEventForm: React.FC = () => {
       }
     } catch (error: any) {
       console.error("[ERROR] Submission failed:", error);
-      setSubmissionError(error.message || "Error creating event");
+      setSubmissionError(
+        error.message || "Erreur lors de la création de l’événement."
+      );
+      toast.error(
+        error.message || "Erreur lors de la création de l’événement."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
+
   const getBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -496,7 +608,7 @@ const CreateEventForm: React.FC = () => {
 
   useEffect(() => {
     if (!isAuthenticated || !user?.id) {
-      toast("hostId not found, kindly login again");
+      toast("hostId introuvable, veuillez vous reconnecter.");
       navigate("/login");
     }
   }, [isAuthenticated, user, navigate]);
@@ -510,7 +622,7 @@ const CreateEventForm: React.FC = () => {
             <>
               <div className="mb-4">
                 <label htmlFor="title" className="block text-gray-600 mb-2">
-                  Event Title
+                  Titre de l’événement
                 </label>
                 <input
                   type="text"
@@ -526,7 +638,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="venue" className="block text-gray-600 mb-2">
-                  Event Venue
+                  Lieu de l’événement
                 </label>
                 <input
                   type="text"
@@ -536,7 +648,7 @@ const CreateEventForm: React.FC = () => {
                   value={eventData.venue}
                   onChange={handleChange}
                   required
-                  placeholder="London, England"
+                  placeholder="Rabbat, Morocco"
                 />
               </div>
 
@@ -546,12 +658,12 @@ const CreateEventForm: React.FC = () => {
                   htmlFor="youtubeUrl"
                   className="block text-gray-600 mb-2"
                 >
-                  YouTube Video URL (Optional)
+                  URL de la vidéo YouTube (facultatif){" "}
                 </label>
                 <input
                   type="url"
-                  id="youtubeUrl" // This can stay as is for the ID
-                  name="youtubeUrl" // Make sure this matches your state property name
+                  id="youtubeUrl"
+                  name="youtubeUrl"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
                   value={eventData.youtubeUrl}
                   onChange={handleYoutubeUrlChange}
@@ -560,13 +672,15 @@ const CreateEventForm: React.FC = () => {
                 {eventData.youtubeUrl &&
                   !isValidYouTubeUrl(eventData.youtubeUrl) && (
                     <p className="text-red-500 text-sm mt-1">
-                      Please enter a valid YouTube URL
+                      Veuillez saisir une URL YouTube valide.{" "}
                     </p>
                   )}
                 {eventData.youtubeUrl &&
                   isValidYouTubeUrl(eventData.youtubeUrl) && (
                     <div className="mt-4">
-                      <h4 className="text-gray-600 mb-2">Video Preview:</h4>
+                      <h4 className="text-gray-600 mb-2">
+                        Aperçu de la vidéo :
+                      </h4>
                       <div className="aspect-w-16 aspect-h-9">
                         <iframe
                           width="100%"
@@ -585,7 +699,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="banner" className="block text-gray-600">
-                  Event Images (Up to 5)
+                  Images de l’événement (jusqu’à 5)
                 </label>
                 <div className="border border-dashed p-12 rounded-md">
                   <div className="flex items-center">
@@ -593,13 +707,13 @@ const CreateEventForm: React.FC = () => {
                       htmlFor="banner"
                       className="cursor-pointer bg-[#25aae1] text-white px-4 py-2 rounded-md mr-2 focus:outline-none"
                     >
-                      Add Event Image
+                      Ajouter une image d’événement{" "}
                     </label>
                     <input
                       type="file"
                       id="banner"
                       name="banner"
-                      accept="image/*"
+                      accept="image/jpeg,image/jpg,image/png,image/gif"
                       className="hidden"
                       onChange={(e) => handleNewImageChange(e.target.files)}
                       ref={fileInputRef}
@@ -614,6 +728,10 @@ const CreateEventForm: React.FC = () => {
                       i
                     </div>
                   </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Taille de fichier maximale : 5 Mo | Formats pris en charge :
+                    JPEG, PNG, GIF
+                  </p>
                 </div>
                 <div className="mt-2 flex flex-wrap">
                   {selectedImages.map((banner, index) => (
@@ -643,6 +761,9 @@ const CreateEventForm: React.FC = () => {
                           />
                         </svg>
                       </button>
+                      <div className="text-xs mt-1 text-center">
+                        {(banner.size / 1024 / 1024).toFixed(2)}MB
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -651,49 +772,54 @@ const CreateEventForm: React.FC = () => {
               {showInformation && (
                 <div className="bg-white p-4 border rounded-md">
                   <p className="italic text-blue-400">
-                    Event graphics preferably include dimensions (220 by 330 px)
-                    and (500 by 550 px) but any size provided may be resized to
-                    fit. Supported formats are jpg, jpeg, png, gif.
+                    Les graphiques de l’événement doivent de préférence avoir
+                    des dimensions de (220 x 330 px) et (500 x 550 px), mais
+                    toute taille fournie peut être redimensionnée pour
+                    s’adapter. Les formats pris en charge sont jpg, jpeg, png et
+                    gif.
+                    <br />
+                    <strong>Taille de fichier maximale : 5 Mo par image</strong>
                   </p>
                 </div>
               )}
             </>
           )}
 
+          {/* Rest of your component remains the same */}
           {step === 2 && (
             <>
               <div className="mb-4">
                 <label htmlFor="startDate" className="block text-gray-600 mb-2">
-                  Start Date
+                  Date de début
                 </label>
                 <input
                   type="date"
                   id="startDate"
                   name="startDate"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                  value={eventData.start[0].date} // Assuming you want to bind to the first element of the start array
-                  onChange={(e) => handleStartDateChange(e, 0)} // Pass index to handle function if needed
+                  value={eventData.start[0].date}
+                  onChange={(e) => handleStartDateChange(e, 0)}
                   required
                 />
               </div>
               <div className="mb-4">
                 <label htmlFor="endDate" className="block text-gray-600 mb-2">
-                  End Date
+                  Date de fin{" "}
                 </label>
                 <input
                   type="date"
                   id="endDate"
                   name="endDate"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                  value={eventData.end[0].date} // Assuming you want to bind to the first element of the end array
-                  onChange={(e) => handleEndDateChange(e, 0)} // Pass index to handle function if needed
+                  value={eventData.end[0].date}
+                  onChange={(e) => handleEndDateChange(e, 0)}
                   required
                 />
               </div>
 
               <div className="mb-4">
                 <label htmlFor="startTime" className="block text-gray-600 mb-2">
-                  Start Time
+                  Heure de début
                 </label>
                 <div className="flex items-center">
                   <input
@@ -721,7 +847,7 @@ const CreateEventForm: React.FC = () => {
 
               <div className="mb-4">
                 <label htmlFor="endTime" className="block text-gray-600 mb-2">
-                  End Time
+                  Heure de fin
                 </label>
                 <div className="flex items-center">
                   <input
@@ -748,6 +874,7 @@ const CreateEventForm: React.FC = () => {
               </div>
             </>
           )}
+
           {step === 3 && (
             <>
               <div className="mb-4" data-name="description">
@@ -765,7 +892,8 @@ const CreateEventForm: React.FC = () => {
                   theme="snow"
                 />
                 <p className="text-xs text-gray-400">
-                  Give a full description. Not more than 3000 words
+                  Fournissez une description complète. Pas plus de 3000
+                  caractères.
                 </p>
               </div>
               <div className="mb-4">
@@ -776,33 +904,35 @@ const CreateEventForm: React.FC = () => {
                   value={eventData.eventType}
                   onChange={handleEventTypeChange}
                 >
-                  <option value="">Select Event Type</option>
+                  <option value="">Sélectionnez le type d’événement</option>
                   <option value="Festival">Festival</option>
-                  <option value="Conference">Conference</option>
-                  <option value="Seminar">Seminar</option>
-                  <option value="Executive Meeting">Executive Meeting</option>
-                  <option value="Webinar">Webinar</option>
-                  <option value="Comedy and Standup">Comedy and Standup</option>
-                  <option value="Musical Show">Musical Show</option>
-                  <option value="Trade Fair">Trade Fair</option>
+                  <option value="Conference">Conférence</option>
+                  <option value="Seminar">Séminaire</option>
+                  <option value="Executive Meeting">Réunion exécutive</option>
+                  <option value="Webinar">Webinaire</option>
+                  <option value="Comedy and Standup">
+                    Comédie et stand-up
+                  </option>
+                  <option value="Musical Show">Spectacle musical</option>
+                  <option value="Trade Fair">Foire commerciale</option>
                   <option value="Charity Events/Fundraisers">
-                    Charity Events/Fundraisers
+                    Événements caritatifs / Collectes de fonds
                   </option>
                   <option value="Club Nights and Bars">
-                    Club Nights and Bars
+                    Soirées en club et bars
                   </option>
                   <option value="Concerts">Concerts</option>
-                  <option value="Cultural Events">Cultural Events</option>
-                  <option value="Trade Show">Trade Show</option>
-                  <option value="Film Screenings">Film Screenings</option>
-                  <option value="Galas/Dinners">Galas/Dinners</option>
-                  <option value="Gigs">Gigs</option>
-                  <option value="Sports Events">Sports Events</option>
+                  <option value="Cultural Events">Événements culturels</option>
+                  <option value="Trade Show">Salon professionnel</option>
+                  <option value="Film Screenings">Projections de films</option>
+                  <option value="Galas/Dinners">Galas / Dîners</option>
+                  <option value="Gigs">Concerts (ou petits spectacles)</option>
+                  <option value="Sports Events">Événements sportifs</option>
                   <option value="Theatre/Performing Arts">
-                    Theatre/Performing Arts
+                    Théâtre / Arts du spectacle
                   </option>
-                  <option value="Workshops">Workshops</option>
-                  <option value="Others">Others</option>
+                  <option value="Workshops">Ateliers</option>
+                  <option value="Others">Autres</option>
                 </select>
               </div>
             </>
@@ -816,7 +946,7 @@ const CreateEventForm: React.FC = () => {
                     htmlFor="bearer"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Charge Bearer
+                    Responsable financier
                   </label>
                   <select
                     id="bearer"
@@ -830,7 +960,7 @@ const CreateEventForm: React.FC = () => {
                       })
                     }
                   >
-                    <option value="">Select Bearer</option>
+                    <option value="">Sélectionnez le responsable</option>
                     <option value="client">Client</option>
                     <option value="moloyal">MoTickets</option>
                   </select>
@@ -841,7 +971,7 @@ const CreateEventForm: React.FC = () => {
                     htmlFor="currency"
                     className="block mb-2 text-sm font-medium text-gray-900"
                   >
-                    Currency
+                    Devise
                   </label>
                   <select
                     id="currency"
@@ -850,35 +980,29 @@ const CreateEventForm: React.FC = () => {
                     value={eventData.currency}
                     onChange={(e) => handleCurrencyChange(e.target.value)}
                   >
-                    <option value="">Sélectionner la devise</option>
+                    <option value="">Sélectionnez la devise</option>
                     <option value="GBP">GBP</option>
                     <option value="USD">USD</option>
                     <option value="NGN">NGN</option>
                     <option value="EUR">EUR</option>
-                    <option value="MAD">MAD</option> {/* Add this line */}
+                    <option value="MAD">MAD</option>
                   </select>
                 </div>
               </div>
 
               <h3 className="text-xl font-semibold mb-4 text-white">
-                Ticket Categories
+                Catégories de billets
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full mb-4">
                   <thead className="bg-[#25aae1]">
                     <tr>
-                      <th className="px-4 py-2">Name</th>
+                      <th className="px-4 py-2">Nom</th>
                       <th className="px-4 py-2">
-                        Price ({currencySymbolMap[eventData.currency]})
+                        Prix ({currencySymbolMap[eventData.currency]})
                       </th>
-                      {/* <th className="px-4 py-2">
-                        Discount Price(
-                        {currencySymbolMap[eventData.currency]})
-                      </th> */}
-
-                      {/* <th className="px-4 py-2">Wallet Discount</th> */}
                       <th className="px-4 py-2">Qty</th>
-                      <th className="px-4 py-2">Guest Per Unit</th>
+                      <th className="px-4 py-2">Invités par unité</th>
                       <th className="px-4 py-2">Action</th>
                     </tr>
                   </thead>
@@ -913,34 +1037,6 @@ const CreateEventForm: React.FC = () => {
                             }
                           />
                         </td>
-                        {/* <td className="border px-4 py-2">
-                          <input
-                            type="text"
-                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                            value={category.discountPrice}
-                            onChange={(e) =>
-                              handleCategoryChange(
-                                index,
-                                "discountPrice",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td> */}
-                        {/* <td className="border px-4 py-2">
-                          <input
-                            type="text"
-                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-                            value={category.walletDiscount}
-                            onChange={(e) =>
-                              handleCategoryChange(
-                                index,
-                                "walletDiscount",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </td> */}
                         <td className="border px-4 py-2">
                           <input
                             type="text"
@@ -971,7 +1067,7 @@ const CreateEventForm: React.FC = () => {
                             className="text-red-500"
                             onClick={() => handleDeleteCategory(index)}
                           >
-                            Delete
+                            Supprimer
                           </button>
                         </td>
                       </tr>
@@ -985,7 +1081,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-4 py-2 rounded-md"
                 onClick={handleAddCategory}
               >
-                Add Category
+                Ajouter une catégorie
               </button>
             </>
           )}
@@ -997,7 +1093,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#c10006] px-6 py-2 rounded-md"
                 onClick={handlePreviousStep}
               >
-                Previous
+                Précédent
               </button>
             )}
             {step !== 4 ? (
@@ -1007,7 +1103,7 @@ const CreateEventForm: React.FC = () => {
                 onClick={handleNextStep}
                 disabled={!isStepFieldsFilled()}
               >
-                Next
+                Suivant
               </button>
             ) : (
               <button
@@ -1015,7 +1111,7 @@ const CreateEventForm: React.FC = () => {
                 className="text-white bg-[#25aae1] px-6 py-2 rounded-md disabled:opacity-70 disabled:cursor-not-allowed"
                 disabled={!isLastStepFieldsFilled() || isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Envoi en cours..." : "Soumettre"}
               </button>
             )}
           </div>

@@ -1,76 +1,180 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+// import ContentWrapper from "../components/ContentWrapper";
+import Card from "../Card";
 import useFetch from "../../hooks/useFetch";
-import moment from "moment";
-import Img from "../LazyLoadImage";
-import PosterFallback from "../../assets/images/no-poster.png";
-import { PriceSelection, getCurrency } from "../../utils/functions";
-import { Link } from "react-router-dom";
+import "./allEvents.scss";
+import ContentWrapper from "../ContentWrapper";
 
-export default function AllEventRevamp() {
+const AllEvents = () => {
   const currency = process.env.REACT_APP_CURRENCY;
-  const [endpoint, setEndpoint] = useState(
+
+  // Fetch both trending and past events
+  const { data: trendingData, loading: trendingLoading } = useFetch(
+    `/eventspercurrency/${currency}`
+  );
+  const { data: pastData, loading: pastLoading } = useFetch(
     `/pasteventspercurrency/${currency}`
   );
 
-  const { data, loading } = useFetch(endpoint); // Fetch data from the API
-  const eventData = data?.data; // Ensure you access the correct array
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const eventsPerPage = 12;
 
-  const imageURL = process.env.REACT_APP_IMAGEURL;
+  // Combine and label the events
+  const allEvents = useMemo(() => {
+    const trendingEvents = (trendingData?.data || []).map((event: any) => ({
+      ...event,
+      type: "trending",
+      typeLabel: "Trending",
+    }));
+
+    const pastEvents = (pastData?.data || []).map((event: any) => ({
+      ...event,
+      type: "past",
+      typeLabel: "Past Event",
+    }));
+
+    // Combine and sort by date (most recent first)
+    return [...trendingEvents, ...pastEvents].sort(
+      (a, b) =>
+        new Date(b.from_date).getTime() - new Date(a.from_date).getTime()
+    );
+  }, [trendingData, pastData]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(allEvents.length / eventsPerPage);
+  const currentEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    return allEvents.slice(startIndex, startIndex + eventsPerPage);
+  }, [allEvents, currentPage, eventsPerPage]);
+
+  const loading = trendingLoading || pastLoading;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Group events by type for display
+  const groupedEvents = useMemo(() => {
+    const trending = currentEvents.filter((event) => event.type === "trending");
+    const past = currentEvents.filter((event) => event.type === "past");
+
+    return { trending, past };
+  }, [currentEvents]);
+
+  // Generate pagination buttons with proper typing
+  const renderPaginationButtons = () => {
+    const buttons: number[] = [];
+    const maxVisibleButtons = 5;
+
+    if (totalPages <= maxVisibleButtons) {
+      // Show all pages if total pages is less than or equal to max visible
+      for (let i = 1; i <= totalPages; i++) {
+        buttons.push(i);
+      }
+    } else {
+      // Logic for showing limited pages with ellipsis
+      if (currentPage <= 3) {
+        // Show first 5 pages
+        for (let i = 1; i <= maxVisibleButtons; i++) {
+          buttons.push(i);
+        }
+      } else if (currentPage >= totalPages - 2) {
+        // Show last 5 pages
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          buttons.push(i);
+        }
+      } else {
+        // Show pages around current page
+        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          buttons.push(i);
+        }
+      }
+    }
+
+    return buttons;
+  };
 
   return (
-    <div className="bg-[#f9f9f9] pt-24">
-      <h3 className="text-dark text-2xl p-12">Tous les événements</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 px-12">
-        {!loading
-          ? eventData?.map((item: any, index: number) => {
-              const posterUrl = item?.imgs[0]?.img
-                ? imageURL + item.imgs[0].img
-                : PosterFallback;
+    <div className="allEventsSection">
+      <ContentWrapper>
+        <div className="allEventsHeader">
+          <h1 className="allEventsTitle">Tous les événements</h1>
+          <p className="allEventsSubtitle">
+            Parcourez les événements tendance et passés{" "}
+          </p>
+        </div>
 
-              return (
-                <div
-                  key={index}
-                  className="flex flex-col rounded-lg bg-white text-surface shadow-secondary-1 dark:bg-surface-dark dark:text-white"
-                >
-                  <Link to={`/details/${item.slug}`}>
-                    <Img
-                      className="rounded-t-lg w-full h-48 object-cover"
-                      src={posterUrl}
-                      alt={item.title || "Event Image"}
-                    />
-                  </Link>
-                  <div className="p-6">
-                    <h5 className="mb-2 text-xl font-medium leading-tight">
-                      {item.title}
-                    </h5>
-                    <p className="text-lg font-medium text-dark">
-                      <PriceSelection
-                        ticketCategories={item.ticketCategories}
-                        currency={getCurrency(item)}
-                      />
-                    </p>
-                    <p className="text-base text-gray-600">
-                      {moment(item.from_date).format("MMM D, YYYY")}
-                    </p>
-                  </div>
-                </div>
-              );
-            })
-          : // Render skeletons during loading
-            [...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse flex flex-col rounded-lg bg-gray-300 dark:bg-gray-700"
-              >
-                <div className="h-48 bg-gray-400 dark:bg-gray-600 rounded-t-lg"></div>
-                <div className="p-6 space-y-4">
-                  <div className="h-4 bg-gray-400 rounded"></div>
-                  <div className="h-4 bg-gray-400 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-400 rounded w-1/2"></div>
-                </div>
+        {!loading ? (
+          <div className="eventsContent">
+            {/* Trending Events Section */}
+            {groupedEvents.trending.length > 0 && (
+              <div className="eventsSection">
+                <h2 className="sectionTitle">Événements tendance</h2>
+                <Card data={groupedEvents.trending} loading={false} title="" />
               </div>
-            ))}
-      </div>
+            )}
+
+            {/* Past Events Section */}
+            {groupedEvents.past.length > 0 && (
+              <div className="eventsSection">
+                <h2 className="sectionTitle">Événements passés</h2>
+                <Card data={groupedEvents.past} loading={false} title="" />
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className="paginationButton prevNext"
+                >
+                  Précédent
+                </button>
+
+                <div className="paginationNumbers">
+                  {renderPaginationButtons().map((pageNum: number) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`paginationButton ${
+                        currentPage === pageNum ? "active" : ""
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className="paginationButton prevNext"
+                >
+                  Suivant
+                </button>
+              </div>
+            )}
+
+            {/* Page Info */}
+            {allEvents.length > 0 && (
+              <div className="pageInfo">
+                Affichage {(currentPage - 1) * eventsPerPage + 1} -{" "}
+                {Math.min(currentPage * eventsPerPage, allEvents.length)} of{" "}
+                {allEvents.length} événements
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="loadingState">
+            <Card data={[]} loading={true} title="" />
+          </div>
+        )}
+      </ContentWrapper>
     </div>
   );
-}
+};
+
+export default AllEvents;

@@ -1,0 +1,219 @@
+@import "../../mixins.scss";
+
+.allEventsSection {
+  padding: 40px 0;
+  background: var(--background-color, #1a202c);
+  min-height: 100vh;
+
+  .allEventsHeader {
+    text-align: center;
+    margin-bottom: 50px;
+    padding-top: 20px;
+
+    .allEventsTitle {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+      @include md {
+        font-size: 3rem;
+      }
+    }
+
+    .allEventsSubtitle {
+      font-size: 1.1rem;
+      color: #a0aec0;
+      opacity: 0.8;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.5;
+
+      @include md {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  .eventsContent {
+    .eventsSection {
+      margin-bottom: 60px;
+
+      .sectionTitle {
+        font-size: 1.8rem;
+        color: white;
+        margin-bottom: 25px;
+        font-weight: 600;
+        padding-left: 10px;
+        border-left: 4px solid #fbbf24;
+
+        @include md {
+          font-size: 2rem;
+          margin-bottom: 30px;
+        }
+      }
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin: 50px 0 30px;
+      flex-wrap: wrap;
+
+      .paginationNumbers {
+        display: flex;
+        gap: 8px;
+      }
+
+      .paginationButton {
+        padding: 12px 18px;
+        border: 2px solid #4a5568;
+        background: #2d3748;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 14px;
+        min-width: 50px;
+
+        &:hover:not(:disabled) {
+          background: #fbbf24;
+          color: #1a202c;
+          border-color: #fbbf24;
+          transform: translateY(-2px);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        &.active {
+          background: #fbbf24;
+          color: #1a202c;
+          border-color: #fbbf24;
+          box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
+        &.prevNext {
+          background: #4a5568;
+          border-color: #718096;
+
+          &:hover:not(:disabled) {
+            background: #fbbf24;
+            border-color: #fbbf24;
+          }
+        }
+      }
+    }
+
+    .pageInfo {
+      text-align: center;
+      color: #a0aec0;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  }
+
+  .loadingState {
+    .cardsGrid {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .allEventsSection {
+    padding: 20px 0;
+
+    .allEventsHeader {
+      margin-bottom: 30px;
+
+      .allEventsTitle {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+
+      .allEventsSubtitle {
+        font-size: 1rem;
+        padding: 0 20px;
+      }
+    }
+
+    .eventsContent {
+      .eventsSection {
+        margin-bottom: 40px;
+
+        .sectionTitle {
+          font-size: 1.5rem;
+          margin-bottom: 20px;
+        }
+      }
+
+      .pagination {
+        margin: 40px 0 20px;
+        gap: 10px;
+
+        .paginationButton {
+          padding: 10px 14px;
+          font-size: 13px;
+          min-width: 44px;
+        }
+
+        .paginationNumbers {
+          gap: 6px;
+        }
+      }
+
+      .pageInfo {
+        font-size: 13px;
+        margin-top: 15px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .allEventsSection {
+    .allEventsHeader {
+      .allEventsTitle {
+        font-size: 1.8rem;
+      }
+    }
+
+    .eventsContent {
+      .pagination {
+        flex-direction: column;
+        gap: 15px;
+
+        .paginationNumbers {
+          order: 2;
+        }
+
+        .paginationButton.prevNext {
+          order: 1;
+          width: 120px;
+        }
+      }
+    }
+  }
+}
+
+// Ensure the Card component integrates properly
+.allEventsSection {
+  .cardsGrid {
+    .gridContainer {
+      // Inherits all your existing card grid styles
+    }
+
+    .loadingSkeleton {
+      // Inherits your existing skeleton styles
+    }
+  }
+}
