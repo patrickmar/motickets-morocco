@@ -23,9 +23,10 @@ import "react-toastify/dist/ReactToastify.css";
 
 type Props = {
   tickets: Array<any>;
-  ticketData: Array<any>;
+  ticketData: any; // changed here
   data: any;
   stripeData: any;
+  totalAmount?: any; // optional because you're not sending it
 };
 
 interface ICheckoutForm {
@@ -44,12 +45,12 @@ interface IBoolean {
 
 const SuccessComponent = (props: Props) => {
   // console.log(props);
-  const { stripeData, data } = props;
+  const { stripeData, data, totalAmount, ticketDatas } = props;
   const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
   const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
   const baseUrl = process.env.REACT_APP_BASEURL;
   //console.log(ticketData);
-  const [tickets, setTickets] = useState(null);
+  const [tickets, setTickets] = useState(ticketDatas);
   const [stripe, setStripe] = useState(null);
   const [userData, setUserData] = useState(data);
   const [ticketData, setTicketData] = useState(null);
@@ -61,6 +62,13 @@ const SuccessComponent = (props: Props) => {
 
   const currencyName = tickets && getCurrencyName(tickets.currency);
   const query = new URLSearchParams(window.location.search);
+
+  // const location = useLocation();
+  // //in Cart.jsx I sent data and cart. Please check that page for the changes.(in video it's only data)
+  // const data = location.state.stripeData;
+  // const cart = location.state.cart;
+  // const currentUser = useSelector((state) => state.user.currentUser);
+  // const [orderId, setOrderId] = useState(null);
 
   // useEffect(() => {
   //   const createOrder = async () => {
@@ -93,7 +101,7 @@ const SuccessComponent = (props: Props) => {
   //   currency: currencycode
   // });
 
-  // console.log(tickdata)
+  // console.log(tickets)
 
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
@@ -115,7 +123,7 @@ const SuccessComponent = (props: Props) => {
         const tacks = session.data.lineitem;
         setTickets(tacks);
       } catch (error) {
-        // console.log(error);
+        //console.log(error);
         toast.error(error, {
           toastId: customId,
         });
@@ -123,14 +131,13 @@ const SuccessComponent = (props: Props) => {
     };
     if (query.get("session_id")) {
       const sessionid = query.get("session_id");
-      // console.log(sessionid);
 
       sessionid && GetSession(sessionid);
     }
 
     if (query.get("canceled")) {
       toast.error(
-        "Commande annulée – continuez à faire vos achats et passez à la caisse quand vous êtes prêt."
+        "Order canceled -- continue to shop around and checkout when you're ready."
       );
     }
   }, []);
@@ -143,6 +150,7 @@ const SuccessComponent = (props: Props) => {
     // console.log(tickets);
   };
 
+  // setTickets(ticketDatas);
   useEffect(() => {
     //console.log(tickets);
 
@@ -158,31 +166,54 @@ const SuccessComponent = (props: Props) => {
         //       amount: totalAmount*100,
         //       currency: currencycode
         //  });
-        const res = await axios
-          .post(`${baseUrl}/dispense/internationalticket-stripenew`, {
-            userdata: userData,
-            stripeData: stripe,
-            ticketData: tickets,
-          })
-          .then((res: any) => {
-            console.log(res.data);
-            console.log(res.data.error);
-            console.log(res.data.message);
-            // setLoading(false);
-            // setData(res?.name === "AxiosError" ? null : res);
-            setTimeout(() => {
-              // toast.success("Order placed! You will receive an email confirmation.", {
-              //   toastId: customId2
-              // });
-              if (res.data.error === false) {
-                setValidatePay(true);
-              }
-              setLoading(false);
 
-              resetState();
-              //setData(res?.name === "AxiosError" ? null : res);
-            }, 5000 * 1);
-          });
+        if (tickets.totalAmount == 0) {
+          const res = await axios
+            .post(`${baseUrl}/freeticket_dispense/internationalticket`, {
+              userdata: userData,
+              stripeData: stripe,
+              ticketData: tickets,
+            })
+            .then((res: any) => {
+              // console.log(res.data);
+              // console.log(res.data.error);
+              // console.log(res.data.message);
+              // setLoading(false);
+              // setData(res?.name === "AxiosError" ? null : res);
+              setTimeout(() => {
+                if (res.data.error === false) {
+                  setValidatePay(true);
+                }
+                setLoading(false);
+
+                resetState();
+                //setData(res?.name === "AxiosError" ? null : res);
+              }, 5000 * 1);
+            });
+        } else {
+          const res = await axios
+            .post(`${baseUrl}/dispense/internationalticket-stripenew`, {
+              userdata: userData,
+              stripeData: stripe,
+              ticketData: tickets,
+            })
+            .then((res: any) => {
+              // console.log(res.data);
+              // console.log(res.data.error);
+              // console.log(res.data.message);
+              // setLoading(false);
+              // setData(res?.name === "AxiosError" ? null : res);
+              setTimeout(() => {
+                if (res.data.error === false) {
+                  setValidatePay(true);
+                }
+                setLoading(false);
+
+                resetState();
+                //setData(res?.name === "AxiosError" ? null : res);
+              }, 5000 * 1);
+            });
+        }
 
         //toast(res.data.error);
       } catch (error) {
@@ -216,10 +247,10 @@ const SuccessComponent = (props: Props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "black",
+                  color: "white",
                 }}
               >
-                Le paiement est invalide ! Veuillez contacter l'administrateur.
+                The payment is invalid! Please contact admin.
               </span>
               <button
                 onClick={() => navigate("/")}
@@ -228,11 +259,11 @@ const SuccessComponent = (props: Props) => {
                   marginTop: 20,
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "black",
+                  color: "white",
                 }}
-                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-black shadow-sm hover:bg-red-700"
+                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
               >
-                Aller à la page d'accueil.
+                Go to Homepage
               </button>
             </>
           ) : (
@@ -242,10 +273,10 @@ const SuccessComponent = (props: Props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "black",
+                  color: "white",
                 }}
               >
-                Les billets ont été achetés avec succès.
+                The tickets have been purchased successfully.
               </span>
               <button
                 onClick={() => navigate("/")}
@@ -256,9 +287,9 @@ const SuccessComponent = (props: Props) => {
                   justifyContent: "center",
                   color: "white",
                 }}
-                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-black shadow-sm hover:bg-red-700"
+                className="flex w-full items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
               >
-                Aller à la page d'accueil.
+                Go to Homepage
               </button>
             </>
           )}
@@ -273,11 +304,10 @@ const SuccessComponent = (props: Props) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  color: "red",
-                  marginTop: "1rem",
+                  color: "white",
                 }}
               >
-                Chargement... Ne pas actualiser<br></br>
+                Loading...do not refresh.<br></br>
               </span>
               {[1, 2, 3, 4, 5, 6, 7].map((item, i) => (
                 <div key={i} className="row skeleton"></div>
