@@ -332,7 +332,7 @@ const CheckoutForm = (props: Props) => {
                   </div>
                 </button>
 
-                <button
+                {/* <button
                   type="button"
                   onClick={() => setSelectedPaymentMethod("payzone")}
                   className={`p-4 rounded-xl border-2 transition-all duration-300 ${
@@ -362,7 +362,7 @@ const CheckoutForm = (props: Props) => {
                       </div>
                     </div>
                   </div>
-                </button>
+                </button> */}
               </div>
             </div>
 
@@ -565,7 +565,7 @@ const CheckoutForm = (props: Props) => {
               {/* Payment Buttons */}
               <div className="space-y-4">
                 {/* Stripe Payment Button - Only show when Stripe is selected */}
-                {selectedPaymentMethod === "stripe" && (
+                {/* {selectedPaymentMethod === "stripe" && ( */}
                   <button
                     type="button"
                     onClick={handleStripePayment}
@@ -600,7 +600,7 @@ const CheckoutForm = (props: Props) => {
                       </>
                     )}
                   </button>
-                )}
+                {/* )} */}
 
                 {/* Payzone Payment Form - Only show when Payzone is selected */}
                 {selectedPaymentMethod === "payzone" && (
@@ -841,14 +841,14 @@ const CheckoutForm = (props: Props) => {
                         />
                       </svg>
                     </div>
-                    <div>
+                    {/* <div>
                       <div className="font-semibold text-gray-800 dark:text-gray-200">
                         Select Payment Method
                       </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
                         Choose between Stripe or Payzone to proceed with payment
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               )}
