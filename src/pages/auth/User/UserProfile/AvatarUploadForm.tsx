@@ -99,7 +99,7 @@ function AvatarUploadForm() {
         data.user[0].img
       ) {
         const imageUrl = `${process.env.REACT_APP_BASEURL}/${data.user[0].img}`;
-        console.log("New image URL:", imageUrl);
+      
 
         const updatedUser = {
           ...user,

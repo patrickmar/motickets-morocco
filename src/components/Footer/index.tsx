@@ -26,7 +26,7 @@ const Footer = (props: Props) => {
         .then((res: any) => {
           !res.data.error ? toast(res.data.message) : toast(res.data.message);
         });
-      console.log(res);
+    
     } catch (error) {
       toast("email not saved, please try again later");
     }

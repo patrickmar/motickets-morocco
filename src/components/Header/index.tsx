@@ -47,7 +47,7 @@ const Header: React.FC = () => {
   const [mobileMenu, setMobileMenu] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [isVisible, setIsVisible] = useState(false);
-  console.log(query);
+  
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -101,7 +101,7 @@ const Header: React.FC = () => {
   const closeDropdown = () => {
     setIsVisible(false);
   };
-  // console.log("Avatar URL before rendering:", avatarUrl);
+
 
   const handleLogout = () => {
     setAvatarUrl(default_avatar);

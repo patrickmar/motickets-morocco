@@ -56,7 +56,7 @@ const HostProfile = () => {
   const user = useSelector(
     (state: RootState) => state.auth.user
   ) as User | null;
-  console.log(user);
+ 
   const { avatarUrl } = useAvatar();
 
   const [dateCreated, setDateCreated] = useState<string>("");
@@ -68,20 +68,15 @@ const HostProfile = () => {
   const [twitter, setTwitter] = useState<string>("");
   const [accountName, setAccountName] = useState<string>("");
 
-  console.log(dateCreated);
-  console.log(email);
-  console.log(bankCode);
-  console.log(instagram);
-  console.log(facebook);
-
+ 
   const [hostname, setHostName] = useState<string>("");
-  console.log(hostname);
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  console.log(twitter);
-  console.log(accountName);
+ 
+  
   const [updateProfile, { error, isSuccess }] = useUpdateProfileMutation();
-  console.log(updateProfile);
+ 
   const updateStatus = useSelector(
     (state: RootState) => state.event.updateStatus
   );
@@ -89,7 +84,7 @@ const HostProfile = () => {
   const { data } = useGetHostQuery(user?.id!, {
     skip: !user?.id,
   });
-  console.log(data);
+
   const userData = data ? data[0] : null; // Get the first user
 
   useEffect(() => {

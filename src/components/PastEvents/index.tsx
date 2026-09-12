@@ -27,13 +27,13 @@ interface FormattedDate {
 
 export default function PasteEvent() {
   const currency = process.env.REACT_APP_CURRENCY;
-  console.log(currency+ 'tt');
+ 
   const [endpoint, setEndpoint] = useState(
     `/pasteventspercurrency/${currency}`
   );
   const { data, loading } = useFetch(endpoint);
   const eventData = data?.data as EventItem[];
-  console.log(data);
+ 
   const imageURL = process.env.REACT_APP_IMAGEURL;
 
   // Format date with visual appeal

@@ -44,19 +44,19 @@ interface IBoolean {
 }
 
 const SuccessComponent = (props: Props) => {
-  // console.log(props);
+ 
   const { stripeData, data, totalAmount, ticketDatas } = props;
   const defaultCountryCode = process.env.REACT_APP_COUNTRYCODE;
   const taxPercent = Number(process.env.REACT_APP_TAXPERCENT);
   const baseUrl = process.env.REACT_APP_BASEURL;
-  //console.log(ticketData);
+  
   const [tickets, setTickets] = useState(ticketDatas);
   const [stripe, setStripe] = useState(null);
   const [userData, setUserData] = useState(data);
   const [ticketData, setTicketData] = useState(null);
   const [validatePay, setValidatePay] = useState(false);
   const [loading, setLoading] = useState(true);
-  //console.log(stripeData);
+ 
   const currency = tickets && getCurrency(tickets.currency);
   const navigate = useNavigate();
 
@@ -101,7 +101,7 @@ const SuccessComponent = (props: Props) => {
   //   currency: currencycode
   // });
 
-  // console.log(tickets)
+
 
   useEffect(() => {
     // Check to see if this is a redirect back from Checkout
@@ -147,7 +147,7 @@ const SuccessComponent = (props: Props) => {
     setStripe({});
     setUserData({});
     //setTickData({});
-    // console.log(tickets);
+    
   };
 
   // setTickets(ticketDatas);
@@ -217,7 +217,7 @@ const SuccessComponent = (props: Props) => {
 
         //toast(res.data.error);
       } catch (error) {
-        console.log(error);
+       
       }
     };
 

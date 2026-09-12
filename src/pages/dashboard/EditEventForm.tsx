@@ -375,7 +375,7 @@ const EditEventForm: React.FC = () => {
             body: imageFormData,
           }
         );
-        console.log(imageResponse);
+        
         // Add proper error handling
         if (!imageResponse.ok) {
           const errorText = await imageResponse.text();

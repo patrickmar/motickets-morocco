@@ -23,7 +23,7 @@ const Offers = () => {
   const carouselContainer = useRef({});
   const currency = process.env.REACT_APP_CURRENCY;
   const [endpoint, setEndpoint] = useState(currency);
-  console.log(setEndpoint);
+  
   const { loading } = useFetch(`/eventspercurrency/${endpoint}`);
 
   // const onTabChange = (tab: string) => {

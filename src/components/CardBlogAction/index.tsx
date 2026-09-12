@@ -34,11 +34,11 @@ interface FormattedDate {
 
 export default function CardBlogAction() {
   const currency = process.env.REACT_APP_CURRENCY;
-  console.log(currency);
+  
   const [endpoint, setEndpoint] = useState(`/eventspercurrency/${currency}`);
   const { data, loading } = useFetch(endpoint);
   const eventData = data?.data as EventItem[];
-   console.log(eventData);
+  
   const imageURL = process.env.REACT_APP_IMAGEURL;
 
   // Check if event is upcoming or past

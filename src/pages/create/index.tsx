@@ -470,17 +470,14 @@ const CreateEventForm: React.FC = () => {
       formData.append("hostid", hostid);
 
       // 1. VERIFICATION: Log initial YouTube URL value
-      console.log("[DEBUG] Initial youtubeurl value:", eventData.youtubeUrl);
+     // console.log("[DEBUG] Initial youtubeurl value:", eventData.youtubeUrl);
 
       // 2. EXPLICITLY add youtubeurl to formData (with verification)
       if (eventData.youtubeUrl) {
         formData.append("youtubeUrl", eventData.youtubeUrl);
-        console.log(
-          "[DEBUG] URL YouTube ajoutée à FormData :",
-          eventData.youtubeUrl
-        );
+        
       } else {
-        console.log("[DEBUG] Aucune URL YouTube fournie (champ facultatif)");
+       // console.log("[DEBUG] Aucune URL YouTube fournie (champ facultatif)");
       }
 
       // Add all other form data
@@ -527,7 +524,7 @@ const CreateEventForm: React.FC = () => {
       }
 
       // 3. FINAL VERIFICATION: Check if youtubeurl exists in FormData
-      console.log("[DEBUG] Final FormData contents:");
+     
       const formDataObj: Record<string, any> = {};
       formData.forEach((value, key) => {
         if (key === "banner[]") {
@@ -537,19 +534,19 @@ const CreateEventForm: React.FC = () => {
           formDataObj[key] = value;
         }
       });
-      console.log(formDataObj);
+     
 
       // 4. VERIFY the actual request payload
-      console.log("[DEBUG] Sending request to:", BaseUrl);
+     
       const response = await fetch(BaseUrl, {
         method: "POST",
         body: formData,
       });
 
       // 5. Verify server response
-      console.log("[DEBUG] Response status:", response.status);
+     
       const responseData = await response.json();
-      console.log("[DEBUG] Server response:", responseData);
+     
 
       if (!response.ok) {
         throw new Error(
@@ -599,7 +596,7 @@ const CreateEventForm: React.FC = () => {
     return `${paddedHours}:${paddedMinutes}:00`;
   };
 
-  console.log(formatTime);
+  
 
   const handleInformationClick = () => {
     setShowInformation((prevShowInformation) => !prevShowInformation);

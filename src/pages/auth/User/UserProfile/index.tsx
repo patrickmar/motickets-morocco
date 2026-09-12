@@ -64,7 +64,7 @@ const Profile = () => {
     };
     updateProfile(userData);
   };
-  console.log(submitHandler);
+ 
   const handlePasswordChange = () => {
     navigate("/profile_change");
   };
